@@ -50,7 +50,7 @@ func (h *authHandlers) handleLangSubmit(w http.ResponseWriter, r *http.Request) 
 	}
 
 	lang := r.FormValue("lang")
-	if lang != "en" && lang != "ar" {
+	if lang != "en" && lang != "hi" && lang != "ar" {
 		http.Error(w, "bad request", http.StatusBadRequest)
 		return
 	}

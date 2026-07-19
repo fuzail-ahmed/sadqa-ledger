@@ -54,6 +54,20 @@ templ AdminShell(d AdminShellData) {
 							class="btn min-h-11 px-2"
 							type="submit"
 							name="lang"
+							value="hi"
+							if d.Lang == "hi" {
+								data-variant="primary"
+								aria-current="true"
+							} else {
+								data-variant="outline"
+							}
+						>
+							HI
+						</button>
+						<button
+							class="btn min-h-11 px-2"
+							type="submit"
+							name="lang"
 							value="ar"
 							if d.Lang == "ar" {
 								data-variant="primary"
