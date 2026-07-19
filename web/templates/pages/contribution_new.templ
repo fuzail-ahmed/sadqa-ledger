@@ -1,0 +1,231 @@
+package pages
+
+import (
+	"fmt"
+	"github.com/fuzail-ahmed/sadqa-ledger/i18n"
+	"github.com/fuzail-ahmed/sadqa-ledger/internal/members"
+	"github.com/fuzail-ahmed/sadqa-ledger/web/templates/components"
+)
+
+// ContributionFormErrors holds form validation errors.
+type ContributionFormErrors struct {
+	Member string
+	Amount string
+}
+
+// ContributionNew renders the full Add Contribution page.
+templ ContributionNew(
+	d components.AdminShellData,
+	quickAmounts []int64,
+	currencySymbol string,
+	currentMonth string,
+	currentDate string,
+	selectedMember *members.Member,
+	amount string,
+	errs ContributionFormErrors,
+	toastMsg string,
+) {
+	@components.AdminShell(d) {
+		<div class="mx-auto max-w-sm px-4 py-8">
+			<div id="toast-container">
+				if toastMsg != "" {
+					<div class="alert mb-4" data-variant="success" role="status" aria-live="polite">
+						<p>{ toastMsg }</p>
+					</div>
+				}
+			</div>
+
+			<div class="card">
+				<header>
+					<h2>{ i18n.T(d.Lang, "nav.add_contribution") }</h2>
+				</header>
+				<section>
+					<form
+						id="contribution-form"
+						method="post"
+						action="/contributions/new"
+						hx-post="/contributions/new"
+						hx-target="#main-form-content"
+						hx-swap="innerHTML"
+						class="grid gap-4"
+					>
+						<input type="hidden" name="csrf_token" value={ d.CSRFToken }/>
+
+						<div id="main-form-content" class="grid gap-4">
+							@ContributionFormContent(d.Lang, quickAmounts, currencySymbol, currentMonth, currentDate, selectedMember, amount, errs)
+						</div>
+
+						<button class="btn min-h-11 w-full" data-variant="primary" type="submit">
+							{ i18n.T(d.Lang, "members.save") }
+						</button>
+					</form>
+				</section>
+			</div>
+		</div>
+	}
+}
+
+// ContributionFormContent renders the inner form fields. This is separate so we can reset or swap it.
+templ ContributionFormContent(
+	lang string,
+	quickAmounts []int64,
+	currencySymbol string,
+	currentMonth string,
+	currentDate string,
+	selectedMember *members.Member,
+	amount string,
+	errs ContributionFormErrors,
+) {
+	<!-- Member Selection -->
+	<div id="member-search-container" class="field">
+		<label class="label">{ i18n.T(lang, "members.name_label") }</label>
+		if selectedMember != nil {
+			<div class="flex min-h-11 items-center justify-between gap-2 rounded-md border border-border bg-muted p-2">
+				<span class="font-medium text-foreground">{ selectedMember.Name }</span>
+				<input type="hidden" name="member_id" value={ fmt.Sprintf("%d", selectedMember.ID) }/>
+				<button
+					type="button"
+					class="btn"
+					data-size="sm"
+					data-variant="outline"
+					hx-get="/contributions/clear-member"
+					hx-target="#member-search-container"
+					hx-swap="outerHTML"
+				>
+					{ i18n.T(lang, "members.cancel") }
+				</button>
+			</div>
+		} else {
+			<input
+				class="input min-h-11"
+				type="search"
+				id="member_search"
+				name="member_search"
+				placeholder={ i18n.T(lang, "members.search_placeholder") }
+				hx-get="/contributions/search-members"
+				hx-trigger="input changed delay:200ms, search"
+				hx-target="#member-search-results"
+			/>
+			<div id="member-search-results" class="mt-1 max-h-48 overflow-y-auto rounded border border-border empty:border-none empty:p-0 bg-surface"></div>
+		}
+		if errs.Member != "" {
+			<p class="mt-1 text-sm text-destructive" role="alert">{ errs.Member }</p>
+		}
+	</div>
+
+	<!-- Duplicate Warning Container -->
+	<div id="duplicate-warning">
+		if selectedMember != nil {
+			@ContributionDuplicateCheck(lang, true, selectedMember.Name, currentMonth)
+		}
+	</div>
+
+	<!-- Amount Field -->
+	<div class="field">
+		<label class="label" for="amount">{ i18n.T(lang, "login.password_label") /* standard amount/label fallback or key */ }</label>
+		<!-- Custom key if missing: we can use a custom title or translation fallbacks -->
+		<label class="label" for="amount">Amount ({ currencySymbol })</label>
+		<input
+			class="input min-h-11 font-mono"
+			type="text"
+			inputmode="numeric"
+			pattern="[0-9]*"
+			id="amount"
+			name="amount"
+			value={ amount }
+			required
+			if errs.Amount != "" {
+				aria-invalid="true"
+				aria-describedby="amount-error"
+			}
+		/>
+		if errs.Amount != "" {
+			<p id="amount-error" class="mt-1 text-sm text-destructive" role="alert">{ errs.Amount }</p>
+		}
+
+		<!-- Quick-Amount Chips -->
+		if len(quickAmounts) > 0 {
+			<div class="mt-2 flex flex-wrap gap-2">
+				for _, valMinor := range quickAmounts {
+					{{ valMajor := valMinor / 100 }}
+					<button
+						type="button"
+						class="btn"
+						data-size="sm"
+						data-variant="outline"
+						onclick={ templ.ComponentScript{
+							Name: "fillAmount",
+							Function: fmt.Sprintf("function() { document.getElementById('amount').value = '%d'; }", valMajor),
+						} }
+					>
+						{ fmt.Sprintf("%s%d", currencySymbol, valMajor) }
+					</button>
+				}
+			</div>
+		}
+	</div>
+
+	<!-- Month Selection -->
+	<div class="field">
+		<label class="label" for="contribution_month">Contribution Month</label>
+		<input
+			class="input min-h-11"
+			type="month"
+			id="contribution_month"
+			name="contribution_month"
+			value={ currentMonth }
+			hx-get="/contributions/check-duplicate"
+			hx-include="[name=member_id],[name=contribution_month]"
+			hx-trigger="change"
+			hx-target="#duplicate-warning"
+			required
+		/>
+	</div>
+
+	<!-- Date Paid -->
+	<div class="field">
+		<label class="label" for="paid_on">Date Paid</label>
+		<input
+			class="input min-h-11"
+			type="date"
+			id="paid_on"
+			name="paid_on"
+			value={ currentDate }
+			required
+		/>
+	</div>
+}
+
+// ContributionSearchResults renders the matching members search results.
+templ ContributionSearchResults(lang string, list []members.Member, currentMonth string) {
+	if len(list) == 0 {
+		<div class="p-2 text-sm text-muted-foreground">{ i18n.T(lang, "members.empty") }</div>
+	} else {
+		for _, m := range list {
+			<button
+				type="button"
+				class="flex w-full items-center justify-between p-2 text-start hover:bg-muted focus:bg-muted focus:outline-none"
+				hx-get={ string(templ.URL(fmt.Sprintf("/contributions/select-member?id=%d", m.ID))) }
+				hx-include="[name=contribution_month]"
+				hx-target="#member-search-container"
+				hx-swap="outerHTML"
+			>
+				<span>{ m.Name }</span>
+				if !m.IsActive {
+					<span class="badge" data-variant="outline">{ i18n.T(lang, "members.status_inactive") }</span>
+				}
+			</button>
+		}
+	}
+}
+
+// ContributionDuplicateCheck renders the duplicate warning if exists.
+templ ContributionDuplicateCheck(lang string, showWarning bool, memberName string, month string) {
+	if showWarning {
+		<div class="alert text-sm" data-variant="warning" role="alert">
+			<p>
+				{ fmt.Sprintf("%s already has a payment logged for %s — this will be added as a second entry.", memberName, month) }
+			</p>
+		</div>
+	}
+}
