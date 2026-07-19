@@ -29,6 +29,9 @@ func New(conn *sql.DB, cfg config.Config) http.Handler {
 	// bundle) — see web/static/embed.go.
 	r.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.FS(static.FS))))
 
+	// Local uploaded receipt photos serving route (docs/SCHEMA.md §7, §Assumptions).
+	r.Handle("/uploads/*", http.StripPrefix("/uploads/", http.FileServer(http.Dir("uploads"))))
+
 	// Public auth routes.
 	r.Get("/setup", h.handleSetupPage)
 	r.Post("/setup", h.handleSetupSubmit)
@@ -60,8 +63,10 @@ func New(conn *sql.DB, cfg config.Config) http.Handler {
 		r.Get("/contributions/select-member", h.handleContributionSelectMember)
 		r.Get("/contributions/clear-member", h.handleContributionClearMember)
 		r.Get("/contributions/check-duplicate", h.handleContributionCheckDuplicate)
-		r.Get("/expenses", h.handlePlaceholder("expenses", "nav.expenses"))
-		r.Get("/expenses/new", h.handlePlaceholder("expenses", "expenses.new_title"))
+		r.Get("/expenses", h.handleExpensesPage)
+		r.Get("/expenses/new", h.handleExpenseNewPage)
+		r.Post("/expenses/new", h.handleExpenseNewSubmit)
+		r.Post("/expenses/{id}/delete", h.handleExpenseDelete)
 		r.Get("/summary", h.handlePlaceholder("more", "nav.summary"))
 		r.Get("/settings", h.handlePlaceholder("more", "nav.settings"))
 		r.Get("/export", h.handlePlaceholder("more", "nav.export"))

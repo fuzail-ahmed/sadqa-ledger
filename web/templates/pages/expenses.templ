@@ -1,0 +1,209 @@
+package pages
+
+import (
+	"fmt"
+	"github.com/fuzail-ahmed/sadqa-ledger/i18n"
+	"github.com/fuzail-ahmed/sadqa-ledger/internal/expenses"
+	"github.com/fuzail-ahmed/sadqa-ledger/web/templates/components"
+)
+
+// ExpenseFormErrors holds errors for the Add Expense form.
+type ExpenseFormErrors struct {
+	Description string
+	Amount      string
+	Photo       string
+}
+
+func formatMoneyExpense(amountMinor int64, symbol string) string {
+	if amountMinor % 100 == 0 {
+		return fmt.Sprintf("%s%d", symbol, amountMinor/100)
+	}
+	return fmt.Sprintf("%s%.2f", symbol, float64(amountMinor)/100.0)
+}
+
+// Expenses renders the reverse-chronological list of active expenses (docs/APP_FLOW.md §5).
+templ Expenses(d components.AdminShellData, list []expenses.Expense, currencySymbol, toastMsg string) {
+	@components.AdminShell(d) {
+		<div class="mx-auto max-w-xl px-4 py-8">
+			<div class="flex items-center justify-between gap-2">
+				<h1 class="text-xl font-semibold">{ i18n.T(d.Lang, "nav.expenses") }</h1>
+				<a class="btn min-h-11" data-variant="primary" href="/expenses/new">
+					+ { i18n.T(d.Lang, "expenses.new_title") }
+				</a>
+			</div>
+
+			if toastMsg != "" {
+				<div class="alert mt-4" data-variant="success" role="status">
+					<p>{ toastMsg }</p>
+				</div>
+			}
+
+			<div class="mt-6 flex flex-col gap-4">
+				if len(list) == 0 {
+					<div class="card p-8 text-center text-muted-foreground">
+						No expenses recorded yet.
+					</div>
+				} else {
+					for _, exp := range list {
+						<div class="card p-4 flex flex-col gap-2 relative">
+							<!-- Top line: description and amount -->
+							<div class="flex items-start justify-between gap-4">
+								<div>
+									<h3 class="font-semibold text-foreground text-base">{ exp.Description }</h3>
+									<p class="text-xs text-muted-foreground font-mono">{ exp.ExpenseDate }</p>
+								</div>
+								<span class="text-lg font-bold font-mono text-expense">
+									{ formatMoneyExpense(exp.AmountMinor, currencySymbol) }
+								</span>
+							</div>
+
+							<!-- Image thumbnail if photo is attached -->
+							if exp.ReceiptPhotoPath != nil && *exp.ReceiptPhotoPath != "" {
+								<div class="mt-2">
+									<a href={ templ.URL("/" + *exp.ReceiptPhotoPath) } target="_blank" class="inline-block border border-border rounded overflow-hidden">
+										<img 
+											src={ templ.URL("/" + *exp.ReceiptPhotoPath) } 
+											alt={ fmt.Sprintf("Receipt photo for: %s, %s", exp.Description, exp.ExpenseDate) }
+											class="h-20 w-auto object-contain max-w-xs"
+										/>
+									</a>
+								</div>
+							}
+
+							<!-- Footer details (audit trail and actions) -->
+							<div class="mt-2 flex items-center justify-between gap-4 text-xs text-muted-foreground border-t border-border pt-2">
+								<span>Recorded by { exp.RecordedByAdminName }</span>
+								
+								<form 
+									method="post" 
+									action={ templ.URL(fmt.Sprintf("/expenses/%d/delete", exp.ID)) }
+									data-confirm="Delete this expense? This action is audited."
+									class="inline"
+								>
+									<input type="hidden" name="csrf_token" value={ d.CSRFToken }/>
+									<button class="btn text-destructive" data-size="sm" data-variant="outline" type="submit">
+										Delete
+									</button>
+								</form>
+							</div>
+						</div>
+					}
+				}
+			</div>
+		</div>
+	}
+}
+
+// ExpenseForm renders the Add Expense creation form.
+templ ExpenseForm(
+	d components.AdminShellData,
+	currencySymbol string,
+	description string,
+	amount string,
+	expenseDate string,
+	errs ExpenseFormErrors,
+) {
+	@components.AdminShell(d) {
+		<div class="mx-auto max-w-sm px-4 py-8">
+			<div class="card">
+				<header>
+					<h2>{ i18n.T(d.Lang, "expenses.new_title") }</h2>
+				</header>
+				<section>
+					<!-- enctype="multipart/form-data" is required for photo file uploads! -->
+					<form 
+						method="post" 
+						action="/expenses/new" 
+						enctype="multipart/form-data" 
+						class="grid gap-4"
+					>
+						<input type="hidden" name="csrf_token" value={ d.CSRFToken }/>
+
+						<!-- Description -->
+						<div class="field">
+							<label class="label" for="description">Description</label>
+							<input
+								class="input min-h-11"
+								type="text"
+								id="description"
+								name="description"
+								value={ description }
+								required
+								if errs.Description != "" {
+									aria-invalid="true"
+									aria-describedby="description-error"
+								}
+							/>
+							if errs.Description != "" {
+								<p id="description-error" class="mt-1 text-sm text-destructive" role="alert">{ errs.Description }</p>
+							}
+						</div>
+
+						<!-- Amount -->
+						<div class="field">
+							<label class="label" for="amount">Amount ({ currencySymbol })</label>
+							<input
+								class="input min-h-11 font-mono"
+								type="text"
+								inputmode="numeric"
+								pattern="[0-9]*"
+								id="amount"
+								name="amount"
+								value={ amount }
+								required
+								if errs.Amount != "" {
+									aria-invalid="true"
+									aria-describedby="amount-error"
+								}
+							/>
+							if errs.Amount != "" {
+								<p id="amount-error" class="mt-1 text-sm text-destructive" role="alert">{ errs.Amount }</p>
+							}
+						</div>
+
+						<!-- Date -->
+						<div class="field">
+							<label class="label" for="expense_date">Date</label>
+							<input
+								class="input min-h-11"
+								type="date"
+								id="expense_date"
+								name="expense_date"
+								value={ expenseDate }
+								required
+							/>
+						</div>
+
+						<!-- Receipt Photo File Upload -->
+						<div class="field">
+							<label class="label" for="receipt_photo">Receipt Photo (optional, size &lt; 5MB, JPG/PNG)</label>
+							<input
+								class="input min-h-11 p-1"
+								type="file"
+								id="receipt_photo"
+								name="receipt_photo"
+								accept="image/png, image/jpeg"
+								if errs.Photo != "" {
+									aria-invalid="true"
+									aria-describedby="receipt_photo-error"
+								}
+							/>
+							if errs.Photo != "" {
+								<p id="receipt_photo-error" class="mt-1 text-sm text-destructive" role="alert">{ errs.Photo }</p>
+							}
+						</div>
+
+						<div class="flex gap-2">
+							<button class="btn min-h-11 flex-1" data-variant="primary" type="submit">
+								{ i18n.T(d.Lang, "members.save") }
+							</button>
+							<a class="btn min-h-11 flex-1" data-variant="outline" href="/expenses">
+								{ i18n.T(d.Lang, "members.cancel") }
+							</a>
+						</div>
+					</form>
+				</section>
+			</div>
+		</div>
+	}
+}
