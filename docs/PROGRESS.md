@@ -63,3 +63,9 @@ Done: `/expenses` list (chronological list, recorded-by details, and receipt pre
 Decisions: Saved upload files directly in `./uploads/` outside the web root, mapping a router prefix to serve them; file upload handled using standard `multipart/form-data` encoding.
 Gotchas: Multipart forms must use `r.ParseMultipartForm` in handlers and `multipart` request building in testing, as `application/x-www-form-urlencoded` fails file parsing.
 Next: Phase 7 — Public Transparency Page & Monthly Summary.
+
+## Phase 7 — Public Transparency Page & Monthly Summary ✅ 2026-07-19
+Done: `/p/:token` public transparency page (renders balance, monthly stats, activity feed with settings-aware member names, robots noindex tags, and custom privacy link), Settings `/settings` (privacy toggle, public link token regeneration, group info with custom quick-amounts and privacy link, admins list, public language), and `/summary` (WhatsApp syntax copyable summary block).
+Decisions: Token regeneration immediately invalidates old tokens by writing a cryptographically random token to `group_settings`; WhatsApp summary text uses asterisks for bold formatting and completely hides contributor names when the names toggle is off.
+Gotchas: Public page is accessible without a session, so robots `noindex` is applied via meta tag and `X-Robots-Tag` header for maximum coverage; settings sections use separate form actions and targets to prevent validation blocking other fields.
+Next: Phase 8 — Backup & Export.
