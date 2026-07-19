@@ -15,12 +15,26 @@ import (
 	"time"
 
 	"github.com/fuzail-ahmed/sadqa-ledger/internal/config"
+	"github.com/fuzail-ahmed/sadqa-ledger/internal/db"
 	"github.com/fuzail-ahmed/sadqa-ledger/internal/server"
+	"github.com/fuzail-ahmed/sadqa-ledger/migrations"
 )
 
 func main() {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	cfg := config.Load()
+
+	conn, err := db.Open(cfg.DatabasePath)
+	if err != nil {
+		logger.Error("open database", "path", cfg.DatabasePath, "error", err)
+		os.Exit(1)
+	}
+	defer conn.Close()
+
+	if err := db.Migrate(conn, migrations.FS); err != nil {
+		logger.Error("apply migrations", "error", err)
+		os.Exit(1)
+	}
 
 	srv := &http.Server{
 		Addr:              fmt.Sprintf(":%d", cfg.Port),

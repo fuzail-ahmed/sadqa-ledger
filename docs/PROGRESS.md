@@ -23,3 +23,10 @@ Done: `cmd/server` entrypoint, `internal/config`/`internal/server`, chi router s
 Decisions: Basecoat loaded via its own `<link>`/`<script>`, not merged into `input.css` (`docs/TRD.md` §4).
 Gotchas: `.air.toml` built `tmp/main` but ran `tmp/main.exe`, so `make dev` silently failed on Windows — fixed by targeting `tmp/main.exe` explicitly.
 Next: Phase 1 — Database & Migrations.
+
+## Phase 1 — Database & Migrations ✅ 2026-07-19
+Done: `internal/db` (connection + generic migration runner tracked in `schema_migrations`), `migrations/0001_init.sql` creating all six SCHEMA.md tables/indexes, `cmd/migrate` and `cmd/server` both apply migrations through the same code path, failing fast on error.
+Decisions: `SetMaxOpenConns(1)` — single writer keeps SQLite lock handling trivial at this scale; DSN has no `file:` prefix (breaks on Windows drive-letter paths).
+Gotchas: none beyond the known `_pragma=` DSN gotcha (already documented) — verified WAL/foreign_keys actually took effect at runtime, not just DSN-string-looks-right.
+Verified: fresh DB gets all tables/indexes (`sqlite_master` inspected), restart against an existing DB applies zero migrations, `make lint test build` all pass, no `.db*` files staged.
+Next: Phase 2 — Auth & First-Run Setup.

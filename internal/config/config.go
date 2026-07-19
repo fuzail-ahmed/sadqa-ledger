@@ -13,6 +13,11 @@ type Config struct {
 	// Port the HTTP server listens on. Defaults to 8080, matching
 	// .env.example's PORT value.
 	Port int
+
+	// DatabasePath is the path to the SQLite database file. Defaults to
+	// sadqa-ledger.db in the working directory for local dev; .env.example's
+	// DATABASE_PATH points inside a mounted volume for Docker deployments.
+	DatabasePath string
 }
 
 // Load reads configuration from environment variables, falling back to
@@ -25,5 +30,11 @@ func Load() Config {
 			port = p
 		}
 	}
-	return Config{Port: port}
+
+	dbPath := "sadqa-ledger.db"
+	if v := os.Getenv("DATABASE_PATH"); v != "" {
+		dbPath = v
+	}
+
+	return Config{Port: port, DatabasePath: dbPath}
 }
