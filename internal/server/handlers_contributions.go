@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/fuzail-ahmed/sadqa-ledger/i18n"
 	"github.com/fuzail-ahmed/sadqa-ledger/internal/auth"
 	"github.com/fuzail-ahmed/sadqa-ledger/internal/contributions"
@@ -319,4 +321,75 @@ func (h *authHandlers) handleContributionNewSubmit(w http.ResponseWriter, r *htt
 
 	// Normal redirect back with toast message
 	http.Redirect(w, r, fmt.Sprintf("/contributions/new?toast=%s", successMsg), http.StatusSeeOther)
+}
+
+// handleContributionsPage renders the list of contributions.
+func (h *authHandlers) handleContributionsPage(w http.ResponseWriter, r *http.Request) {
+	gs, err := settings.Get(h.conn)
+	if err != nil {
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+
+	month := strings.TrimSpace(r.URL.Query().Get("month"))
+	if month == "" {
+		month = time.Now().Format("2006-01")
+	}
+
+	list, err := contributions.ListActiveByMonth(h.conn, month)
+	if err != nil {
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+
+	toast := r.URL.Query().Get("toast")
+	pages.Contributions(
+		h.shellData(w, r, "more", "nav.contributions"),
+		list,
+		gs.CurrencySymbol,
+		month,
+		toast,
+	).Render(r.Context(), w)
+}
+
+// handleContributionDelete soft-deletes a contribution.
+func (h *authHandlers) handleContributionDelete(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+	if err := auth.VerifyCSRF(r); err != nil {
+		http.Error(w, "invalid form submission, please try again", http.StatusForbidden)
+		return
+	}
+
+	admin := auth.CurrentAdmin(r)
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		http.Error(w, "invalid contribution id", http.StatusBadRequest)
+		return
+	}
+
+	// Fetch details for context before deleting
+	c, err := contributions.Get(h.conn, id)
+	if err != nil {
+		http.Error(w, "contribution not found", http.StatusNotFound)
+		return
+	}
+
+	err = contributions.SoftDelete(h.conn, id, admin.ID)
+	if err != nil {
+		http.Error(w, "failed to delete contribution", http.StatusInternalServerError)
+		return
+	}
+
+	gs, _ := settings.Get(h.conn)
+	amountStr := fmt.Sprintf("%.2f", float64(c.AmountMinor)/100.0)
+	if c.AmountMinor%100 == 0 {
+		amountStr = fmt.Sprintf("%d", c.AmountMinor/100)
+	}
+	msg := fmt.Sprintf("Deleted contribution entry — %s%s from %s for %s", gs.CurrencySymbol, amountStr, c.MemberName, c.ContributionMonth)
+
+	http.Redirect(w, r, fmt.Sprintf("/contributions?month=%s&toast=%s", c.ContributionMonth, msg), http.StatusSeeOther)
 }

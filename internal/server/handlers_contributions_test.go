@@ -1,6 +1,7 @@
 package server
 
 import (
+	"database/sql"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -140,5 +141,34 @@ func TestContributionLoggingFlow(t *testing.T) {
 	}
 	if !strings.Contains(htmxBody, `id="amount"`) || !strings.Contains(htmxBody, `value=""`) {
 		t.Errorf("HTMX response did not reset amount field. Body was:\n%s", htmxBody)
+	}
+
+	// --- 8. Get contributions list ---
+	listGet := doGet(h, "/contributions?month=2026-07", sessionCookies)
+	if listGet.Code != 200 {
+		t.Fatalf("GET /contributions = %d, want 200", listGet.Code)
+	}
+	listBody := listGet.Body.String()
+	if !strings.Contains(listBody, "Farhan") {
+		t.Error("GET /contributions did not contain member name Farhan")
+	}
+
+	var contribID int64
+	conn.QueryRow(`SELECT id FROM contributions WHERE member_id = ? LIMIT 1`, memberID).Scan(&contribID)
+
+	// --- 9. Delete contribution ---
+	listCsrf, listCookies := extractCSRF(t, listGet)
+	deletePost := doPostForm(h, "/contributions/"+strconv.FormatInt(contribID, 10)+"/delete", url.Values{
+		"csrf_token": {listCsrf},
+	}, mergeCookies(sessionCookies, listCookies))
+	if deletePost.Code != 303 {
+		t.Fatalf("POST /contributions/%d/delete = %d, want 303 redirect", contribID, deletePost.Code)
+	}
+
+	// Verify database record has deleted_at set (soft-deleted)
+	var deletedAt sql.NullString
+	conn.QueryRow(`SELECT deleted_at FROM contributions WHERE id = ?`, contribID).Scan(&deletedAt)
+	if !deletedAt.Valid || deletedAt.String == "" {
+		t.Error("Soft deleted contribution has null/empty deleted_at")
 	}
 }
