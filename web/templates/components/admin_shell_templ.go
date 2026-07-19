@@ -245,14 +245,14 @@ func AdminShell(d AdminShellData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\"> <button class=\"btn px-3 py-1.5 text-xs min-h-11 flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none\" data-variant=\"outline\" type=\"submit\" aria-label=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\"> <button class=\"btn px-2.5 py-1 text-xs min-h-0 flex items-center gap-1.5 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none\" data-variant=\"outline\" type=\"submit\" aria-label=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.ResolveAttributeValue(i18n.T(d.Lang, "common.logout"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/components/admin_shell.templ`, Line: 90, Col: 229}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/components/admin_shell.templ`, Line: 90, Col: 228}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
 			if templ_7745c5c3_Err != nil {
