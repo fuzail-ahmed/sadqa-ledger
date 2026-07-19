@@ -16,9 +16,9 @@ tmp_dir = "tmp"
 
 [build]
   pre_cmd = ["make templ", "make css"]
-  cmd = "go build -o ./tmp/main ./cmd/server"
-  bin = "tmp/main"
-  full_bin = "tmp/main"
+  cmd = "go build -o ./tmp/main.exe ./cmd/server"
+  bin = "tmp/main.exe"
+  full_bin = "tmp/main.exe"
 
   # Watch Go, templ, HTML, CSS, and i18n JSON files.
   include_ext = ["go", "templ", "html", "css", "json"]
