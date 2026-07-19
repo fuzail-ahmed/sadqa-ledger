@@ -43,7 +43,11 @@ func (h *authHandlers) handlePublicPage(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("X-Robots-Tag", "noindex, nofollow")
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
-	pages.PublicPage(gs.DefaultPublicLanguage, "ltr", gs, data).Render(r.Context(), w)
+	dir := "ltr"
+	if gs.DefaultPublicLanguage == "ar" {
+		dir = "rtl"
+	}
+	pages.PublicPage(gs.DefaultPublicLanguage, dir, gs, data).Render(r.Context(), w)
 }
 
 func (h *authHandlers) renderPublic404(w http.ResponseWriter, r *http.Request) {

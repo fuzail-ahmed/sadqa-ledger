@@ -32,36 +32,36 @@ templ Export(d components.AdminShellData, backupActive bool, toastMsg string) {
 					<div class="flex flex-col gap-4 border-t border-border pt-4">
 						<!-- Database Snapshot -->
 						<div class="flex flex-col gap-1">
-							<h3 class="text-sm font-semibold text-foreground">Database Snapshot</h3>
+							<h3 class="text-sm font-semibold text-foreground">{ i18n.T(d.Lang, "export.db_title") }</h3>
 							<p class="text-xs text-muted-foreground">Download the sanitized SQLite ledger database file (.db).</p>
 							<a class="btn mt-1" data-variant="primary" href="/export/database" download="sadqa-ledger-sanitized.db">
-								Download database (.db)
+								{ i18n.T(d.Lang, "export.db_btn") }
 							</a>
 						</div>
 
 						<div class="grid grid-cols-2 gap-4 border-t border-border pt-4">
 							<!-- Contributions CSV -->
 							<div class="flex flex-col gap-1">
-								<h3 class="text-sm font-semibold text-foreground">Contributions</h3>
+								<h3 class="text-sm font-semibold text-foreground">{ i18n.T(d.Lang, "nav.contributions") }</h3>
 								<p class="text-xs text-muted-foreground">Active contributions spreadsheet (CSV).</p>
 								<a class="btn mt-1" data-variant="outline" href="/export/contributions" download="contributions.csv">
-									Download Contributions (CSV)
+									{ i18n.T(d.Lang, "export.contrib_btn") }
 								</a>
 							</div>
 
 							<!-- Expenses CSV -->
 							<div class="flex flex-col gap-1">
-								<h3 class="text-sm font-semibold text-foreground">Expenses</h3>
+								<h3 class="text-sm font-semibold text-foreground">{ i18n.T(d.Lang, "nav.expenses") }</h3>
 								<p class="text-xs text-muted-foreground">Active expenses spreadsheet (CSV).</p>
 								<a class="btn mt-1" data-variant="outline" href="/export/expenses" download="expenses.csv">
-									Download Expenses (CSV)
+									{ i18n.T(d.Lang, "export.expense_btn") }
 								</a>
 							</div>
 						</div>
 					</div>
 
 					<div class="border-t border-border pt-4 flex items-center justify-between text-xs text-muted-foreground">
-						<span>Litestream Backup Status:</span>
+						<span>{ i18n.T(d.Lang, "export.backup_status_label") }:</span>
 						if backupActive {
 							<span class="text-income font-medium">● Active (Streaming to Cloudflare R2)</span>
 						} else {

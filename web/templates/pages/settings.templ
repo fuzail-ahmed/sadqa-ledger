@@ -74,7 +74,7 @@ templ Settings(
 // SettingsPrivacy renders the privacy toggle segment.
 templ SettingsPrivacy(lang, csrfToken string, showNames bool, toast string) {
 	<header class="p-4 border-b border-border">
-		<h2 class="text-lg font-semibold">Privacy Settings</h2>
+		<h2 class="text-lg font-semibold">{ i18n.T(lang, "settings.privacy_title") }</h2>
 	</header>
 	<section class="p-4">
 		<form 
@@ -97,9 +97,9 @@ templ SettingsPrivacy(lang, csrfToken string, showNames bool, toast string) {
 					value="1" 
 					if showNames { checked }
 				/>
-				<span>Show contributor names publicly (default OFF)</span>
+				<span>{ i18n.T(lang, "settings.show_names_label") }</span>
 			</label>
-			<button class="btn w-full" data-variant="primary" type="submit">Save Privacy Settings</button>
+			<button class="btn w-full" data-variant="primary" type="submit">{ i18n.T(lang, "settings.save_privacy") }</button>
 		</form>
 	</section>
 }
@@ -108,14 +108,14 @@ templ SettingsPrivacy(lang, csrfToken string, showNames bool, toast string) {
 templ SettingsPublicLink(lang, csrfToken, publicToken, baseUrl, toast string) {
 	{{ publicUrl := fmt.Sprintf("%s/p/%s", baseUrl, publicToken) }}
 	<header class="p-4 border-b border-border">
-		<h2 class="text-lg font-semibold">Public Link</h2>
+		<h2 class="text-lg font-semibold">{ i18n.T(lang, "settings.public_link_title") }</h2>
 	</header>
 	<section class="p-4 grid gap-4">
 		if toast != "" {
 			<div class="alert text-sm py-1" data-variant="success" role="status"><p>{ toast }</p></div>
 		}
 		<div class="field">
-			<label class="label">Public Transparency Page URL</label>
+			<label class="label">{ i18n.T(lang, "settings.public_link_title") }</label>
 			<div class="flex gap-2">
 				<input class="input font-mono min-h-11 flex-1" type="text" id="public-url-input" value={ publicUrl } readonly/>
 				<button 
@@ -124,7 +124,7 @@ templ SettingsPublicLink(lang, csrfToken, publicToken, baseUrl, toast string) {
 					data-variant="outline"
 					onclick="navigator.clipboard.writeText(document.getElementById('public-url-input').value)"
 				>
-					Copy
+					{ i18n.T(lang, "settings.copy_btn") }
 				</button>
 			</div>
 		</div>
@@ -138,7 +138,7 @@ templ SettingsPublicLink(lang, csrfToken, publicToken, baseUrl, toast string) {
 		>
 			<input type="hidden" name="csrf_token" value={ csrfToken }/>
 			<button class="btn w-full" data-variant="outline" type="submit">
-				Regenerate public link
+				{ i18n.T(lang, "settings.regenerate_btn") }
 			</button>
 		</form>
 	</section>
@@ -160,7 +160,7 @@ templ SettingsGroupInfo(lang, csrfToken string, gs *settings.GroupSettings, toas
 		}
 	}}
 	<header class="p-4 border-b border-border">
-		<h2 class="text-lg font-semibold">Group & Masjid Information</h2>
+		<h2 class="text-lg font-semibold">{ i18n.T(lang, "settings.group_info_title") }</h2>
 	</header>
 	<section class="p-4">
 		<form 
@@ -178,36 +178,36 @@ templ SettingsGroupInfo(lang, csrfToken string, gs *settings.GroupSettings, toas
 
 			<!-- Group Name -->
 			<div class="field">
-				<label class="label" for="group_name">Group / Masjid Name</label>
+				<label class="label" for="group_name">{ i18n.T(lang, "settings.group_name_label") }</label>
 				<input class="input min-h-11" type="text" id="group_name" name="group_name" value={ gs.GroupName } required/>
 			</div>
 
 			<div class="grid grid-cols-2 gap-4">
 				<!-- Currency Code -->
 				<div class="field">
-					<label class="label" for="currency_code">Currency Code (e.g. INR)</label>
+					<label class="label" for="currency_code">{ i18n.T(lang, "settings.currency_code_label") }</label>
 					<input class="input min-h-11 font-mono" type="text" id="currency_code" name="currency_code" value={ gs.CurrencyCode } required/>
 				</div>
 				<!-- Currency Symbol -->
 				<div class="field">
-					<label class="label" for="currency_symbol">Symbol (e.g. ₹)</label>
+					<label class="label" for="currency_symbol">{ i18n.T(lang, "settings.currency_symbol_label") }</label>
 					<input class="input min-h-11 font-mono" type="text" id="currency_symbol" name="currency_symbol" value={ gs.CurrencySymbol } required/>
 				</div>
 			</div>
 
 			<!-- Quick amounts chips (minor units, comma-separated major) -->
 			<div class="field">
-				<label class="label" for="quick_amounts">Quick Amounts (comma separated, e.g. 200, 500, 1000, 2000)</label>
+				<label class="label" for="quick_amounts">{ i18n.T(lang, "settings.quick_amounts_label") }</label>
 				<input class="input min-h-11 font-mono" type="text" id="quick_amounts" name="quick_amounts" value={ amountsStr } required/>
 			</div>
 
 			<!-- Privacy Policy URL -->
 			<div class="field">
-				<label class="label" for="privacy_policy_url">Privacy Policy URL (e.g., operator's policy page link)</label>
+				<label class="label" for="privacy_policy_url">{ i18n.T(lang, "settings.privacy_url_label") }</label>
 				<input class="input min-h-11" type="url" id="privacy_policy_url" name="privacy_policy_url" value={ privacyPolicyUrl } placeholder="https://example.com/privacy"/>
 			</div>
 
-			<button class="btn w-full" data-variant="primary" type="submit">Save Group Settings</button>
+			<button class="btn w-full" data-variant="primary" type="submit">{ i18n.T(lang, "settings.save_group") }</button>
 		</form>
 	</section>
 }
@@ -215,7 +215,7 @@ templ SettingsGroupInfo(lang, csrfToken string, gs *settings.GroupSettings, toas
 // SettingsLanguage renders the default public language form.
 templ SettingsLanguage(lang, csrfToken string, defaultPublicLanguage string, toast string) {
 	<header class="p-4 border-b border-border">
-		<h2 class="text-lg font-semibold">Public Page Default Language</h2>
+		<h2 class="text-lg font-semibold">{ i18n.T(lang, "settings.default_lang_title") }</h2>
 	</header>
 	<section class="p-4">
 		<form 
@@ -249,7 +249,7 @@ templ SettingsLanguage(lang, csrfToken string, defaultPublicLanguage string, toa
 				</div>
 			</fieldset>
 
-			<button class="btn w-full" data-variant="primary" type="submit">Save Language Settings</button>
+			<button class="btn w-full" data-variant="primary" type="submit">{ i18n.T(lang, "settings.save_lang") }</button>
 		</form>
 	</section>
 }

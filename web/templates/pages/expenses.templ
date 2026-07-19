@@ -41,7 +41,7 @@ templ Expenses(d components.AdminShellData, list []expenses.Expense, currencySym
 			<div class="mt-6 flex flex-col gap-4">
 				if len(list) == 0 {
 					<div class="card p-8 text-center text-muted-foreground">
-						No expenses recorded yet.
+						{ i18n.T(d.Lang, "expenses.empty") }
 					</div>
 				} else {
 					for _, exp := range list {
@@ -72,7 +72,7 @@ templ Expenses(d components.AdminShellData, list []expenses.Expense, currencySym
 
 							<!-- Footer details (audit trail and actions) -->
 							<div class="mt-2 flex items-center justify-between gap-4 text-xs text-muted-foreground border-t border-border pt-2">
-								<span>Recorded by { exp.RecordedByAdminName }</span>
+								<span>{ i18n.T(d.Lang, "expenses.recorded_by") } { exp.RecordedByAdminName }</span>
 								
 								<form 
 									method="post" 
@@ -82,7 +82,7 @@ templ Expenses(d components.AdminShellData, list []expenses.Expense, currencySym
 								>
 									<input type="hidden" name="csrf_token" value={ d.CSRFToken }/>
 									<button class="btn text-destructive" data-size="sm" data-variant="outline" type="submit">
-										Delete
+										{ i18n.T(d.Lang, "expenses.delete") }
 									</button>
 								</form>
 							</div>
@@ -121,7 +121,7 @@ templ ExpenseForm(
 
 						<!-- Description -->
 						<div class="field">
-							<label class="label" for="description">Description</label>
+							<label class="label" for="description">{ i18n.T(d.Lang, "expenses.description") }</label>
 							<input
 								class="input min-h-11"
 								type="text"
@@ -141,7 +141,7 @@ templ ExpenseForm(
 
 						<!-- Amount -->
 						<div class="field">
-							<label class="label" for="amount">Amount ({ currencySymbol })</label>
+							<label class="label" for="amount">{ i18n.T(d.Lang, "expenses.amount") } ({ currencySymbol })</label>
 							<input
 								class="input min-h-11 font-mono"
 								type="text"
@@ -163,7 +163,7 @@ templ ExpenseForm(
 
 						<!-- Date -->
 						<div class="field">
-							<label class="label" for="expense_date">Date</label>
+							<label class="label" for="expense_date">{ i18n.T(d.Lang, "expenses.date") }</label>
 							<input
 								class="input min-h-11"
 								type="date"
@@ -176,7 +176,7 @@ templ ExpenseForm(
 
 						<!-- Receipt Photo File Upload -->
 						<div class="field">
-							<label class="label" for="receipt_photo">Receipt Photo (optional, size &lt; 5MB, JPG/PNG)</label>
+							<label class="label" for="receipt_photo">{ i18n.T(d.Lang, "expenses.photo_label") }</label>
 							<input
 								class="input min-h-11 p-1"
 								type="file"

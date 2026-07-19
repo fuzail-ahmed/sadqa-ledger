@@ -83,22 +83,113 @@ func Export(d components.AdminShellData, backupActive bool, toastMsg string) tem
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"flex flex-col gap-2\"><p class=\"text-foreground text-sm\">Export your group's data at any time. Downloads are generated on demand.</p><p class=\"text-xs text-muted-foreground\"><strong>Security notice:</strong> Both the database snapshot and CSV exports completely exclude active session tokens and administrator password hashes. They are safe to share for backups, reporting, or migration.</p></div><div class=\"flex flex-col gap-4 border-t border-border pt-4\"><!-- Database Snapshot --><div class=\"flex flex-col gap-1\"><h3 class=\"text-sm font-semibold text-foreground\">Database Snapshot</h3><p class=\"text-xs text-muted-foreground\">Download the sanitized SQLite ledger database file (.db).</p><a class=\"btn mt-1\" data-variant=\"primary\" href=\"/export/database\" download=\"sadqa-ledger-sanitized.db\">Download database (.db)</a></div><div class=\"grid grid-cols-2 gap-4 border-t border-border pt-4\"><!-- Contributions CSV --><div class=\"flex flex-col gap-1\"><h3 class=\"text-sm font-semibold text-foreground\">Contributions</h3><p class=\"text-xs text-muted-foreground\">Active contributions spreadsheet (CSV).</p><a class=\"btn mt-1\" data-variant=\"outline\" href=\"/export/contributions\" download=\"contributions.csv\">Download Contributions (CSV)</a></div><!-- Expenses CSV --><div class=\"flex flex-col gap-1\"><h3 class=\"text-sm font-semibold text-foreground\">Expenses</h3><p class=\"text-xs text-muted-foreground\">Active expenses spreadsheet (CSV).</p><a class=\"btn mt-1\" data-variant=\"outline\" href=\"/export/expenses\" download=\"expenses.csv\">Download Expenses (CSV)</a></div></div></div><div class=\"border-t border-border pt-4 flex items-center justify-between text-xs text-muted-foreground\"><span>Litestream Backup Status:</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"flex flex-col gap-2\"><p class=\"text-foreground text-sm\">Export your group's data at any time. Downloads are generated on demand.</p><p class=\"text-xs text-muted-foreground\"><strong>Security notice:</strong> Both the database snapshot and CSV exports completely exclude active session tokens and administrator password hashes. They are safe to share for backups, reporting, or migration.</p></div><div class=\"flex flex-col gap-4 border-t border-border pt-4\"><!-- Database Snapshot --><div class=\"flex flex-col gap-1\"><h3 class=\"text-sm font-semibold text-foreground\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var5 string
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(d.Lang, "export.db_title"))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/export.templ`, Line: 35, Col: 92}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</h3><p class=\"text-xs text-muted-foreground\">Download the sanitized SQLite ledger database file (.db).</p><a class=\"btn mt-1\" data-variant=\"primary\" href=\"/export/database\" download=\"sadqa-ledger-sanitized.db\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var6 string
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(d.Lang, "export.db_btn"))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/export.templ`, Line: 38, Col: 41}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</a></div><div class=\"grid grid-cols-2 gap-4 border-t border-border pt-4\"><!-- Contributions CSV --><div class=\"flex flex-col gap-1\"><h3 class=\"text-sm font-semibold text-foreground\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var7 string
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(d.Lang, "nav.contributions"))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/export.templ`, Line: 45, Col: 95}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</h3><p class=\"text-xs text-muted-foreground\">Active contributions spreadsheet (CSV).</p><a class=\"btn mt-1\" data-variant=\"outline\" href=\"/export/contributions\" download=\"contributions.csv\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var8 string
+			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(d.Lang, "export.contrib_btn"))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/export.templ`, Line: 48, Col: 47}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</a></div><!-- Expenses CSV --><div class=\"flex flex-col gap-1\"><h3 class=\"text-sm font-semibold text-foreground\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var9 string
+			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(d.Lang, "nav.expenses"))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/export.templ`, Line: 54, Col: 90}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</h3><p class=\"text-xs text-muted-foreground\">Active expenses spreadsheet (CSV).</p><a class=\"btn mt-1\" data-variant=\"outline\" href=\"/export/expenses\" download=\"expenses.csv\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var10 string
+			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(d.Lang, "export.expense_btn"))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/export.templ`, Line: 57, Col: 47}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</a></div></div></div><div class=\"border-t border-border pt-4 flex items-center justify-between text-xs text-muted-foreground\"><span>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var11 string
+			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(d.Lang, "export.backup_status_label"))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/export.templ`, Line: 64, Col: 58}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, ":</span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if backupActive {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<span class=\"text-income font-medium\">● Active (Streaming to Cloudflare R2)</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span class=\"text-income font-medium\">● Active (Streaming to Cloudflare R2)</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<span>Not configured</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<span>Not configured</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div></section></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</div></section></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

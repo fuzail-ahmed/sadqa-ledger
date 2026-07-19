@@ -13,8 +13,16 @@ templ Shell(lang, dir, title string) {
 			<title>{ title }</title>
 			<link rel="stylesheet" href="/static/vendor/basecoat/basecoat.min.css"/>
 			<link rel="stylesheet" href="/static/css/output.css"/>
+			<link rel="manifest" href="/manifest.json"/>
+			<link rel="apple-touch-icon" href="/static/images/icon-192.png"/>
+			<meta name="theme-color" content="#1F2422"/>
 			<script src="/static/vendor/basecoat/basecoat.min.js" defer></script>
 			<script src="/static/vendor/htmx/htmx.min.js" defer></script>
+			<script>
+				if ('serviceWorker' in navigator) {
+					navigator.serviceWorker.register('/sw.js');
+				}
+			</script>
 			<script>
 				// Native confirm() before submitting any form marked data-confirm
 				// (e.g. deactivating a member, docs/APP_FLOW.md §4a) — no dialog

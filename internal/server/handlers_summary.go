@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/fuzail-ahmed/sadqa-ledger/internal/auth"
 	"github.com/fuzail-ahmed/sadqa-ledger/internal/settings"
 	"github.com/fuzail-ahmed/sadqa-ledger/web/templates/pages"
 )
@@ -42,8 +43,8 @@ func (h *authHandlers) handleSummaryGenerate(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	pages.SummaryPreview(text).Render(r.Context(), w)
+	admin := auth.CurrentAdmin(r)
+	pages.SummaryPreview(admin.LanguagePref, text).Render(r.Context(), w)
 }
 
 func (h *authHandlers) buildSummaryText(month string) (string, error) {

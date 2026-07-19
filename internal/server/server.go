@@ -39,6 +39,26 @@ func New(conn *sql.DB, cfg config.Config) http.Handler {
 	r.Post("/login", h.handleLoginSubmit)
 	r.Get("/p/{token}", h.handlePublicPage)
 
+	// PWA routes served from root (docs/TRD.md §11)
+	r.Get("/manifest.json", func(w http.ResponseWriter, r *http.Request) {
+		data, err := static.FS.ReadFile("manifest.json")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write(data)
+	})
+	r.Get("/sw.js", func(w http.ResponseWriter, r *http.Request) {
+		data, err := static.FS.ReadFile("sw.js")
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("Content-Type", "application/javascript")
+		_, _ = w.Write(data)
+	})
+
 	// Admin routes, behind session auth (docs/SCHEMA.md §6).
 	r.Group(func(r chi.Router) {
 		r.Use(auth.RequireAuth(conn, cfg.SecureCookies))

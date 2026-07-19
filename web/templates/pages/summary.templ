@@ -20,7 +20,7 @@ templ Summary(
 				<section class="grid gap-4">
 					<!-- Month Picker -->
 					<div class="field">
-						<label class="label" for="summary_month">Select Month</label>
+						<label class="label" for="summary_month">{ i18n.T(d.Lang, "summary.select_month") }</label>
 						<input
 							class="input min-h-11"
 							type="month"
@@ -36,7 +36,7 @@ templ Summary(
 
 					<!-- Preview Container -->
 					<div id="summary-preview-container">
-						@SummaryPreview(summaryText)
+						@SummaryPreview(d.Lang, summaryText)
 					</div>
 				</section>
 			</div>
@@ -45,10 +45,10 @@ templ Summary(
 }
 
 // SummaryPreview renders the preview text area, copy button, and success banner.
-templ SummaryPreview(text string) {
+templ SummaryPreview(lang string, text string) {
 	<div class="grid gap-4">
 		<div class="field">
-			<label class="label" for="summary_text">WhatsApp Summary Preview</label>
+			<label class="label" for="summary_text">{ i18n.T(lang, "summary.preview_label") }</label>
 			<textarea
 				id="summary_text"
 				name="summary_text"
@@ -76,7 +76,7 @@ templ SummaryPreview(text string) {
 						});
 				"
 			>
-				Copy to Clipboard
+				{ i18n.T(lang, "summary.copy_btn") }
 			</button>
 			<p class="text-xs text-muted-foreground text-center">
 				Or select the text inside the box above, right click, and copy manually.

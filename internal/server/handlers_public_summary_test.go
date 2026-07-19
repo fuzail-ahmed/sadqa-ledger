@@ -181,4 +181,21 @@ func TestPublicAndSummarySettingsFlow(t *testing.T) {
 	if len(gsFinal.QuickAmountsMinor) != 3 || gsFinal.QuickAmountsMinor[0] != 1000 {
 		t.Errorf("gsFinal.QuickAmountsMinor = %v, want [1000, 2000, 5000]", gsFinal.QuickAmountsMinor)
 	}
+
+	// --- 9. PWA Routes ---
+	manifestRes := doGet(h, "/manifest.json", nil)
+	if manifestRes.Code != 200 {
+		t.Errorf("GET /manifest.json = %d, want 200", manifestRes.Code)
+	}
+	if !strings.Contains(manifestRes.Body.String(), "Sadqa Ledger") {
+		t.Error("manifest.json missing name field")
+	}
+
+	swRes := doGet(h, "/sw.js", nil)
+	if swRes.Code != 200 {
+		t.Errorf("GET /sw.js = %d, want 200", swRes.Code)
+	}
+	if !strings.Contains(swRes.Body.String(), "sadqa-ledger-v1") {
+		t.Error("sw.js missing cache name definition")
+	}
 }

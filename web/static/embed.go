@@ -12,5 +12,5 @@ import "embed"
 // they must exist on disk at build time, which `make dev` / `make build`
 // guarantee via their prerequisite targets.
 //
-//go:embed css/output.css vendor/basecoat/basecoat.min.css vendor/basecoat/basecoat.min.js vendor/htmx/htmx.min.js
+//go:embed css/output.css vendor/basecoat/basecoat.min.css vendor/basecoat/basecoat.min.js vendor/htmx/htmx.min.js manifest.json sw.js images/icon-192.png images/icon-512.png
 var FS embed.FS
