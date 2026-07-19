@@ -1,0 +1,75 @@
+package pages
+
+import (
+	"github.com/fuzail-ahmed/sadqa-ledger/i18n"
+	"github.com/fuzail-ahmed/sadqa-ledger/web/templates/components"
+)
+
+// Export renders the Backup & Export page (docs/APP_FLOW.md §8).
+templ Export(d components.AdminShellData, backupActive bool, toastMsg string) {
+	@components.AdminShell(d) {
+		<div class="mx-auto max-w-xl px-4 py-8 flex flex-col gap-6">
+			<div class="card">
+				<header>
+					<h2>{ i18n.T(d.Lang, "nav.export") }</h2>
+				</header>
+				<section class="grid gap-6">
+					if toastMsg != "" {
+						<div class="alert" data-variant="success" role="status">
+							<p>{ toastMsg }</p>
+						</div>
+					}
+
+					<div class="flex flex-col gap-2">
+						<p class="text-foreground text-sm">
+							Export your group's data at any time. Downloads are generated on demand.
+						</p>
+						<p class="text-xs text-muted-foreground">
+							<strong>Security notice:</strong> Both the database snapshot and CSV exports completely exclude active session tokens and administrator password hashes. They are safe to share for backups, reporting, or migration.
+						</p>
+					</div>
+
+					<div class="flex flex-col gap-4 border-t border-border pt-4">
+						<!-- Database Snapshot -->
+						<div class="flex flex-col gap-1">
+							<h3 class="text-sm font-semibold text-foreground">Database Snapshot</h3>
+							<p class="text-xs text-muted-foreground">Download the sanitized SQLite ledger database file (.db).</p>
+							<a class="btn mt-1" data-variant="primary" href="/export/database" download="sadqa-ledger-sanitized.db">
+								Download database (.db)
+							</a>
+						</div>
+
+						<div class="grid grid-cols-2 gap-4 border-t border-border pt-4">
+							<!-- Contributions CSV -->
+							<div class="flex flex-col gap-1">
+								<h3 class="text-sm font-semibold text-foreground">Contributions</h3>
+								<p class="text-xs text-muted-foreground">Active contributions spreadsheet (CSV).</p>
+								<a class="btn mt-1" data-variant="outline" href="/export/contributions" download="contributions.csv">
+									Download Contributions (CSV)
+								</a>
+							</div>
+
+							<!-- Expenses CSV -->
+							<div class="flex flex-col gap-1">
+								<h3 class="text-sm font-semibold text-foreground">Expenses</h3>
+								<p class="text-xs text-muted-foreground">Active expenses spreadsheet (CSV).</p>
+								<a class="btn mt-1" data-variant="outline" href="/export/expenses" download="expenses.csv">
+									Download Expenses (CSV)
+								</a>
+							</div>
+						</div>
+					</div>
+
+					<div class="border-t border-border pt-4 flex items-center justify-between text-xs text-muted-foreground">
+						<span>Litestream Backup Status:</span>
+						if backupActive {
+							<span class="text-income font-medium">● Active (Streaming to Cloudflare R2)</span>
+						} else {
+							<span>Not configured</span>
+						}
+					</div>
+				</section>
+			</div>
+		</div>
+	}
+}

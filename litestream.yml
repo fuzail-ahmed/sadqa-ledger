@@ -1,0 +1,13 @@
+# Litestream replication configuration template (docs/DEPLOY.md §5, §Assumptions)
+# Place this in /etc/litestream.yml on your server or run with: litestream replicate -config litestream.yml
+
+dbs:
+  - path: ${DATABASE_PATH:-/data/sadqa-ledger.db}
+    replicas:
+      - type: s3
+        name: r2
+        bucket: ${LITESTREAM_R2_BUCKET}
+        endpoint: ${LITESTREAM_R2_ENDPOINT}
+        access-key-id: ${LITESTREAM_R2_ACCESS_KEY_ID}
+        secret-access-key: ${LITESTREAM_R2_SECRET_ACCESS_KEY}
+        sync-interval: 1s

@@ -75,7 +75,10 @@ func New(conn *sql.DB, cfg config.Config) http.Handler {
 		r.Post("/settings/regenerate-token", h.handleSettingsTokenRegenerateSubmit)
 		r.Post("/settings/info", h.handleSettingsInfoSubmit)
 		r.Post("/settings/language", h.handleSettingsLanguageSubmit)
-		r.Get("/export", h.handlePlaceholder("more", "nav.export"))
+		r.Get("/export", h.handleExportPage)
+		r.Get("/export/database", h.handleExportDatabase)
+		r.Get("/export/contributions", h.handleExportContributions)
+		r.Get("/export/expenses", h.handleExportExpenses)
 	})
 
 	return r
