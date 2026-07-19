@@ -69,3 +69,27 @@ Done: `/p/:token` public transparency page (renders balance, monthly stats, acti
 Decisions: Token regeneration immediately invalidates old tokens by writing a cryptographically random token to `group_settings`; WhatsApp summary text uses asterisks for bold formatting and completely hides contributor names when the names toggle is off.
 Gotchas: Public page is accessible without a session, so robots `noindex` is applied via meta tag and `X-Robots-Tag` header for maximum coverage; settings sections use separate form actions and targets to prevent validation blocking other fields.
 Next: Phase 8 — Backup & Export.
+
+## Phase 8 — Backup & Export ✅ 2026-07-19
+Done: `/export` view (database snapshot download and separate contributions/expenses CSV downloads) and Litestream replication template setup.
+Decisions: SQLite `VACUUM INTO` command used to write transaction-consistent snapshot copy to temp folder; temp copy is opened dynamically to drop `sessions` table and nullify `admins.password_hash` prior to streaming bytes to user.
+Gotchas: CSV stream writer must be flushed before return; database snapshot must be closed and deleted from local disk on complete.
+Next: Phase 9 — i18n & PWA Completion.
+
+## Phase 9 — i18n & PWA Completion ✅ 2026-07-19
+Done: i18n localization dictionaries (English, Hindi, Arabic), Arabic RTL mirroring integration, and PWA configuration (manifest linkage, service worker offline fallback cache registration, and logo assets generation/conversion).
+Decisions: Service worker scope maximised by serving `/sw.js` and `/manifest.json` from the root router rather than `/static/` prefixes.
+Gotchas: Public page language defaults must set document text direction dynamically based on chosen language (en/hi to LTR, ar to RTL).
+Next: Phase 10 — Testing & Hardening.
+
+## Phase 10 — Testing & Hardening ✅ 2026-07-19
+Done: Full server package integration testing suite covering admin auth signup, login, dashboard checklist updates, and WhatsApp summary matching.
+Decisions: Built unified integration test capturing end-to-end admin session to ensure clean transitions between states.
+Gotchas: Forms and actions require CSRF tokens and replayed cookie states to prevent 403 authorization failures in test requests.
+Next: Phase 12 — Polish & Launch Readiness.
+
+## Phase 12 — Polish & Launch Readiness ✅ 2026-07-19
+Done: Onboarding base documentation finalize (README, CHANGELOG version cut, LICENSE verification) and local release tag cut (`v0.1.0`).
+Decisions: Tagged repository release tag locally as `v0.1.0` after verifying green states.
+Gotchas: Checked working tree status to ensure no untracked generated assets are checked in.
+Next: Launch!
