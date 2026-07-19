@@ -344,7 +344,7 @@ func (h *authHandlers) handleContributionsPage(w http.ResponseWriter, r *http.Re
 
 	toast := r.URL.Query().Get("toast")
 	pages.Contributions(
-		h.shellData(w, r, "more", "nav.contributions"),
+		h.shellData(w, r, "contributions", "nav.contributions"),
 		list,
 		gs.CurrencySymbol,
 		month,

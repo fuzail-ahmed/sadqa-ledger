@@ -104,7 +104,7 @@ templ AdminShell(d AdminShellData) {
 			<nav class="fixed bottom-0 start-0 end-0 flex items-stretch border-t border-border bg-surface shadow-lg z-20 px-2 py-1" aria-label={ i18n.T(d.Lang, "nav.dashboard") }>
 				@navLink("/", d.Active == "dashboard", i18n.T(d.Lang, "nav.dashboard"), IconHome("h-5 w-5"))
 				@navLink("/members", d.Active == "members", i18n.T(d.Lang, "nav.members"), IconUsers("h-5 w-5"))
-				@navLink("/contributions/new", d.Active == "add", i18n.T(d.Lang, "nav.add_contribution"), IconPlusCircle("h-5 w-5"))
+				@navLink("/contributions", d.Active == "contributions", i18n.T(d.Lang, "nav.contributions"), IconPlusCircle("h-5 w-5"))
 				@navLink("/expenses", d.Active == "expenses", i18n.T(d.Lang, "nav.expenses"), IconCreditCard("h-5 w-5"))
 				
 				<!-- More details context dropdown -->
@@ -114,8 +114,8 @@ templ AdminShell(d AdminShellData) {
 						<span>{ i18n.T(d.Lang, "nav.more") }</span>
 					</summary>
 					<div class="absolute bottom-full mb-2 end-0 flex flex-col gap-1 rounded-md border border-border bg-surface p-2 shadow-xl min-w-44 z-30">
-						<a class="min-h-11 flex items-center whitespace-nowrap px-4 py-2 text-sm text-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary focus:outline-none rounded-md" href="/contributions">
-							{ i18n.T(d.Lang, "nav.contributions") }
+						<a class="min-h-11 flex items-center whitespace-nowrap px-4 py-2 text-sm text-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary focus:outline-none rounded-md" href="/contributions/new">
+							{ i18n.T(d.Lang, "nav.add_contribution") }
 						</a>
 						<a class="min-h-11 flex items-center whitespace-nowrap px-4 py-2 text-sm text-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary focus:outline-none rounded-md" href="/summary">
 							{ i18n.T(d.Lang, "nav.summary") }

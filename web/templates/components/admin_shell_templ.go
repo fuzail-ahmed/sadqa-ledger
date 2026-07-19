@@ -312,7 +312,7 @@ func AdminShell(d AdminShellData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = navLink("/contributions/new", d.Active == "add", i18n.T(d.Lang, "nav.add_contribution"), IconPlusCircle("h-5 w-5")).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = navLink("/contributions", d.Active == "contributions", i18n.T(d.Lang, "nav.contributions"), IconPlusCircle("h-5 w-5")).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -341,14 +341,14 @@ func AdminShell(d AdminShellData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</span></summary><div class=\"absolute bottom-full mb-2 end-0 flex flex-col gap-1 rounded-md border border-border bg-surface p-2 shadow-xl min-w-44 z-30\"><a class=\"min-h-11 flex items-center whitespace-nowrap px-4 py-2 text-sm text-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary focus:outline-none rounded-md\" href=\"/contributions\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</span></summary><div class=\"absolute bottom-full mb-2 end-0 flex flex-col gap-1 rounded-md border border-border bg-surface p-2 shadow-xl min-w-44 z-30\"><a class=\"min-h-11 flex items-center whitespace-nowrap px-4 py-2 text-sm text-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary focus:outline-none rounded-md\" href=\"/contributions/new\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var16 string
-			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(d.Lang, "nav.contributions"))
+			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(d.Lang, "nav.add_contribution"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/components/admin_shell.templ`, Line: 118, Col: 44}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/components/admin_shell.templ`, Line: 118, Col: 47}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
