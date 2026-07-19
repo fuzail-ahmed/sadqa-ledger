@@ -1,0 +1,49 @@
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+/bin/
+/tmp/
+/dist/
+
+# Go build/module cache artifacts
+go.work
+go.work.sum
+
+# templ generated files marker (keep generated .go files unless project decides otherwise)
+# *_templ.go
+
+# SQLite database files — never commit real data
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Compiled Tailwind output (built by the standalone CLI, not committed)
+/static/css/output.css
+/web/static/css/output.css
+
+# Uploaded receipt photos (local-disk storage mode)
+/uploads/
+/data/
+
+# OS/editor cruft
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Build artifacts
+/sadqa-ledger
+/sadqa-ledger.exe
