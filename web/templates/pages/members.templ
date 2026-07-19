@@ -45,7 +45,9 @@ templ Members(d components.AdminShellData, list []members.Member, query, toastMs
 				<div class="h-11 animate-pulse rounded-md bg-muted"></div>
 				<div class="h-11 animate-pulse rounded-md bg-muted"></div>
 			</div>
+			<div class="table-container">
 			@MemberList(d.Lang, d.CSRFToken, query, list)
+			</div>
 		</div>
 	}
 }
@@ -54,33 +56,44 @@ templ Members(d components.AdminShellData, list []members.Member, query, toastMs
 // and on every HTMX live-search request (docs/APP_FLOW.md §4 states:
 // empty/search-no-results/success).
 templ MemberList(lang, csrfToken, query string, list []members.Member) {
-	<div id="member-list" class="mt-4">
+	<table id="member-list" class="table">
+		
+		<thead>
+      <tr>
+        <th>Name</th>
+        <th>Actions</th>
+      </tr>
+  </thead>
+
+
+		<tbody>
 		if len(list) == 0 && query != "" {
-			<p class="text-muted-foreground">{ fmt.Sprintf(i18n.T(lang, "members.no_results"), query) }</p>
+			<tr><td class="text-muted-foreground">{ fmt.Sprintf(i18n.T(lang, "members.no_results"), query) }</td></tr>
 		} else if len(list) == 0 {
-			<p class="text-muted-foreground">{ i18n.T(lang, "members.empty") }</p>
+			<tr><td class="text-muted-foreground">{ i18n.T(lang, "members.empty") }</td></tr>
 		} else {
-			<ul class="grid gap-2">
 				for _, m := range list {
 					@memberRow(lang, csrfToken, m)
 				}
-			</ul>
 		}
-	</div>
+		</tbody>
+	</table>
 }
 
 templ memberRow(lang, csrfToken string, m members.Member) {
-	<li class="card flex items-center justify-between gap-2 px-4 py-3">
-		<div class="flex items-center gap-2">
-			<span>{ m.Name }</span>
-			if m.IsActive {
-				<span class="badge" data-variant="secondary">{ i18n.T(lang, "members.status_active") }</span>
-			} else {
-				<span class="badge" data-variant="outline">{ i18n.T(lang, "members.status_inactive") }</span>
-			}
-		</div>
-		<div class="flex items-center gap-2">
-			<a class="btn min-h-11" data-variant="outline" href={ templ.URL(fmt.Sprintf("/members/%d/edit", m.ID)) }>
+	<tr>
+		<td>
+			<div>
+				<span>{ m.Name }</span>
+				if m.IsActive {
+					<span class="badge" data-variant="secondary">{ i18n.T(lang, "members.status_active") }</span>
+				} else {
+					<span class="badge" data-variant="outline">{ i18n.T(lang, "members.status_inactive") }</span>
+				}
+			</div>
+		</td>
+		<td class="text-end">
+			<a class="btn" data-size="sm" data-variant="outline" href={ templ.URL(fmt.Sprintf("/members/%d/edit", m.ID)) }>
 				{ i18n.T(lang, "members.edit_link") }
 			</a>
 			<form
@@ -89,9 +102,10 @@ templ memberRow(lang, csrfToken string, m members.Member) {
 				if m.IsActive {
 					data-confirm={ i18n.T(lang, "members.deactivate_confirm") }
 				}
+				class="inline"
 			>
 				<input type="hidden" name="csrf_token" value={ csrfToken }/>
-				<button class="btn min-h-11" data-variant="outline" type="submit">
+				<button class="btn" data-size="sm" data-variant="outline" type="submit">
 					if m.IsActive {
 						{ i18n.T(lang, "members.deactivate") }
 					} else {
@@ -99,6 +113,6 @@ templ memberRow(lang, csrfToken string, m members.Member) {
 					}
 				</button>
 			</form>
-		</div>
-	</li>
+		</td>
+	</tr>
 }
