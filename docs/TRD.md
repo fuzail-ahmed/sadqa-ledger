@@ -22,7 +22,7 @@ Every technical decision optimizes for: **runs on one cheap/free machine, surviv
 | Hosting | Oracle Cloud "always free" VM, behind Caddy |
 | CI/CD | GitHub Actions |
 | Installability | PWA (manifest + icons) |
-| i18n | JSON translation files (English, Hindi, Urdu, Arabic) |
+| i18n | JSON translation files (English, Hindi, Arabic) |
 | Infra cost target | $0/month |
 
 ## 3. Backend
@@ -128,7 +128,7 @@ No caching layer, CDN, or read-replica is planned — none is needed at this sca
 
 ## 11. i18n
 
-Translation strings live in simple JSON files, one per language (English, Hindi, Urdu, Arabic), keyed by string ID, loaded at startup and selected per-request (by a user/browser preference or a UI toggle — detailed in `docs/APP_FLOW.md`). JSON is chosen over `.po`/gettext tooling because it requires no additional build step or library beyond Go's standard `encoding/json`, keeping with the project's low-toolchain philosophy. Arabic and Urdu are right-to-left languages; layout/CSS implications are covered in `docs/UI_UX_BRIEF.md`.
+Translation strings live in simple JSON files, one per language (English, Hindi, Arabic), keyed by string ID, loaded at startup and selected per-request (by a user/browser preference or a UI toggle — detailed in `docs/APP_FLOW.md`). JSON is chosen over `.po`/gettext tooling because it requires no additional build step or library beyond Go's standard `encoding/json`, keeping with the project's low-toolchain philosophy. Arabic is a right-to-left language; layout/CSS implications are covered in `docs/UI_UX_BRIEF.md`.
 
 ## Assumptions
 

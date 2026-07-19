@@ -51,12 +51,12 @@ Phased build sequence, each phase producing a concrete, demoable deliverable wit
 **Deliverables:**
 - Base layout template (header, bottom nav per `docs/UI_UX_BRIEF.md` §5/§7) shared across admin screens.
 - Route scaffolding for all admin paths in `docs/APP_FLOW.md` §0 (empty/placeholder content, real logic in later phases).
-- Language switcher wired to the JSON i18n files (`docs/TRD.md` §11) with at least English + one other language loading correctly, including RTL layout verification for Urdu/Arabic.
+- Language switcher wired to the JSON i18n files (`docs/TRD.md` §11) with at least English + one other language loading correctly, including RTL layout verification for Arabic.
 - Basecoat components integrated (buttons, cards, forms, toasts, dialogs) per `docs/UI_UX_BRIEF.md` §4.
 
 **Acceptance criteria:**
 - Every route in the route map renders without error and shows the shared nav/header.
-- Switching language changes visible UI text and, for Arabic/Urdu, mirrors layout direction.
+- Switching language changes visible UI text and, for Arabic, mirrors layout direction.
 - Touch targets and type sizes spot-checked against `docs/UI_UX_BRIEF.md` §3/§6 on an actual phone-width viewport.
 - **Accessibility (see `docs/ACCESSIBILITY.md`):** the shared shell (nav, header, layout) is fully keyboard-navigable with a visible focus indicator on every focusable element; icon-only nav buttons have `aria-label`s; a first Lighthouse/axe pass run on this shell catches structural issues (missing landmarks, heading order) before they're repeated across every later screen.
 
@@ -128,14 +128,14 @@ Phased build sequence, each phase producing a concrete, demoable deliverable wit
 ## Phase 9 — i18n & PWA Completion
 
 **Deliverables:**
-- Full translation coverage for all four languages (English, Hindi, Urdu, Arabic) across every screen, not just the Phase 3 spot check.
+- Full translation coverage for all three languages (English, Hindi, Arabic) across every screen, not just the Phase 3 spot check.
 - PWA manifest + icon set (`docs/TRD.md` §4), installable to home screen on both Android and iOS Safari.
 - Bilingual label treatment (जमा/खर्च/बाकी etc., `docs/UI_UX_BRIEF.md` §8) applied consistently on Dashboard and Summary.
 
 **Acceptance criteria:**
-- No untranslated string ("missing key") fallback visible in any of the four languages on any screen.
+- No untranslated string ("missing key") fallback visible in any of the three languages on any screen.
 - App installs to home screen on a real Android phone (primary device target, `docs/PRD.md`) and opens without browser chrome.
-- RTL rendering manually verified on the Dashboard, Add Contribution, and Settings screens for Arabic and Urdu.
+- RTL rendering manually verified on the Dashboard, Add Contribution, and Settings screens for Arabic.
 - **Accessibility:** text remains usable (no clipping/overlap) at 200% browser zoom on a phone-width viewport, across at least one LTR and one RTL language (`docs/ACCESSIBILITY.md`).
 
 ## Phase 10 — Testing & Hardening

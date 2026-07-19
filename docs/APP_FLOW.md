@@ -169,7 +169,7 @@ This screen exists independently of Litestream's automatic replication (`docs/TR
 - **Session expiry:** any admin action attempted after session expiry redirects to `/login` with a notice: "Your session expired — please log in again." Unsaved form data is not preserved across this redirect in v1 (see Assumptions).
 - **Network failure (HTMX request fails client-side, e.g., phone loses signal mid-save):** the affected fragment shows an inline error with a Retry action; the rest of the page remains interactive. This matters specifically because the primary device is a phone, where flaky connectivity is expected.
 - **Confirmation dialogs** are used before any destructive or hard-to-reverse action: deactivating a member, regenerating the public token, removing an admin. Deleting a contribution/expense outright (vs. correcting via a new entry) requires a confirmation dialog and is itself an audited action (see `docs/SCHEMA.md`).
-- **Language switch:** available from every screen (icon in header/nav), applies immediately without losing in-progress form data where technically feasible; RTL layout automatically applies for Arabic/Urdu (see `docs/UI_UX_BRIEF.md`).
+- **Language switch:** available from every screen (icon in header/nav), applies immediately without losing in-progress form data where technically feasible; RTL layout automatically applies for Arabic (see `docs/UI_UX_BRIEF.md`).
 
 ## Assumptions
 

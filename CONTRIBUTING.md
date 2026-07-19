@@ -69,7 +69,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:
 
 1. Copy `i18n/en.json` to `i18n/<language-code>.json` (use the [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes) two-letter code, e.g. `bn` for Bengali).
 2. Translate every value, keeping the keys unchanged.
-3. If the language is right-to-left (like Arabic and Urdu already are), confirm the layout mirrors correctly — see [`docs/UI_UX_BRIEF.md`](docs/UI_UX_BRIEF.md) §8 for the RTL approach (CSS logical properties, not hardcoded left/right).
+3. If the language is right-to-left (like Arabic already is), confirm the layout mirrors correctly — see [`docs/UI_UX_BRIEF.md`](docs/UI_UX_BRIEF.md) §8 for the RTL approach (CSS logical properties, not hardcoded left/right).
 4. Add the language to the switcher's language list and to `docs/TRD.md`'s supported-languages list if you'd like it documented as officially supported.
 5. Open a PR — translations are one of the easiest and most valued ways to contribute, even without writing any Go.
 

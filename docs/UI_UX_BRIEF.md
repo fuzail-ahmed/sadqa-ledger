@@ -32,9 +32,9 @@ Green/teal was chosen over a generic blue because it reads as "growth/ledger/tru
 
 ## 3. Typography
 
-- **Typeface:** a highly legible system-first stack (e.g., `system-ui`, falling back to Noto Sans for broad Devanagari/Arabic/Urdu script coverage where the OS font lacks it). No custom display font — legibility across four languages and older eyes outranks brand personality here.
+- **Typeface:** a highly legible system-first stack (e.g., `system-ui`, falling back to Noto Sans for broad Devanagari/Arabic script coverage where the OS font lacks it). No custom display font — legibility across three languages and older eyes outranks brand personality here.
 - **Base size:** 16px minimum for body text on mobile; numbers on the Dashboard stat cards are notably larger (24–32px) since they're the most-glanced-at content on the screen.
-- **Line height:** generous (1.5+) for body text, especially important for Urdu/Arabic script and for older readers.
+- **Line height:** generous (1.5+) for body text, especially important for Arabic script and for older readers.
 - **Weight:** avoid thin/light weights entirely; primary content uses regular or medium weight, headings use semibold. Thin fonts fail the "readable for older users" requirement.
 - **Numerals:** contribution/expense amounts always rendered in a tabular/monospaced numeral style so columns of numbers align — makes scanning a list of amounts easier, echoing the notebook's column alignment this app is replacing.
 
@@ -80,8 +80,8 @@ Reiterating the content order from `docs/APP_FLOW.md` §2 with visual intent:
 
 - **Labels:** core financial terms (Deposit/जमा, Expense/खर्च, Balance/बाकी) appear bilingually on stat cards and key headings regardless of the selected UI language, since these three words are the ones a quick glance most needs to recognize instantly for a mixed-literacy, mixed-familiarity user base. Full sentence-level content (buttons, form labels, help text) follows the selected language only, not bilingually duplicated everywhere — duplicating everything would clutter the calm layout this brief calls for.
 - **Language switcher:** a small, always-visible icon/control in the header (globe icon + current language code), consistent placement across all screens per `docs/APP_FLOW.md` §10.
-- **RTL support:** when Arabic or Urdu is selected, the layout mirrors (nav, icons, text alignment) using CSS logical properties (`margin-inline-start` etc.) rather than hardcoded left/right values, so the same Tailwind-based components support LTR and RTL without a separate template set.
-- **Script rendering:** typography stack (§3) includes RTL/Devanagari-capable fallback fonts so Urdu/Arabic/Hindi render correctly without extra font-loading configuration per language.
+- **RTL support:** when Arabic is selected, the layout mirrors (nav, icons, text alignment) using CSS logical properties (`margin-inline-start` etc.) rather than hardcoded left/right values, so the same Tailwind-based components support LTR and RTL without a separate template set.
+- **Script rendering:** typography stack (§3) includes RTL/Devanagari-capable fallback fonts so Arabic/Hindi render correctly without extra font-loading configuration per language.
 
 ## 9. UX Principles (summary)
 

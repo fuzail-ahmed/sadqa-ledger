@@ -4,7 +4,7 @@
 
 Sadqa Ledger is a small, self-hostable ledger web app for community groups — masjids, community associations, or any group that collects recurring member contributions and spends them on shared upkeep. It replaces a paper notebook with a mobile-first web app that any group can run on its own, at zero infrastructure cost.
 
-"Sadqa" (also spelled "sadaqah") refers to voluntary charitable giving in Islamic practice. The name reflects the app's origin, but the app itself is generic: any group collecting dues and tracking shared expenses can use it (a residents' welfare association, a school parent-committee fund, a sports club). Nothing in the data model or UI assumes a specific religion, beyond bilingual labels that include Hindi/Urdu terms alongside English (see `docs/UI_UX_BRIEF.md`).
+"Sadqa" (also spelled "sadaqah") refers to voluntary charitable giving in Islamic practice. The name reflects the app's origin, but the app itself is generic: any group collecting dues and tracking shared expenses can use it (a residents' welfare association, a school parent-committee fund, a sports club). Nothing in the data model or UI assumes a specific religion, beyond bilingual labels that include Hindi terms alongside English (see `docs/UI_UX_BRIEF.md`).
 
 ## 2. Problem Statement
 

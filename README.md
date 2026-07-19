@@ -33,7 +33,7 @@ Full reasoning behind every product and technical decision lives in [`docs/`](do
 - **Monthly WhatsApp summary** — a ready-to-paste text summary of the month's activity for your group's WhatsApp.
 - **Backup & export, always available** — download the full database or a CSV export any time, so your group's data is never locked to one device or one person.
 - **Every entry is attributed** — the app records which admin logged each contribution or expense, so the numbers are always accountable.
-- **Works in English, Hindi, Urdu, and Arabic.**
+- **Works in English, Hindi, and Arabic.**
 - **Installs like an app** on your phone's home screen — no app store needed.
 
 ## Quick start (Docker)
@@ -89,7 +89,3 @@ Parts of this project — including planning documents, templates, and code — 
 ## हिन्दी में संक्षिप्त जानकारी
 
 Sadqa Ledger एक छोटा, मुफ़्त चलने वाला ऐप है जो मस्जिद या किसी भी सामुदायिक समूह के लिए बनाया गया है, जो हर महीने चंदा इकट्ठा करते हैं और उसे मरम्मत, बिजली बिल जैसे खर्चों पर लगाते हैं। यह कागज़ की नोटबुक की जगह लेता है — कोई भी 2-3 भरोसेमंद व्यक्ति फ़ोन से कुछ ही सेकंड में चंदा दर्ज कर सकते हैं, और पूरा समुदाय एक लिंक के ज़रिए हिसाब-किताब पारदर्शी रूप से देख सकता है। सदस्यों के नाम सार्वजनिक रूप से दिखाना या न दिखाना, यह आपके समूह की पसंद पर निर्भर करता है। पूरी जानकारी के लिए [`docs/DEPLOY.md`](docs/DEPLOY.md) देखें।
-
-## اردو میں مختصر تعارف
-
-Sadqa Ledger ایک چھوٹی، مفت چلنے والی ایپ ہے جو مسجد یا کسی بھی کمیونٹی گروپ کے لیے بنائی گئی ہے جو ہر ماہ چندہ جمع کرتے ہیں اور اسے مرمت، بجلی کے بل جیسے اخراجات پر خرچ کرتے ہیں۔ یہ کاغذی نوٹ بک کی جگہ لیتی ہے — کوئی بھی 2-3 قابلِ اعتماد افراد فون سے چند سیکنڈوں میں چندہ درج کر سکتے ہیں، اور پوری کمیونٹی ایک لنک کے ذریعے حساب کتاب شفاف طریقے سے دیکھ سکتی ہے۔ ارکان کے نام عوامی طور پر ظاہر کرنا یا نہ کرنا، یہ آپ کے گروپ کی مرضی پر منحصر ہے۔ مکمل معلومات کے لیے [`docs/DEPLOY.md`](docs/DEPLOY.md) دیکھیں۔

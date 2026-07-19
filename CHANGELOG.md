@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Public transparency page with configurable name privacy.
 - Monthly WhatsApp-shareable summary.
 - On-demand database and CSV export.
-- i18n support for English, Hindi, Urdu, and Arabic.
+- i18n support for English, Hindi, and Arabic.
 - PWA installability.
 - Docker image and Oracle Cloud + Caddy + Litestream deployment path.
 

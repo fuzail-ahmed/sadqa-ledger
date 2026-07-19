@@ -52,7 +52,7 @@ CREATE TABLE admins (
     username        TEXT NOT NULL UNIQUE,
     password_hash   TEXT NOT NULL,              -- bcrypt hash, see docs/TRD.md §6
     display_name    TEXT NOT NULL,
-    language_pref   TEXT NOT NULL DEFAULT 'en',  -- 'en' | 'hi' | 'ur' | 'ar'
+    language_pref   TEXT NOT NULL DEFAULT 'en',  -- 'en' | 'hi' | 'ar'
     is_active       INTEGER NOT NULL DEFAULT 1,  -- 0/1 boolean; deactivated admins can't log in but audit history is preserved
     created_at      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
     updated_at      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
