@@ -4,35 +4,44 @@ Thanks for considering a contribution. This project is small on purpose — see 
 
 ## Local development setup
 
-Prerequisites: Go (latest stable), the [templ CLI](https://templ.guide), and the [Tailwind standalone CLI](https://tailwindcss.com/blog/standalone-cli) (no Node.js needed for either).
+Prerequisites: **Go** and **make**. That's it — you do not need to install templ, the Tailwind CLI, or Node.js yourself; `make setup` handles all of that for you.
 
 ```bash
 git clone https://github.com/fuzail-ahmed/sadqa-ledger.git
 cd sadqa-ledger
-cp .env.example .env          # then edit .env with local values
-
-# Generate templ files
-templ generate
-
-# Build the Tailwind CSS
-./tailwindcss -i web/static/css/input.css -o web/static/css/output.css --watch
-
-# In a separate terminal, run the app
-go run ./cmd/server
+make setup
+make dev
 ```
 
-Open `http://localhost:8080`. The first run will walk you through creating an admin account and a group name — see [`docs/APP_FLOW.md`](docs/APP_FLOW.md) §First-run setup.
+Then open `http://localhost:8080`. The first run will walk you through creating an admin account and a group name — see [`docs/APP_FLOW.md`](docs/APP_FLOW.md) §First-run setup.
 
-Run tests:
+`make setup` verifies your Go version, installs `templ` and `air` (pinned versions, via `go install`), downloads the Tailwind standalone CLI for your OS/architecture into a local `.tools/` folder, creates your `.env` from `.env.example` (never overwriting one that already exists), downloads Go module dependencies, and builds once so you know it all works. It's safe to run more than once.
+
+`make dev` runs the app with hot reload via [air](https://github.com/air-verse/air): saving a `.go`, `.templ`, `.css`, or i18n `.json` file regenerates templ, rebuilds the CSS, and rebuilds/restarts the server automatically. One terminal, no watch script in a second window.
+
+### Windows
+
+`make` isn't available in a plain Windows Command Prompt or PowerShell by default. Use one of these instead (all work fine with the Makefile as-is — no separate scripts needed):
+
+- **Git Bash** (installed alongside [Git for Windows](https://git-scm.com/download/win)) — includes `make`-compatible tools for everything this Makefile needs (`curl`, `awk`, `sed`, `uname`). This is the quickest option if you already have Git for Windows.
+- **WSL** (Windows Subsystem for Linux) — run everything inside a real Linux environment; the most trouble-free option if you're doing more than occasional contributions.
+- **Chocolatey**: `choco install make`, then run the same commands from PowerShell or Command Prompt.
+
+Whichever you pick, `make setup` and `make dev` are the same two commands — the Makefile detects Windows automatically and downloads the right Tailwind CLI binary for it.
+
+### Other useful commands
+
+Run `make help` at any time to see the full list with descriptions. The ones you'll reach for most:
 
 ```bash
-go test ./...
-```
-
-Run migrations manually if needed (the app also applies them automatically on startup, see [`docs/SCHEMA.md`](docs/SCHEMA.md) §8):
-
-```bash
-go run ./cmd/migrate
+make build    # production binary in bin/, minified CSS
+make test     # go test ./...
+make lint     # gofmt + go vet
+make fmt      # gofmt -w .
+make templ    # regenerate .templ files only
+make css      # rebuild Tailwind CSS only
+make migrate  # run pending DB migrations manually (the app also applies them on startup — see docs/SCHEMA.md §8)
+make clean    # remove build artifacts (never touches .env or your database)
 ```
 
 ## Code style

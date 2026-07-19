@@ -1,0 +1,62 @@
+# Air configuration for Sadqa Ledger local development.
+#
+# `make dev` runs air so a contributor only needs one terminal: air watches
+# source files, regenerates templ + rebuilds the CSS, then rebuilds and
+# restarts the Go binary automatically.
+#
+# Pre-build steps shell out to `make templ` / `make css` rather than calling
+# templ/tailwindcss directly, so the Makefile stays the single source of
+# truth for how those tools are invoked (paths, flags, pinned versions) —
+# nothing here duplicates what's already defined in the Makefile.
+#
+# See: https://github.com/air-verse/air
+
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  pre_cmd = ["make templ", "make css"]
+  cmd = "go build -o ./tmp/main ./cmd/server"
+  bin = "tmp/main"
+  full_bin = "tmp/main"
+
+  # Watch Go, templ, HTML, CSS, and i18n JSON files.
+  include_ext = ["go", "templ", "html", "css", "json"]
+
+  # Don't watch build output, tool downloads, or version control.
+  exclude_dir = ["tmp", "bin", ".tools", ".git", "vendor"]
+
+  # Generated templ files and SQLite files would otherwise trigger their own
+  # rebuild the moment `make templ`/the app writes them — excluded so a single
+  # source change causes one rebuild, not a loop.
+  exclude_regex = ["_templ\\.go$", "\\.db$", "\\.db-wal$", "\\.db-shm$"]
+  exclude_file = ["web/static/css/output.css"]
+
+  exclude_unchanged = true
+  follow_symlink = false
+
+  # Rebuild delay: batches rapid saves (e.g. an editor writing .templ and the
+  # generated .go together) into a single rebuild instead of a storm of them.
+  delay = 600
+
+  stop_on_error = true
+  send_interrupt = true
+  kill_delay = "500ms"
+  rerun = false
+
+[color]
+  main = "magenta"
+  watcher = "cyan"
+  build = "yellow"
+  runner = "green"
+
+[log]
+  time = false
+  main_only = false
+
+[misc]
+  clean_on_exit = false
+
+[screen]
+  clear_on_rebuild = false
+  keep_scroll = true

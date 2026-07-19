@@ -11,6 +11,8 @@ Total ongoing cost: **$0/month**, using free tiers designed to stay free indefin
 
 Related reading if you want the "why" behind these choices: [`docs/TRD.md`](TRD.md) §Deployment and §Security.
 
+This guide runs the pre-built, published Docker image — you never build the app from source. If you're a developer who wants to build and run Sadqa Ledger locally instead (to contribute code, for example), see [`CONTRIBUTING.md`](../CONTRIBUTING.md)'s `make setup` / `make dev` instead of this guide; the two paths use the same Makefile-driven build under the hood, so there's one source of truth for how the app is actually built.
+
 ---
 
 ## Overview of what you're building
