@@ -53,6 +53,11 @@ make clean    # remove build artifacts (never touches .env or your database)
 - Money is always an integer in minor units (paise, cents) — never a float. See [`docs/SCHEMA.md`](docs/SCHEMA.md) §1.
 - New UI strings go into the JSON translation files (`i18n/en.json`, etc.) with a descriptive key — never hardcode user-facing text in a template.
 
+## Project context files
+
+- [`CLAUDE.md`](CLAUDE.md) (repo root) — a short pointer file for AI coding assistants: stack summary, doc map, key commands, and the project's non-negotiable rules. Humans can read it as a one-page orientation too. Keep it short; details belong in `docs/`.
+- [`docs/PROGRESS.md`](docs/PROGRESS.md) — the append-only build log recording which implementation phases are done and what decisions/gotchas came up. Check it before starting work; append a terse entry when a phase completes.
+
 ## Commit conventions
 
 Use [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`. Example: `feat: add quick-amount chips to contribution form`. Keep commits focused — one logical change per commit.

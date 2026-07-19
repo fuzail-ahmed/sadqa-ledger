@@ -1,0 +1,49 @@
+/*
+ * Tailwind CSS v4 — CSS-first configuration (no tailwind.config.js).
+ *
+ * Compiled by the Tailwind standalone CLI (`make css`) into
+ * web/static/css/output.css, which is embedded into the binary
+ * (see web/static/embed.go).
+ *
+ * Basecoat is intentionally NOT imported here — it's a separately vendored
+ * CDN bundle loaded via its own <link>/<script> tags (see Makefile's
+ * `basecoat` target and docs/TRD.md §4). This file only carries the
+ * project's own Tailwind utilities and design tokens.
+ *
+ * Tokens below mirror docs/UI_UX_BRIEF.md §2 (Color Palette) and also use
+ * Tailwind v4's `--color-*` theme-variable convention, which auto-generates
+ * matching utilities (e.g. `--color-primary` -> `bg-primary`,
+ * `text-primary`, `border-primary`, ...). Naming is kept close to
+ * Basecoat's own semantic tokens (background, foreground, primary, border,
+ * muted-foreground) so the two systems read consistently side by side, per
+ * docs/TRD.md's "Colors are defined as CSS variables so Basecoat/Tailwind
+ * theming stays centralized."
+ */
+
+@import "tailwindcss";
+
+@theme {
+  /* Backgrounds & text */
+  --color-background: #FAF9F6;
+  --color-surface: #FFFFFF;
+  --color-foreground: #1F2422;
+  --color-muted-foreground: #6B7280;
+
+  /* Primary action / links */
+  --color-primary: #0F6B5C;
+  --color-primary-hover: #0B5548;
+
+  /* Financial semantics */
+  --color-income: #0F6B5C;
+  --color-expense: #B4552F;
+  --color-warning: #B8860B;
+  --color-danger: #B3261E;
+
+  /* Structure */
+  --color-border: #E5E1DA;
+
+  /* Typography — system-first stack with Devanagari/Arabic fallback
+     coverage per docs/UI_UX_BRIEF.md §3. */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans",
+    "Noto Sans Devanagari", "Noto Sans Arabic", sans-serif;
+}
