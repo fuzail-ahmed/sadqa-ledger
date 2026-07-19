@@ -179,8 +179,7 @@ func (h *authHandlers) handleLogout(w http.ResponseWriter, r *http.Request) {
 // (list, remove, reset-password) is a Phase 7 deliverable; this ships just
 // enough to satisfy "existing admins can create additional admins" now.
 func (h *authHandlers) handleAdminNewPage(w http.ResponseWriter, r *http.Request) {
-	csrfToken := auth.CSRFToken(w, r, h.cfg.SecureCookies)
-	pages.AdminNew(csrfToken, "", "", pages.AdminNewErrors{}, "").Render(r.Context(), w)
+	pages.AdminNew(h.shellData(w, r, "", "admin_new.heading"), "", "", pages.AdminNewErrors{}, "").Render(r.Context(), w)
 }
 
 func (h *authHandlers) handleAdminNewSubmit(w http.ResponseWriter, r *http.Request) {
@@ -193,23 +192,25 @@ func (h *authHandlers) handleAdminNewSubmit(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	creator := auth.CurrentAdmin(r)
+	lang := creator.LanguagePref
+
 	username := strings.TrimSpace(r.FormValue("username"))
 	displayName := strings.TrimSpace(r.FormValue("display_name"))
 	password := r.FormValue("password")
 
 	var errs pages.AdminNewErrors
 	if username == "" {
-		errs.Username = i18n.T("en", "validation.required")
+		errs.Username = i18n.T(lang, "validation.required")
 	}
 	if displayName == "" {
-		errs.DisplayName = i18n.T("en", "validation.required")
+		errs.DisplayName = i18n.T(lang, "validation.required")
 	}
 	if len(password) < minPasswordLength {
-		errs.Password = i18n.T("en", "validation.password_too_short")
+		errs.Password = i18n.T(lang, "validation.password_too_short")
 	}
 	if errs != (pages.AdminNewErrors{}) {
-		csrfToken := auth.CSRFToken(w, r, h.cfg.SecureCookies)
-		pages.AdminNew(csrfToken, username, displayName, errs, "").Render(r.Context(), w)
+		pages.AdminNew(h.shellData(w, r, "", "admin_new.heading"), username, displayName, errs, "").Render(r.Context(), w)
 		return
 	}
 
@@ -219,16 +220,13 @@ func (h *authHandlers) handleAdminNewSubmit(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	creator := auth.CurrentAdmin(r)
 	if _, err := auth.CreateAdmin(h.conn, username, passwordHash, displayName, creator.ID); err != nil {
-		csrfToken := auth.CSRFToken(w, r, h.cfg.SecureCookies)
-		errs.Username = i18n.T("en", "validation.username_taken")
-		pages.AdminNew(csrfToken, username, displayName, errs, "").Render(r.Context(), w)
+		errs.Username = i18n.T(lang, "validation.username_taken")
+		pages.AdminNew(h.shellData(w, r, "", "admin_new.heading"), username, displayName, errs, "").Render(r.Context(), w)
 		return
 	}
 
-	csrfToken := auth.CSRFToken(w, r, h.cfg.SecureCookies)
-	pages.AdminNew(csrfToken, "", "", pages.AdminNewErrors{}, i18n.T("en", "admin_new.success")).Render(r.Context(), w)
+	pages.AdminNew(h.shellData(w, r, "", "admin_new.heading"), "", "", pages.AdminNewErrors{}, i18n.T(lang, "admin_new.success")).Render(r.Context(), w)
 }
 
 // startSession creates a fresh session and sets the cookie — the single

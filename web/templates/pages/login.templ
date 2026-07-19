@@ -6,7 +6,7 @@ import (
 )
 
 templ Login(csrfToken, username, errorMsg string) {
-	@components.Shell(i18n.T("en", "login.title")) {
+	@components.Shell("en", "ltr", i18n.T("en", "login.title")) {
 		<main class="mx-auto max-w-sm px-6 py-16">
 			<div class="card">
 				<header>

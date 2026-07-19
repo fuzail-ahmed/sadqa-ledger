@@ -12,12 +12,12 @@ type AdminNewErrors struct {
 	Password    string
 }
 
-templ AdminNew(csrfToken, username, displayName string, errs AdminNewErrors, successMsg string) {
-	@components.Shell(i18n.T("en", "admin_new.title")) {
-		<main class="mx-auto max-w-sm px-6 py-16">
+templ AdminNew(d components.AdminShellData, username, displayName string, errs AdminNewErrors, successMsg string) {
+	@components.AdminShell(d) {
+		<div class="mx-auto max-w-sm px-4 py-8">
 			<div class="card">
 				<header>
-					<h2>{ i18n.T("en", "admin_new.heading") }</h2>
+					<h2>{ i18n.T(d.Lang, "admin_new.heading") }</h2>
 				</header>
 				<section>
 					if successMsg != "" {
@@ -26,19 +26,19 @@ templ AdminNew(csrfToken, username, displayName string, errs AdminNewErrors, suc
 						</div>
 					}
 					<form method="post" action="/admins/new" class="grid gap-4">
-						<input type="hidden" name="csrf_token" value={ csrfToken }/>
-						@components.TextField("username", "username", i18n.T("en", "admin_new.username_label"), "text", username, "username", errs.Username)
-						@components.TextField("display_name", "display_name", i18n.T("en", "admin_new.display_name_label"), "text", displayName, "name", errs.DisplayName)
-						@components.TextField("password", "password", i18n.T("en", "admin_new.password_label"), "password", "", "new-password", errs.Password)
+						<input type="hidden" name="csrf_token" value={ d.CSRFToken }/>
+						@components.TextField("username", "username", i18n.T(d.Lang, "admin_new.username_label"), "text", username, "username", errs.Username)
+						@components.TextField("display_name", "display_name", i18n.T(d.Lang, "admin_new.display_name_label"), "text", displayName, "name", errs.DisplayName)
+						@components.TextField("password", "password", i18n.T(d.Lang, "admin_new.password_label"), "password", "", "new-password", errs.Password)
 						<button class="btn w-full min-h-11" data-variant="primary" type="submit">
-							{ i18n.T("en", "admin_new.submit") }
+							{ i18n.T(d.Lang, "admin_new.submit") }
 						</button>
 					</form>
 				</section>
 				<footer>
-					<a href="/">{ i18n.T("en", "admin_new.back_link") }</a>
+					<a href="/">{ i18n.T(d.Lang, "admin_new.back_link") }</a>
 				</footer>
 			</div>
-		</main>
+		</div>
 	}
 }

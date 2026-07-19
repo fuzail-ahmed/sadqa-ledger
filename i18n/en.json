@@ -22,7 +22,21 @@
   "admin_new.success": "Admin account created — share the temporary password with them directly.",
   "admin_new.back_link": "Back to dashboard",
   "common.logout": "Log out",
+  "common.language": "Language",
   "validation.required": "This field is required.",
   "validation.username_taken": "That username is already taken.",
-  "validation.password_too_short": "Password must be at least 8 characters."
+  "validation.password_too_short": "Password must be at least 8 characters.",
+  "nav.dashboard": "Dashboard",
+  "nav.members": "Members",
+  "nav.add_contribution": "Add Contribution",
+  "nav.expenses": "Expenses",
+  "nav.more": "More",
+  "nav.contributions": "Contributions",
+  "nav.summary": "Summary",
+  "nav.settings": "Settings",
+  "nav.export": "Export",
+  "members.new_title": "Add Member",
+  "members.edit_title": "Edit Member",
+  "expenses.new_title": "Add Expense",
+  "placeholder.coming_soon": "Coming soon."
 }

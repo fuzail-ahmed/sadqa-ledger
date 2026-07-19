@@ -1,8 +1,7 @@
 // Package i18n loads translation strings from JSON files (docs/TRD.md §11)
-// and looks them up by key. Phase 2 only ships English content; Hindi and
-// Arabic files/the language switcher land in Phase 3/9
-// (docs/IMPLEMENTATION_PLAN.md) — the lookup already falls back to English
-// so templates never need a hardcoded string in the meantime.
+// and looks them up by key. Phase 2 shipped English only; Phase 3 adds
+// Arabic (RTL) — Hindi follows separately — the lookup falls back to
+// English for any key missing from a translated catalog.
 package i18n
 
 import (
@@ -16,7 +15,7 @@ var filesFS embed.FS
 var catalog = map[string]map[string]string{}
 
 func init() {
-	for _, lang := range []string{"en"} {
+	for _, lang := range []string{"en", "ar"} {
 		data, err := filesFS.ReadFile(lang + ".json")
 		if err != nil {
 			continue

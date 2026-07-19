@@ -1,11 +1,12 @@
 package components
 
-// Shell is the shared HTML document wrapper (head, Tailwind/Basecoat
-// asset links, body) used by every page until the full nav shell lands in
-// Phase 3 (docs/IMPLEMENTATION_PLAN.md).
-templ Shell(title string) {
+// Shell is the shared HTML document wrapper (head, Tailwind/Basecoat asset
+// links, body). lang/dir drive the language switcher and Arabic RTL mirroring
+// (docs/UI_UX_BRIEF.md §8); AdminShell (admin_shell.templ) wraps this with
+// the shared header/bottom nav for authenticated screens.
+templ Shell(lang, dir, title string) {
 	<!DOCTYPE html>
-	<html lang="en">
+	<html lang={ lang } dir={ dir }>
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>

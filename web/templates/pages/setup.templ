@@ -14,7 +14,7 @@ type SetupErrors struct {
 }
 
 templ Setup(csrfToken, groupName, displayName, username string, errs SetupErrors, generalErr string) {
-	@components.Shell(i18n.T("en", "setup.title")) {
+	@components.Shell("en", "ltr", i18n.T("en", "setup.title")) {
 		<main class="mx-auto max-w-sm px-6 py-16">
 			<div class="card">
 				<header>

@@ -1,0 +1,18 @@
+package pages
+
+import (
+	"github.com/fuzail-ahmed/sadqa-ledger/i18n"
+	"github.com/fuzail-ahmed/sadqa-ledger/web/templates/components"
+)
+
+// Placeholder renders a stub screen for a route not yet implemented
+// (docs/IMPLEMENTATION_PLAN.md Phase 3: route scaffolding only — real logic
+// lands in the phase that owns each screen).
+templ Placeholder(d components.AdminShellData, headingKey string) {
+	@components.AdminShell(d) {
+		<div class="mx-auto max-w-xl px-4 py-8">
+			<h1 class="text-xl font-semibold">{ i18n.T(d.Lang, headingKey) }</h1>
+			<p class="text-muted-foreground mt-2">{ i18n.T(d.Lang, "placeholder.coming_soon") }</p>
+		</div>
+	}
+}

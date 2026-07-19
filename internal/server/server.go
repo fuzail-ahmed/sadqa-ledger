@@ -40,8 +40,23 @@ func New(conn *sql.DB, cfg config.Config) http.Handler {
 		r.Use(auth.RequireAuth(conn, cfg.SecureCookies))
 		r.Get("/", h.handleHome)
 		r.Post("/logout", h.handleLogout)
+		r.Post("/lang", h.handleLangSubmit)
 		r.Get("/admins/new", h.handleAdminNewPage)
 		r.Post("/admins/new", h.handleAdminNewSubmit)
+
+		// Route scaffolding for the remaining admin screens
+		// (docs/APP_FLOW.md §0) — placeholder content only, real logic lands
+		// in the phase that owns each screen (docs/IMPLEMENTATION_PLAN.md).
+		r.Get("/members", h.handlePlaceholder("members", "nav.members"))
+		r.Get("/members/new", h.handlePlaceholder("members", "members.new_title"))
+		r.Get("/members/{id}/edit", h.handlePlaceholder("members", "members.edit_title"))
+		r.Get("/contributions", h.handlePlaceholder("more", "nav.contributions"))
+		r.Get("/contributions/new", h.handlePlaceholder("add", "nav.add_contribution"))
+		r.Get("/expenses", h.handlePlaceholder("expenses", "nav.expenses"))
+		r.Get("/expenses/new", h.handlePlaceholder("expenses", "expenses.new_title"))
+		r.Get("/summary", h.handlePlaceholder("more", "nav.summary"))
+		r.Get("/settings", h.handlePlaceholder("more", "nav.settings"))
+		r.Get("/export", h.handlePlaceholder("more", "nav.export"))
 	})
 
 	return r

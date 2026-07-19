@@ -6,15 +6,15 @@ import (
 	"github.com/fuzail-ahmed/sadqa-ledger/web/templates/components"
 )
 
-// Home is the Phase 0 placeholder page, now behind auth (Phase 2). The real
-// Dashboard content lands in Phase 5; this only proves the protected route
-// and login/logout flow work end to end.
-templ Home(displayName, csrfToken string) {
-	@components.Shell(i18n.T("en", "app.name")) {
-		<main class="mx-auto max-w-xl px-6 py-16">
+// Home is the Dashboard route. Phase 3 wraps it in the shared admin shell
+// (header, nav); the real Dashboard content (stat cards, checklist, activity
+// feed) lands in Phase 5.
+templ Home(d components.AdminShellData, displayName string) {
+	@components.AdminShell(d) {
+		<div class="mx-auto max-w-xl px-4 py-8">
 			<div class="card">
 				<header>
-					<h2>{ i18n.T("en", "app.name") }</h2>
+					<h2>{ i18n.T(d.Lang, "app.name") }</h2>
 					<p>Logged in as { displayName }.</p>
 				</header>
 				<section>
@@ -24,16 +24,10 @@ templ Home(displayName, csrfToken string) {
 						both wired up correctly.
 					</p>
 				</section>
-				<footer class="flex gap-2">
+				<footer>
 					<a class="btn min-h-11" data-variant="outline" href="/admins/new">Add admin</a>
-					<form method="post" action="/logout">
-						<input type="hidden" name="csrf_token" value={ csrfToken }/>
-						<button class="btn min-h-11" data-variant="primary" type="submit">
-							{ i18n.T("en", "common.logout") }
-						</button>
-					</form>
 				</footer>
 			</div>
-		</main>
+		</div>
 	}
 }
