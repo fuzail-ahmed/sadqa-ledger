@@ -1,6 +1,6 @@
 # Database Schema — Sadqa Ledger
 
-SQLite in WAL mode, accessed via `database/sql` with no ORM (see `docs/TRD.md` §5). This document is the source of truth for tables, relationships, sessions, permissions, and migrations. Screen-level behavior referencing these tables is in `docs/APP_FLOW.md`.
+SQLite in WAL mode, accessed via `database/sql` with no ORM, using the **`modernc.org/sqlite` driver (pure Go, no cgo)** — see `docs/TRD.md` §5 for the full reasoning. This document is the source of truth for tables, relationships, sessions, permissions, and migrations. Screen-level behavior referencing these tables is in `docs/APP_FLOW.md`.
 
 ## 1. Conventions
 
@@ -8,7 +8,23 @@ SQLite in WAL mode, accessed via `database/sql` with no ORM (see `docs/TRD.md` �
 - All timestamps are stored as `TEXT` in ISO 8601 UTC (`YYYY-MM-DDTHH:MM:SSZ`), SQLite's recommended format for sortable, comparable datetime strings.
 - All tables have an `id INTEGER PRIMARY KEY` (SQLite `rowid` alias), plus `created_at`/`updated_at` audit timestamps where the row can change after creation.
 - Soft deletes: rows that a product-level "Delete" affects (contributions, expenses) are never physically removed; a `deleted_at` column marks them. This preserves the audit trail even for corrected/removed entries (`docs/PRD.md` §5, `docs/APP_FLOW.md` §10 Assumptions). Members are deactivated (`is_active`), never deleted, for the same reason.
-- Foreign keys are enforced (`PRAGMA foreign_keys = ON` set at connection time — SQLite does not enforce FKs by default).
+- Foreign keys are enforced (`PRAGMA foreign_keys = ON` set at connection time — SQLite does not enforce FKs by default). **The exact syntax for setting this depends on the driver — see §1a below.**
+
+### 1a. Connection String / DSN and Pragmas (driver-specific)
+
+`modernc.org/sqlite` uses a **different DSN pragma syntax than `mattn/go-sqlite3`** — this is a real gotcha if anyone copy-pastes a connection string example from elsewhere, so it's called out explicitly here rather than assumed.
+
+`modernc.org/sqlite` accepts a repeatable `_pragma=` query parameter; each occurrence is run as its own `PRAGMA ...` statement at connection time (verified against the driver's own `Driver.Open` documentation on pkg.go.dev):
+
+```
+file:sadqa-ledger.db?_pragma=journal_mode(WAL)&_pragma=foreign_keys(1)&_pragma=busy_timeout(5000)
+```
+
+This is the required connection string form for this project. Do **not** use `mattn/go-sqlite3`-style parameters (e.g. `?_journal_mode=WAL&_foreign_keys=on&_busy_timeout=5000`) — those are a different driver's convention and are silently ignored (not an error) by `modernc.org/sqlite`, which would leave WAL mode and foreign-key enforcement quietly turned off. At minimum, the connection string should set:
+
+- `_pragma=journal_mode(WAL)` — WAL mode, per `docs/TRD.md` §5.
+- `_pragma=foreign_keys(1)` — foreign key enforcement, since SQLite does not enable this by default.
+- `_pragma=busy_timeout(5000)` (or similar) — so concurrent access by 2–3 admins plus the public read page waits briefly for a lock rather than failing immediately.
 
 ## 2. Entity-Relationship Summary
 

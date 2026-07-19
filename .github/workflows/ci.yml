@@ -1,0 +1,58 @@
+# CI for Sadqa Ledger.
+#
+# Deliberately minimal: no deploy job, no release job, no matrix builds yet.
+# Every build step calls a Makefile target rather than inlining commands, so
+# the Makefile stays the single source of truth for how the project builds
+# (see CONTRIBUTING.md and docs/TRD.md).
+#
+# Note: `make setup` isn't used directly here. It creates a local .env file
+# and prints interactive-friendly messages, neither of which CI needs — so
+# there's a dedicated `make ci-setup` target instead (tools + deps only, no
+# .env, no build/generate step, since `make build` below already covers
+# that). See the Makefile's `ci-setup` target for exactly what it skips and
+# why.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true # caches ~/go/pkg/mod and the build cache, keyed on go.sum
+
+      - name: Cache downloaded tools (Tailwind CLI, Basecoat)
+        uses: actions/cache@v4
+        with:
+          path: |
+            .tools
+            web/static/vendor/basecoat
+          # Keyed on the Makefile since that's where TAILWIND_VERSION and
+          # BASECOAT_VERSION are pinned — bumping either invalidates the cache.
+          key: ${{ runner.os }}-tools-${{ hashFiles('Makefile') }}
+          restore-keys: |
+            ${{ runner.os }}-tools-
+
+      - name: CI setup (Go tools, Tailwind CLI, Basecoat, Go module deps)
+        run: make ci-setup
+
+      - name: Lint (gofmt + go vet)
+        run: make lint
+
+      - name: Test
+        run: make test
+
+      - name: Build
+        run: make build

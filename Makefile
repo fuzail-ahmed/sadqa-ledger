@@ -14,10 +14,20 @@
 # ---------------------------------------------------------------------------
 # Pinned tool versions — change here to upgrade
 # ---------------------------------------------------------------------------
+# Verified against each project's real releases on 2026-07-19:
+#   templ:    https://github.com/a-h/templ/releases/latest      -> v0.3.1020
+#   air:      https://github.com/air-verse/air/releases/latest  -> v1.66.0
+#   Tailwind: https://github.com/tailwindlabs/tailwindcss/releases/latest -> v4.3.3
+#   Basecoat: https://basecoatui.com/installation/ (v1.0.2) — its README states
+#             "Tailwind CSS v4 source files and generated CSS bundles", so
+#             Tailwind must be v4 here, not v3. See docs/TRD.md §4 for why
+#             Basecoat and Tailwind are both required (complementary, not
+#             alternatives).
 
-TEMPL_VERSION   := v0.3.833
-AIR_VERSION     := v1.61.7
-TAILWIND_VERSION := v3.4.17
+TEMPL_VERSION    := v0.3.1020
+AIR_VERSION      := v1.66.0
+TAILWIND_VERSION := v4.3.3
+BASECOAT_VERSION := 1.0.2
 
 # Minimum Go version is read from go.mod's `go` directive so it can never drift
 # out of sync with what the module actually requires. Falls back to 1.23 if
@@ -95,16 +105,29 @@ AIR   := $(GOBIN)/air$(EXE)
 TOOLS_DIR    := .tools
 TAILWIND_BIN := $(TOOLS_DIR)/tailwindcss$(EXE)
 
+# Basecoat is vendored (downloaded once, embedded into the binary via Go's
+# `embed` at build time) rather than installed with npm, keeping "no Node.js
+# in the build" true for UI dependencies too. It's a static CSS+JS bundle
+# loaded directly via <link>/<script> tags — decoupled from the Tailwind CLI
+# build entirely, so there's no import-resolution dependency between the two.
+BASECOAT_DIR     := web/static/vendor/basecoat
+BASECOAT_CSS     := $(BASECOAT_DIR)/basecoat.min.css
+BASECOAT_JS      := $(BASECOAT_DIR)/basecoat.min.js
+BASECOAT_CSS_URL := https://cdn.jsdelivr.net/npm/basecoat-css@$(BASECOAT_VERSION)/dist/basecoat.cdn.min.css
+BASECOAT_JS_URL  := https://cdn.jsdelivr.net/npm/basecoat-css@$(BASECOAT_VERSION)/dist/js/all.min.js
+
 BUILD_DIR   := bin
 BINARY_NAME := sadqa-ledger$(EXE)
 
+# Tailwind v4 config lives in CSS itself (`@import "tailwindcss";` and
+# `@theme { ... }` in this file) — there is no tailwind.config.js to wire up.
 CSS_INPUT  := web/static/css/input.css
 CSS_OUTPUT := web/static/css/output.css
 
 .DEFAULT_GOAL := help
 
 .PHONY: help setup dev build test lint fmt templ css migrate clean \
-        check-go install-tools tailwind-cli env-file deps
+        check-go install-tools tailwind-cli basecoat env-file deps ci-setup
 
 # ---------------------------------------------------------------------------
 # Primary targets
@@ -117,18 +140,18 @@ help: ## Show this list of commands
 	@echo ""
 	@echo "New here? Run: make setup   then:   make dev"
 
-setup: check-go install-tools tailwind-cli env-file deps templ css ## Prepare a fresh clone: check Go, install tools, fetch Tailwind CLI, create .env, fetch deps, build once
+setup: check-go install-tools tailwind-cli basecoat env-file deps templ css ## Prepare a fresh clone: check Go, install tools, fetch Tailwind CLI + Basecoat, create .env, fetch deps, build once
 	@echo ""
 	@echo "Setup complete — run 'make dev' to start the app with hot reload."
 	@echo ""
 
-dev: check-go install-tools tailwind-cli env-file deps ## Run the app with hot reload (templ + Tailwind + Go), one terminal, via air
+dev: check-go install-tools tailwind-cli basecoat env-file deps ## Run the app with hot reload (templ + Tailwind + Go), one terminal, via air
 	$(AIR)
 
-build: templ tailwind-cli ## Build a production binary (bin/sadqa-ledger) with minified CSS
+build: templ tailwind-cli basecoat ## Build a production binary (bin/sadqa-ledger) with minified CSS, CGO disabled for a static binary
 	@mkdir -p $(BUILD_DIR)
 	$(TAILWIND_BIN) -i $(CSS_INPUT) -o $(CSS_OUTPUT) --minify
-	go build -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/server
+	CGO_ENABLED=0 go build -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd/server
 	@echo "Built $(BUILD_DIR)/$(BINARY_NAME)"
 
 test: ## Run all Go tests
@@ -216,6 +239,18 @@ tailwind-cli: ## Download the Tailwind standalone CLI for this OS/architecture (
 		echo "Tailwind CLI ready at $(TAILWIND_BIN)"; \
 	fi
 
+basecoat: ## Download Basecoat's CSS + JS bundle, vendored locally (no Node.js/npm; skips if already present)
+	@mkdir -p $(BASECOAT_DIR)
+	@if [ -f "$(BASECOAT_CSS)" ] && [ -f "$(BASECOAT_JS)" ]; then \
+		echo "Basecoat already present at $(BASECOAT_DIR), skipping download."; \
+	else \
+		command -v curl >/dev/null 2>&1 || { echo "curl is required to download Basecoat. Install curl and re-run 'make setup'."; exit 1; }; \
+		echo "Downloading Basecoat $(BASECOAT_VERSION) CSS + JS..."; \
+		curl -sL -o "$(BASECOAT_CSS)" "$(BASECOAT_CSS_URL)"; \
+		curl -sL -o "$(BASECOAT_JS)" "$(BASECOAT_JS_URL)"; \
+		echo "Basecoat ready at $(BASECOAT_DIR)"; \
+	fi
+
 env-file: ## Copy .env.example to .env if .env does not already exist (never overwrites)
 	@if [ -f .env ]; then \
 		echo ".env already exists, leaving it untouched."; \
@@ -226,3 +261,6 @@ env-file: ## Copy .env.example to .env if .env does not already exist (never ove
 
 deps: ## Download Go module dependencies
 	go mod download
+
+ci-setup: check-go install-tools tailwind-cli basecoat deps ## CI-safe subset of setup: no .env creation, no build/generate step (the build/test/lint targets cover that)
+	@echo "CI setup complete."

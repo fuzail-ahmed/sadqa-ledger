@@ -15,7 +15,7 @@ make dev
 
 Then open `http://localhost:8080`. The first run will walk you through creating an admin account and a group name — see [`docs/APP_FLOW.md`](docs/APP_FLOW.md) §First-run setup.
 
-`make setup` verifies your Go version, installs `templ` and `air` (pinned versions, via `go install`), downloads the Tailwind standalone CLI for your OS/architecture into a local `.tools/` folder, creates your `.env` from `.env.example` (never overwriting one that already exists), downloads Go module dependencies, and builds once so you know it all works. It's safe to run more than once.
+`make setup` verifies your Go version, installs `templ` and `air` (pinned versions, via `go install`), downloads the Tailwind standalone CLI **v4** for your OS/architecture into a local `.tools/` folder, downloads Basecoat's CSS/JS bundle into `web/static/vendor/basecoat/` (vendored, not npm-installed — see [`docs/TRD.md`](docs/TRD.md) §4), creates your `.env` from `.env.example` (never overwriting one that already exists), downloads Go module dependencies, and builds once so you know it all works. It's safe to run more than once.
 
 `make dev` runs the app with hot reload via [air](https://github.com/air-verse/air): saving a `.go`, `.templ`, `.css`, or i18n `.json` file regenerates templ, rebuilds the CSS, and rebuilds/restarts the server automatically. One terminal, no watch script in a second window.
 
