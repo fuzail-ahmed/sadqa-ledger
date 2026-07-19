@@ -37,6 +37,7 @@ func New(conn *sql.DB, cfg config.Config) http.Handler {
 	r.Post("/setup", h.handleSetupSubmit)
 	r.Get("/login", h.handleLoginPage)
 	r.Post("/login", h.handleLoginSubmit)
+	r.Get("/p/{token}", h.handlePublicPage)
 
 	// Admin routes, behind session auth (docs/SCHEMA.md §6).
 	r.Group(func(r chi.Router) {
@@ -67,8 +68,13 @@ func New(conn *sql.DB, cfg config.Config) http.Handler {
 		r.Get("/expenses/new", h.handleExpenseNewPage)
 		r.Post("/expenses/new", h.handleExpenseNewSubmit)
 		r.Post("/expenses/{id}/delete", h.handleExpenseDelete)
-		r.Get("/summary", h.handlePlaceholder("more", "nav.summary"))
-		r.Get("/settings", h.handlePlaceholder("more", "nav.settings"))
+		r.Get("/summary", h.handleSummaryPage)
+		r.Get("/summary/generate", h.handleSummaryGenerate)
+		r.Get("/settings", h.handleSettingsPage)
+		r.Post("/settings/privacy", h.handleSettingsPrivacySubmit)
+		r.Post("/settings/regenerate-token", h.handleSettingsTokenRegenerateSubmit)
+		r.Post("/settings/info", h.handleSettingsInfoSubmit)
+		r.Post("/settings/language", h.handleSettingsLanguageSubmit)
 		r.Get("/export", h.handlePlaceholder("more", "nav.export"))
 	})
 

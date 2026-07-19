@@ -1,0 +1,131 @@
+package pages
+
+import (
+	"fmt"
+	"github.com/fuzail-ahmed/sadqa-ledger/internal/dashboard"
+	"github.com/fuzail-ahmed/sadqa-ledger/internal/settings"
+)
+
+func formatMoneyPublic(amountMinor int64, symbol string) string {
+	if amountMinor % 100 == 0 {
+		return fmt.Sprintf("%s%d", symbol, amountMinor/100)
+	}
+	return fmt.Sprintf("%s%.2f", symbol, float64(amountMinor)/100.0)
+}
+
+// PublicPage renders the read-only transparency page (docs/APP_FLOW.md §9).
+templ PublicPage(
+	lang string,
+	dir string,
+	gs *settings.GroupSettings,
+	data *dashboard.DashboardData,
+) {
+	<!DOCTYPE html>
+	<html lang={ lang } dir={ dir }>
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<!-- Prevent search engines from indexing the page (docs/TRD.md §9) -->
+			<meta name="robots" content="noindex, nofollow"/>
+			<title>{ gs.GroupName } — Transparency Page</title>
+			<link rel="stylesheet" href="/static/vendor/basecoat/basecoat.min.css"/>
+			<link rel="stylesheet" href="/static/css/output.css"/>
+		</head>
+		<body class="bg-background text-foreground font-sans min-h-screen flex flex-col justify-between">
+			<div class="mx-auto max-w-xl w-full px-4 py-8 flex flex-col gap-6">
+				<!-- Header -->
+				<header class="text-center">
+					<h1 class="text-2xl font-bold text-foreground">{ gs.GroupName }</h1>
+					<p class="text-sm text-muted-foreground mt-1">Public Transparency Ledger</p>
+				</header>
+
+				<!-- Balance and monthly stats -->
+				<div class="grid grid-cols-2 gap-4">
+					<!-- Current Balance -->
+					<div class="card p-4 flex flex-col gap-1 col-span-2 text-center bg-surface border-primary border-2">
+						<span class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+							Current Balance / बाकी
+						</span>
+						<span class="text-3xl font-extrabold font-mono text-income">
+							{ formatMoneyPublic(data.CurrentBalance, gs.CurrencySymbol) }
+						</span>
+					</div>
+
+					<!-- This Month's Collection -->
+					<div class="card p-4 flex flex-col gap-1">
+						<span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+							This Month Collected / जमा
+						</span>
+						<span class="text-xl font-bold font-mono text-income">
+							{ formatMoneyPublic(data.ThisMonthCollected, gs.CurrencySymbol) }
+						</span>
+					</div>
+
+					<!-- All-Time Expenses -->
+					<div class="card p-4 flex flex-col gap-1">
+						<span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+							Total Expenses / खर्च
+						</span>
+						<span class="text-xl font-bold font-mono text-expense">
+							{ formatMoneyPublic(data.AllTimeExpenses, gs.CurrencySymbol) }
+						</span>
+					</div>
+				</div>
+
+				<!-- Recent Activity Feed -->
+				<div class="card">
+					<header class="p-4 border-b border-border">
+						<h2 class="text-lg font-semibold">Recent Financial Activity</h2>
+					</header>
+					<section class="p-2">
+						if len(data.RecentActivity) == 0 {
+							<p class="p-4 text-center text-muted-foreground text-sm">No activity recorded yet.</p>
+						} else {
+							<ul class="flex flex-col gap-2" role="list">
+								for _, act := range data.RecentActivity {
+									<li class="flex flex-col gap-0.5 p-2 border-b border-border last:border-none">
+										<div class="flex items-center justify-between gap-2">
+											<span class="font-medium text-sm text-foreground">
+												if act.Type == "contribution" {
+													if gs.ShowNamesPublicly {
+														{ "Deposit from " + act.Detail }
+													} else {
+														{ "Deposit" }
+													}
+												} else {
+													{ "Expense: " + act.Detail }
+												}
+											</span>
+											<span class="font-mono text-sm font-semibold" if act.Type == "contribution" { data-variant="income" } else { data-variant="expense" }>
+												if act.Type == "contribution" {
+													{ "+" + formatMoneyPublic(act.AmountMinor, gs.CurrencySymbol) }
+												} else {
+													{ "-" + formatMoneyPublic(act.AmountMinor, gs.CurrencySymbol) }
+												}
+											</span>
+										</div>
+										<div class="text-xs text-muted-foreground font-mono">
+											{ act.CreatedAt[:10] }
+										</div>
+									</li>
+								}
+							</ul>
+						}
+					</section>
+				</div>
+			</div>
+
+			<!-- Footer with Privacy Policy link -->
+			<footer class="border-t border-border py-4 text-center text-xs text-muted-foreground w-full">
+				<p>© { gs.GroupName } Sadqa Ledger. All rights reserved.</p>
+				if gs.PrivacyPolicyURL != nil && *gs.PrivacyPolicyURL != "" {
+					<p class="mt-1">
+						<a href={ templ.URL(*gs.PrivacyPolicyURL) } target="_blank" rel="noopener noreferrer" class="underline hover:text-foreground">
+							Privacy Policy
+						</a>
+					</p>
+				}
+			</footer>
+		</body>
+	</html>
+}

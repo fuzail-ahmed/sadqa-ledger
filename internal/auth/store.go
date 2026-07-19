@@ -144,3 +144,22 @@ func CreateGroupInSetup(conn *sql.DB, username, passwordHash, displayName, group
 	}
 	return adminID, nil
 }
+
+// ListAdmins returns all admin accounts, active or not (for settings management).
+func ListAdmins(conn *sql.DB) ([]Admin, error) {
+	rows, err := conn.Query(`SELECT id, username, password_hash, display_name, language_pref FROM admins ORDER BY username`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var list []Admin
+	for rows.Next() {
+		var a Admin
+		if err := rows.Scan(&a.ID, &a.Username, &a.PasswordHash, &a.DisplayName, &a.LanguagePref); err != nil {
+			return nil, err
+		}
+		list = append(list, a)
+	}
+	return list, rows.Err()
+}

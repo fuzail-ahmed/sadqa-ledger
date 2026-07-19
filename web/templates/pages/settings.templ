@@ -1,0 +1,255 @@
+package pages
+
+import (
+	"fmt"
+	"strings"
+	"github.com/fuzail-ahmed/sadqa-ledger/i18n"
+	"github.com/fuzail-ahmed/sadqa-ledger/internal/auth"
+	"github.com/fuzail-ahmed/sadqa-ledger/internal/settings"
+	"github.com/fuzail-ahmed/sadqa-ledger/web/templates/components"
+)
+
+// Settings renders the full settings manager dashboard.
+templ Settings(
+	d components.AdminShellData,
+	gs *settings.GroupSettings,
+	admins []auth.Admin,
+	baseUrl string,
+	toastMsg string,
+) {
+	@components.AdminShell(d) {
+		<div class="mx-auto max-w-xl px-4 py-8 flex flex-col gap-6">
+			<h1 class="text-2xl font-bold text-foreground">{ i18n.T(d.Lang, "nav.settings") }</h1>
+
+			if toastMsg != "" {
+				<div class="alert" data-variant="success" role="status">
+					<p>{ toastMsg }</p>
+				</div>
+			}
+
+			<!-- 1. Privacy Toggle Section -->
+			<div class="card" id="privacy-section">
+				@SettingsPrivacy(d.Lang, d.CSRFToken, gs.ShowNamesPublicly, "")
+			</div>
+
+			<!-- 2. Public Link & Regeneration Section -->
+			<div class="card" id="public-link-section">
+				@SettingsPublicLink(d.Lang, d.CSRFToken, gs.PublicToken, baseUrl, "")
+			</div>
+
+			<!-- 3. Group Info Section -->
+			<div class="card" id="group-info-section">
+				@SettingsGroupInfo(d.Lang, d.CSRFToken, gs, "")
+			</div>
+
+			<!-- 4. Admins Section -->
+			<div class="card">
+				<header class="p-4 border-b border-border flex items-center justify-between">
+					<h2 class="text-lg font-semibold">{ i18n.T(d.Lang, "admin_new.heading") }s</h2>
+					<a class="btn" data-size="sm" href="/admins/new">+ Add Admin</a>
+				</header>
+				<section class="p-4">
+					<ul class="flex flex-col gap-2" role="list">
+						for _, admin := range admins {
+							<li class="flex items-center justify-between p-2 border-b border-border last:border-none">
+								<div>
+									<span class="font-medium">{ admin.DisplayName }</span>
+									<span class="text-xs text-muted-foreground ml-2 font-mono">({ admin.Username })</span>
+								</div>
+								<span class="badge" data-variant="outline">{ admin.LanguagePref }</span>
+							</li>
+						}
+					</ul>
+				</section>
+			</div>
+
+			<!-- 5. Default Public Language Section -->
+			<div class="card" id="language-section">
+				@SettingsLanguage(d.Lang, d.CSRFToken, gs.DefaultPublicLanguage, "")
+			</div>
+		</div>
+	}
+}
+
+// SettingsPrivacy renders the privacy toggle segment.
+templ SettingsPrivacy(lang, csrfToken string, showNames bool, toast string) {
+	<header class="p-4 border-b border-border">
+		<h2 class="text-lg font-semibold">Privacy Settings</h2>
+	</header>
+	<section class="p-4">
+		<form 
+			method="post" 
+			action="/settings/privacy" 
+			hx-post="/settings/privacy" 
+			hx-target="#privacy-section" 
+			hx-swap="innerHTML"
+			class="grid gap-4"
+			data-confirm="Turning this on will show member names next to amounts on the public page and in summaries. Proceed?"
+		>
+			<input type="hidden" name="csrf_token" value={ csrfToken }/>
+			if toast != "" {
+				<div class="alert text-sm py-1" data-variant="success" role="status"><p>{ toast }</p></div>
+			}
+			<label class="flex items-center gap-2 cursor-pointer min-h-11">
+				<input 
+					type="checkbox" 
+					name="show_names_publicly" 
+					value="1" 
+					if showNames { checked }
+				/>
+				<span>Show contributor names publicly (default OFF)</span>
+			</label>
+			<button class="btn w-full" data-variant="primary" type="submit">Save Privacy Settings</button>
+		</form>
+	</section>
+}
+
+// SettingsPublicLink renders the public link card.
+templ SettingsPublicLink(lang, csrfToken, publicToken, baseUrl, toast string) {
+	{{ publicUrl := fmt.Sprintf("%s/p/%s", baseUrl, publicToken) }}
+	<header class="p-4 border-b border-border">
+		<h2 class="text-lg font-semibold">Public Link</h2>
+	</header>
+	<section class="p-4 grid gap-4">
+		if toast != "" {
+			<div class="alert text-sm py-1" data-variant="success" role="status"><p>{ toast }</p></div>
+		}
+		<div class="field">
+			<label class="label">Public Transparency Page URL</label>
+			<div class="flex gap-2">
+				<input class="input font-mono min-h-11 flex-1" type="text" id="public-url-input" value={ publicUrl } readonly/>
+				<button 
+					type="button" 
+					class="btn" 
+					data-variant="outline"
+					onclick="navigator.clipboard.writeText(document.getElementById('public-url-input').value)"
+				>
+					Copy
+				</button>
+			</div>
+		</div>
+		<form 
+			method="post" 
+			action="/settings/regenerate-token" 
+			hx-post="/settings/regenerate-token" 
+			hx-target="#public-link-section" 
+			hx-swap="innerHTML"
+			data-confirm="The old link will stop working immediately. Regenerate public URL?"
+		>
+			<input type="hidden" name="csrf_token" value={ csrfToken }/>
+			<button class="btn w-full" data-variant="outline" type="submit">
+				Regenerate public link
+			</button>
+		</form>
+	</section>
+}
+
+// SettingsGroupInfo renders the group info editor card.
+templ SettingsGroupInfo(lang, csrfToken string, gs *settings.GroupSettings, toast string) {
+	{{
+		// Join quick amounts with commas for form presentation
+		var amounts []string
+		for _, v := range gs.QuickAmountsMinor {
+			amounts = append(amounts, fmt.Sprintf("%d", v/100))
+		}
+		amountsStr := strings.Join(amounts, ", ")
+		
+		var privacyPolicyUrl string
+		if gs.PrivacyPolicyURL != nil {
+			privacyPolicyUrl = *gs.PrivacyPolicyURL
+		}
+	}}
+	<header class="p-4 border-b border-border">
+		<h2 class="text-lg font-semibold">Group & Masjid Information</h2>
+	</header>
+	<section class="p-4">
+		<form 
+			method="post" 
+			action="/settings/info" 
+			hx-post="/settings/info" 
+			hx-target="#group-info-section" 
+			hx-swap="innerHTML"
+			class="grid gap-4"
+		>
+			<input type="hidden" name="csrf_token" value={ csrfToken }/>
+			if toast != "" {
+				<div class="alert text-sm py-1" data-variant="success" role="status"><p>{ toast }</p></div>
+			}
+
+			<!-- Group Name -->
+			<div class="field">
+				<label class="label" for="group_name">Group / Masjid Name</label>
+				<input class="input min-h-11" type="text" id="group_name" name="group_name" value={ gs.GroupName } required/>
+			</div>
+
+			<div class="grid grid-cols-2 gap-4">
+				<!-- Currency Code -->
+				<div class="field">
+					<label class="label" for="currency_code">Currency Code (e.g. INR)</label>
+					<input class="input min-h-11 font-mono" type="text" id="currency_code" name="currency_code" value={ gs.CurrencyCode } required/>
+				</div>
+				<!-- Currency Symbol -->
+				<div class="field">
+					<label class="label" for="currency_symbol">Symbol (e.g. ₹)</label>
+					<input class="input min-h-11 font-mono" type="text" id="currency_symbol" name="currency_symbol" value={ gs.CurrencySymbol } required/>
+				</div>
+			</div>
+
+			<!-- Quick amounts chips (minor units, comma-separated major) -->
+			<div class="field">
+				<label class="label" for="quick_amounts">Quick Amounts (comma separated, e.g. 200, 500, 1000, 2000)</label>
+				<input class="input min-h-11 font-mono" type="text" id="quick_amounts" name="quick_amounts" value={ amountsStr } required/>
+			</div>
+
+			<!-- Privacy Policy URL -->
+			<div class="field">
+				<label class="label" for="privacy_policy_url">Privacy Policy URL (e.g., operator's policy page link)</label>
+				<input class="input min-h-11" type="url" id="privacy_policy_url" name="privacy_policy_url" value={ privacyPolicyUrl } placeholder="https://example.com/privacy"/>
+			</div>
+
+			<button class="btn w-full" data-variant="primary" type="submit">Save Group Settings</button>
+		</form>
+	</section>
+}
+
+// SettingsLanguage renders the default public language form.
+templ SettingsLanguage(lang, csrfToken string, defaultPublicLanguage string, toast string) {
+	<header class="p-4 border-b border-border">
+		<h2 class="text-lg font-semibold">Public Page Default Language</h2>
+	</header>
+	<section class="p-4">
+		<form 
+			method="post" 
+			action="/settings/language" 
+			hx-post="/settings/language" 
+			hx-target="#language-section" 
+			hx-swap="innerHTML"
+			class="grid gap-4"
+		>
+			<input type="hidden" name="csrf_token" value={ csrfToken }/>
+			if toast != "" {
+				<div class="alert text-sm py-1" data-variant="success" role="status"><p>{ toast }</p></div>
+			}
+
+			<fieldset class="field">
+				<legend class="label">Choose Default Language for Public Viewers</legend>
+				<div class="flex gap-4">
+					<label class="flex items-center gap-2 cursor-pointer">
+						<input type="radio" name="default_public_language" value="en" if defaultPublicLanguage == "en" { checked }/>
+						<span>English (EN)</span>
+					</label>
+					<label class="flex items-center gap-2 cursor-pointer">
+						<input type="radio" name="default_public_language" value="hi" if defaultPublicLanguage == "hi" { checked }/>
+						<span>Hindi (HI)</span>
+					</label>
+					<label class="flex items-center gap-2 cursor-pointer">
+						<input type="radio" name="default_public_language" value="ar" if defaultPublicLanguage == "ar" { checked }/>
+						<span>Arabic (AR)</span>
+					</label>
+				</div>
+			</fieldset>
+
+			<button class="btn w-full" data-variant="primary" type="submit">Save Language Settings</button>
+		</form>
+	</section>
+}

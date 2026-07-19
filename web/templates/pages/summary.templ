@@ -1,0 +1,91 @@
+package pages
+
+import (
+	"github.com/fuzail-ahmed/sadqa-ledger/i18n"
+	"github.com/fuzail-ahmed/sadqa-ledger/web/templates/components"
+)
+
+// Summary renders the monthly summary generation screen.
+templ Summary(
+	d components.AdminShellData,
+	currentMonth string,
+	summaryText string,
+) {
+	@components.AdminShell(d) {
+		<div class="mx-auto max-w-xl px-4 py-8 flex flex-col gap-6">
+			<div class="card">
+				<header>
+					<h2>{ i18n.T(d.Lang, "nav.summary") }</h2>
+				</header>
+				<section class="grid gap-4">
+					<!-- Month Picker -->
+					<div class="field">
+						<label class="label" for="summary_month">Select Month</label>
+						<input
+							class="input min-h-11"
+							type="month"
+							id="summary_month"
+							name="summary_month"
+							value={ currentMonth }
+							hx-get="/summary/generate"
+							hx-trigger="change"
+							hx-target="#summary-preview-container"
+							hx-swap="innerHTML"
+						/>
+					</div>
+
+					<!-- Preview Container -->
+					<div id="summary-preview-container">
+						@SummaryPreview(summaryText)
+					</div>
+				</section>
+			</div>
+		</div>
+	}
+}
+
+// SummaryPreview renders the preview text area, copy button, and success banner.
+templ SummaryPreview(text string) {
+	<div class="grid gap-4">
+		<div class="field">
+			<label class="label" for="summary_text">WhatsApp Summary Preview</label>
+			<textarea
+				id="summary_text"
+				name="summary_text"
+				rows="12"
+				readonly
+				class="input font-mono w-full p-3 bg-muted border border-border rounded text-sm whitespace-pre"
+			>{ text }</textarea>
+		</div>
+
+		<div class="flex flex-col gap-2">
+			<!-- Copy to Clipboard Button -->
+			<button
+				type="button"
+				class="btn w-full"
+				data-variant="primary"
+				onclick="
+					navigator.clipboard.writeText(document.getElementById('summary_text').value)
+						.then(() => {
+							var toast = document.getElementById('copy-success-toast');
+							toast.classList.remove('hidden');
+							setTimeout(() => { toast.classList.add('hidden'); }, 3000);
+						})
+						.catch(() => {
+							alert('Could not copy automatically. Please select the text inside the preview box and copy manually.');
+						});
+				"
+			>
+				Copy to Clipboard
+			</button>
+			<p class="text-xs text-muted-foreground text-center">
+				Or select the text inside the box above, right click, and copy manually.
+			</p>
+			
+			<!-- Hidden Success Alert -->
+			<div id="copy-success-toast" class="alert hidden" data-variant="success" role="status">
+				<p>Copied summary to clipboard!</p>
+			</div>
+		</div>
+	</div>
+}
