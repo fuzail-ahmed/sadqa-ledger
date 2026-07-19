@@ -29,17 +29,17 @@ templ ContributionNew(
 		<div class="mx-auto max-w-sm px-4 py-8">
 			<div id="toast-container">
 				if toastMsg != "" {
-					<div class="alert mb-4" data-variant="success" role="status" aria-live="polite">
+					<div class="alert mb-4 shadow-sm" data-variant="success" role="status" aria-live="polite">
 						<p>{ toastMsg }</p>
 					</div>
 				}
 			</div>
 
-			<div class="card">
-				<header>
-					<h2>{ i18n.T(d.Lang, "nav.add_contribution") }</h2>
+			<div class="card border border-border/50 shadow-md">
+				<header class="p-4 border-b border-border">
+					<h2 class="text-lg font-bold text-foreground">{ i18n.T(d.Lang, "nav.add_contribution") }</h2>
 				</header>
-				<section>
+				<section class="p-4">
 					<form
 						id="contribution-form"
 						method="post"
@@ -55,7 +55,7 @@ templ ContributionNew(
 							@ContributionFormContent(d.Lang, quickAmounts, currencySymbol, currentMonth, currentDate, selectedMember, amount, errs)
 						</div>
 
-						<button class="btn min-h-11 w-full" data-variant="primary" type="submit">
+						<button class="btn min-h-11 w-full text-sm font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none mt-2" data-variant="primary" type="submit">
 							{ i18n.T(d.Lang, "members.save") }
 						</button>
 					</form>
@@ -78,15 +78,14 @@ templ ContributionFormContent(
 ) {
 	<!-- Member Selection -->
 	<div id="member-search-container" class="field">
-		<label class="label">{ i18n.T(lang, "members.name_label") }</label>
+		<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for="member_search">{ i18n.T(lang, "members.name_label") }</label>
 		if selectedMember != nil {
-			<div class="flex min-h-11 items-center justify-between gap-2 rounded-md border border-border bg-muted p-2">
-				<span class="font-medium text-foreground">{ selectedMember.Name }</span>
+			<div class="flex min-h-11 items-center justify-between gap-2 rounded-md border border-border bg-muted/30 p-2">
+				<span class="font-semibold text-sm text-foreground px-1">{ selectedMember.Name }</span>
 				<input type="hidden" name="member_id" value={ fmt.Sprintf("%d", selectedMember.ID) }/>
 				<button
 					type="button"
-					class="btn"
-					data-size="sm"
+					class="btn px-3 py-1.5 text-xs min-h-11 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
 					data-variant="outline"
 					hx-get="/contributions/clear-member"
 					hx-target="#member-search-container"
@@ -96,20 +95,26 @@ templ ContributionFormContent(
 				</button>
 			</div>
 		} else {
-			<input
-				class="input min-h-11"
-				type="search"
-				id="member_search"
-				name="member_search"
-				placeholder={ i18n.T(lang, "members.search_placeholder") }
-				hx-get="/contributions/search-members"
-				hx-trigger="input changed delay:200ms, search"
-				hx-target="#member-search-results"
-			/>
-			<div id="member-search-results" class="mt-1 max-h-48 overflow-y-auto rounded border border-border empty:border-none empty:p-0 bg-surface"></div>
+			<div class="relative">
+				<input
+					class="input min-h-11 w-full focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
+					type="search"
+					id="member_search"
+					name="member_search"
+					placeholder={ i18n.T(lang, "members.search_placeholder") }
+					hx-get="/contributions/search-members"
+					hx-trigger="input changed delay:200ms, search"
+					hx-target="#member-search-results"
+					required
+				/>
+			</div>
+			<div id="member-search-results" class="mt-1 max-h-48 overflow-y-auto rounded-md border border-border empty:border-none empty:p-0 bg-surface shadow-md"></div>
 		}
 		if errs.Member != "" {
-			<p class="mt-1 text-sm text-destructive" role="alert">{ errs.Member }</p>
+			<p class="mt-1 text-xs text-destructive flex items-center gap-1 font-medium" role="alert">
+				@components.IconAlertCircle("h-4 w-4 flex-shrink-0")
+				{ errs.Member }
+			</p>
 		}
 	</div>
 
@@ -122,11 +127,9 @@ templ ContributionFormContent(
 
 	<!-- Amount Field -->
 	<div class="field">
-		<label class="label" for="amount">{ i18n.T(lang, "login.password_label") /* standard amount/label fallback or key */ }</label>
-		<!-- Custom key if missing: we can use a custom title or translation fallbacks -->
-		<label class="label" for="amount">Amount ({ currencySymbol })</label>
+		<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for="amount">Amount ({ currencySymbol })</label>
 		<input
-			class="input min-h-11 font-mono"
+			class="input min-h-11 font-mono focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
 			type="text"
 			inputmode="numeric"
 			pattern="[0-9]*"
@@ -140,18 +143,20 @@ templ ContributionFormContent(
 			}
 		/>
 		if errs.Amount != "" {
-			<p id="amount-error" class="mt-1 text-sm text-destructive" role="alert">{ errs.Amount }</p>
+			<p id="amount-error" class="mt-1 text-xs text-destructive flex items-center gap-1 font-medium" role="alert">
+				@components.IconAlertCircle("h-4 w-4 flex-shrink-0")
+				{ errs.Amount }
+			</p>
 		}
 
 		<!-- Quick-Amount Chips -->
 		if len(quickAmounts) > 0 {
-			<div class="mt-2 flex flex-wrap gap-2">
+			<div class="mt-2.5 flex flex-wrap gap-2">
 				for _, valMinor := range quickAmounts {
 					{{ valMajor := valMinor / 100 }}
 					<button
 						type="button"
-						class="btn"
-						data-size="sm"
+						class="btn min-h-11 px-4 py-2 text-xs font-semibold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none border border-border/80"
 						data-variant="outline"
 						onclick={ templ.ComponentScript{
 							Name: "fillAmount",
@@ -167,9 +172,9 @@ templ ContributionFormContent(
 
 	<!-- Month Selection -->
 	<div class="field">
-		<label class="label" for="contribution_month">Contribution Month</label>
+		<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for="contribution_month">Contribution Month</label>
 		<input
-			class="input min-h-11"
+			class="input min-h-11 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
 			type="month"
 			id="contribution_month"
 			name="contribution_month"
@@ -184,9 +189,9 @@ templ ContributionFormContent(
 
 	<!-- Date Paid -->
 	<div class="field">
-		<label class="label" for="paid_on">Date Paid</label>
+		<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for="paid_on">Date Paid</label>
 		<input
-			class="input min-h-11"
+			class="input min-h-11 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
 			type="date"
 			id="paid_on"
 			name="paid_on"
@@ -199,20 +204,20 @@ templ ContributionFormContent(
 // ContributionSearchResults renders the matching members search results.
 templ ContributionSearchResults(lang string, list []members.Member, currentMonth string) {
 	if len(list) == 0 {
-		<div class="p-2 text-sm text-muted-foreground">{ i18n.T(lang, "members.empty") }</div>
+		<div class="p-4 text-sm text-center text-muted-foreground">{ i18n.T(lang, "members.no_results") }</div>
 	} else {
 		for _, m := range list {
 			<button
 				type="button"
-				class="flex w-full items-center justify-between p-2 text-start hover:bg-muted focus:bg-muted focus:outline-none"
+				class="flex w-full items-center justify-between p-3 min-h-11 text-start hover:bg-muted focus:bg-muted focus:outline-none text-sm font-semibold border-b border-border/50 last:border-none"
 				hx-get={ string(templ.URL(fmt.Sprintf("/contributions/select-member?id=%d", m.ID))) }
 				hx-include="[name=contribution_month]"
 				hx-target="#member-search-container"
 				hx-swap="outerHTML"
 			>
-				<span>{ m.Name }</span>
+				<span class="text-foreground">{ m.Name }</span>
 				if !m.IsActive {
-					<span class="badge" data-variant="outline">{ i18n.T(lang, "members.status_inactive") }</span>
+					<span class="badge py-0.5 px-2 text-[9px] font-bold uppercase tracking-wider" data-variant="warning">{ i18n.T(lang, "members.status_inactive") }</span>
 				}
 			</button>
 		}
@@ -222,8 +227,9 @@ templ ContributionSearchResults(lang string, list []members.Member, currentMonth
 // ContributionDuplicateCheck renders the duplicate warning if exists.
 templ ContributionDuplicateCheck(lang string, showWarning bool, memberName string, month string) {
 	if showWarning {
-		<div class="alert text-sm" data-variant="warning" role="alert">
-			<p>
+		<div class="alert text-xs p-3 flex items-start gap-2 shadow-sm border border-warning/30" data-variant="warning" role="alert">
+			@components.IconAlertCircle("h-5 w-5 text-warning flex-shrink-0 mt-0.5")
+			<p class="font-medium">
 				{ fmt.Sprintf("%s already has a payment logged for %s — this will be added as a second entry.", memberName, month) }
 			</p>
 		</div>

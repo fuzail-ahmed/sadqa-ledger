@@ -8,22 +8,25 @@ import (
 templ Login(csrfToken, username, errorMsg string) {
 	@components.Shell("en", "ltr", i18n.T("en", "login.title")) {
 		<main class="mx-auto max-w-sm px-6 py-16">
-			<div class="card">
-				<header>
-					<h2>{ i18n.T("en", "app.name") }</h2>
+			<div class="card border border-border/50 shadow-lg">
+				<header class="p-4 border-b border-border text-center">
+					<h1 class="text-xl font-extrabold text-foreground tracking-tight">{ i18n.T("en", "app.name") }</h1>
 				</header>
-				<section>
+				<section class="p-4">
 					if errorMsg != "" {
-						<div class="alert" data-variant="destructive" role="alert">
-							<p>{ errorMsg }</p>
+						<div class="alert text-xs flex items-center gap-2 p-3 mb-4 shadow-sm border border-destructive/20" data-variant="destructive" role="alert">
+							@components.IconAlertCircle("h-5 w-5 text-destructive flex-shrink-0")
+							<p class="font-medium">{ errorMsg }</p>
 						</div>
 					}
 					<form method="post" action="/login" class="grid gap-4">
 						<input type="hidden" name="csrf_token" value={ csrfToken }/>
+						
+						<!-- Username -->
 						<div class="field">
-							<label class="label" for="username">{ i18n.T("en", "login.username_label") }</label>
+							<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for="username">{ i18n.T("en", "login.username_label") }</label>
 							<input
-								class="input min-h-11"
+								class="input min-h-11 w-full focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
 								type="text"
 								id="username"
 								name="username"
@@ -33,10 +36,12 @@ templ Login(csrfToken, username, errorMsg string) {
 								required
 							/>
 						</div>
+
+						<!-- Password -->
 						<div class="field">
-							<label class="label" for="password">{ i18n.T("en", "login.password_label") }</label>
+							<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for="password">{ i18n.T("en", "login.password_label") }</label>
 							<input
-								class="input min-h-11"
+								class="input min-h-11 w-full focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
 								type="password"
 								id="password"
 								name="password"
@@ -44,7 +49,8 @@ templ Login(csrfToken, username, errorMsg string) {
 								required
 							/>
 						</div>
-						<button class="btn w-full min-h-11" data-variant="primary" type="submit">
+
+						<button class="btn w-full min-h-11 text-sm font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none mt-2" data-variant="primary" type="submit">
 							{ i18n.T("en", "login.submit") }
 						</button>
 					</form>

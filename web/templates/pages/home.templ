@@ -28,100 +28,131 @@ templ Home(
 			<!-- Header Info -->
 			<header class="flex items-center justify-between gap-4">
 				<div>
-					<h1 class="text-2xl font-bold text-foreground">{ groupName }</h1>
-					<p class="text-sm text-muted-foreground">{ currentMonthLabel } • Welcome, { displayName }</p>
+					<h1 class="text-xl font-extrabold text-foreground tracking-tight">{ groupName }</h1>
+					<p class="text-xs text-muted-foreground mt-0.5">{ currentMonthLabel } • Welcome, { displayName }</p>
 				</div>
-				<a class="btn" data-variant="primary" href="/contributions/new">
+				<a class="btn min-h-11 flex items-center justify-center px-4 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" data-variant="primary" href="/contributions/new">
 					+ { i18n.T(d.Lang, "nav.add_contribution") }
 				</a>
 			</header>
 
-			<!-- 2x2 Stats Grid -->
+			<!-- 2x2 Stats Grid with Visual Icons -->
 			<div class="grid grid-cols-2 gap-4">
 				<!-- This Month Collected -->
-				<div class="card p-4 flex flex-col gap-1">
-					<span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-						This Month / जमा
-					</span>
-					<span class="text-2xl font-semibold font-mono text-income">
-						{ formatMoney(data.ThisMonthCollected, currencySymbol) }
-					</span>
+				<div class="card p-4 flex items-center justify-between gap-4 border border-border/50 hover:shadow-md transition-shadow duration-200">
+					<div class="flex flex-col gap-1 min-w-0">
+						<span class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider truncate">
+							This Month / जमा
+						</span>
+						<span class="text-xl font-bold font-mono text-income tracking-tight truncate">
+							{ formatMoney(data.ThisMonthCollected, currencySymbol) }
+						</span>
+					</div>
+					<div class="p-2.5 bg-income/10 rounded-full flex-shrink-0 text-income">
+						@components.IconArrowDownRight("h-5 w-5")
+					</div>
 				</div>
 
 				<!-- All-Time Collected -->
-				<div class="card p-4 flex flex-col gap-1">
-					<span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-						Total Collected / जमा
-					</span>
-					<span class="text-2xl font-semibold font-mono text-income">
-						{ formatMoney(data.AllTimeCollected, currencySymbol) }
-					</span>
+				<div class="card p-4 flex items-center justify-between gap-4 border border-border/50 hover:shadow-md transition-shadow duration-200">
+					<div class="flex flex-col gap-1 min-w-0">
+						<span class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider truncate">
+							Total Collected / जमा
+						</span>
+						<span class="text-xl font-bold font-mono text-income tracking-tight truncate">
+							{ formatMoney(data.AllTimeCollected, currencySymbol) }
+						</span>
+					</div>
+					<div class="p-2.5 bg-income/10 rounded-full flex-shrink-0 text-income">
+						@components.IconWallet("h-5 w-5")
+					</div>
 				</div>
 
 				<!-- All-Time Expenses -->
-				<div class="card p-4 flex flex-col gap-1">
-					<span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-						Total Expenses / खर्च
-					</span>
-					<span class="text-2xl font-semibold font-mono text-expense">
-						{ formatMoney(data.AllTimeExpenses, currencySymbol) }
-					</span>
+				<div class="card p-4 flex items-center justify-between gap-4 border border-border/50 hover:shadow-md transition-shadow duration-200">
+					<div class="flex flex-col gap-1 min-w-0">
+						<span class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider truncate">
+							Total Expenses / खर्च
+						</span>
+						<span class="text-xl font-bold font-mono text-expense tracking-tight truncate">
+							{ formatMoney(data.AllTimeExpenses, currencySymbol) }
+						</span>
+					</div>
+					<div class="p-2.5 bg-expense/10 rounded-full flex-shrink-0 text-expense">
+						@components.IconCreditCard("h-5 w-5")
+					</div>
 				</div>
 
 				<!-- Current Balance -->
-				<div class="card p-4 flex flex-col gap-1">
-					<span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-						Balance / बाकी
-					</span>
-					<span
-						class="text-2xl font-semibold font-mono"
-						if data.CurrentBalance >= 0 {
-							data-variant="income"
-						} else {
-							data-variant="expense"
-						}
-					>
-						{ formatMoney(data.CurrentBalance, currencySymbol) }
-					</span>
+				<div class="card p-4 flex items-center justify-between gap-4 border border-border/50 hover:shadow-md transition-shadow duration-200">
+					<div class="flex flex-col gap-1 min-w-0">
+						<span class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider truncate">
+							Balance / बाकी
+						</span>
+						<span
+							class="text-xl font-bold font-mono tracking-tight truncate"
+							if data.CurrentBalance >= 0 {
+								data-variant="income"
+							} else {
+								data-variant="expense"
+							}
+						>
+							{ formatMoney(data.CurrentBalance, currencySymbol) }
+						</span>
+					</div>
+					<div class={
+						"p-2.5 rounded-full flex-shrink-0",
+						templ.KV("bg-primary/10 text-primary", data.CurrentBalance >= 0),
+						templ.KV("bg-expense/10 text-expense", data.CurrentBalance < 0),
+					}>
+						@components.IconScale("h-5 w-5")
+					</div>
 				</div>
 			</div>
 
 			<!-- Paid/Unpaid Checklist -->
 			<div class="card">
 				<header class="p-4 border-b border-border flex items-center justify-between">
-					<h2 class="text-lg font-semibold">{ i18n.T(d.Lang, "nav.members") } Checklist</h2>
-					<span class="text-xs text-muted-foreground">Current Month</span>
+					<h2 class="text-base font-bold text-foreground">{ i18n.T(d.Lang, "nav.members") } Checklist</h2>
+					<span class="text-xs text-muted-foreground font-medium">Current Month</span>
 				</header>
-				<section class="p-2 max-h-80 overflow-y-auto" id="dashboard-checklist-container" aria-live="polite">
+				<section class="p-2 max-h-96 overflow-y-auto" id="dashboard-checklist-container" aria-live="polite">
 					if len(data.Checklist) == 0 {
-						<div class="p-4 text-center text-muted-foreground">
-							{ i18n.T(d.Lang, "members.empty") }
-							<div class="mt-2">
-								<a class="btn" data-variant="outline" href="/members/new">+ Add Member</a>
-							</div>
+						<div class="p-8 text-center text-muted-foreground flex flex-col items-center justify-center gap-3">
+							<span class="text-sm">{ i18n.T(d.Lang, "members.empty") }</span>
+							<a class="btn min-h-11 px-4 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" data-variant="outline" href="/members/new">
+								+ Add Member
+							</a>
 						</div>
 					} else {
-						<ul class="flex flex-col gap-1" role="list">
+						<ul class="flex flex-col gap-1.5" role="list">
 							for _, item := range data.Checklist {
-								<li class="flex items-center justify-between p-2 rounded hover:bg-muted min-h-11">
-									<div class="flex items-center gap-2">
+								<li class="flex items-center justify-between p-3 rounded-lg border border-border/40 hover:bg-muted/40 transition-colors min-h-12">
+									<div class="flex items-center gap-3">
 										if item.Paid {
-											<span class="text-income font-bold" aria-label="Paid">✓</span>
+											<span class="flex items-center gap-1 badge py-0.5 px-2 text-[10px] font-bold uppercase tracking-wider" data-variant="success" aria-label="Paid">
+												<span>✓</span>
+												<span>Paid</span>
+											</span>
 										} else {
-											<span class="text-warning font-bold" aria-label="Unpaid">—</span>
+											<span class="flex items-center gap-1 badge py-0.5 px-2 text-[10px] font-bold uppercase tracking-wider" data-variant="warning" aria-label="Unpaid">
+												<span>—</span>
+												<span>Unpaid</span>
+											</span>
 										}
-										<span class="text-foreground">{ item.MemberName }</span>
+										<span class="text-sm font-semibold text-foreground">{ item.MemberName }</span>
 									</div>
 									<div class="flex items-center gap-2">
 										if item.Paid {
-											<span class="font-mono text-sm text-income">
-												{ formatMoney(item.AmountMinor, currencySymbol) }
-											</span>
-											<span class="text-xs text-muted-foreground font-mono">{ item.PaidOn }</span>
+											<div class="flex flex-col items-end">
+												<span class="font-mono text-sm font-bold text-income">
+													{ formatMoney(item.AmountMinor, currencySymbol) }
+												</span>
+												<span class="text-[10px] text-muted-foreground font-mono">{ item.PaidOn }</span>
+											</div>
 										} else {
 											<a 
-												class="btn" 
-												data-size="sm" 
+												class="btn min-h-11 px-4 flex items-center justify-center text-xs font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" 
 												data-variant="outline"
 												href={ templ.URL(fmt.Sprintf("/contributions/new?member_id=%d", item.MemberID)) }
 											>
@@ -139,41 +170,54 @@ templ Home(
 			<!-- Recent Activity Feed -->
 			<div class="card">
 				<header class="p-4 border-b border-border">
-					<h2 class="text-lg font-semibold">Recent Activity</h2>
+					<h2 class="text-base font-bold text-foreground">Recent Activity</h2>
 				</header>
-				<section class="p-2 max-h-64 overflow-y-auto">
+				<section class="p-2 max-h-80 overflow-y-auto">
 					if len(data.RecentActivity) == 0 {
-						<p class="p-4 text-center text-muted-foreground text-sm">No activity recorded yet.</p>
+						<p class="p-8 text-center text-muted-foreground text-sm">No activity recorded yet.</p>
 					} else {
 						<ul class="flex flex-col gap-2" role="list">
 							for _, act := range data.RecentActivity {
-								<li class="flex flex-col gap-0.5 p-2 border-b border-border last:border-none">
-									<div class="flex items-center justify-between gap-2">
-										<span class="font-medium text-sm text-foreground">
-											if act.Type == "contribution" {
-												{ "Deposit from " + act.Detail }
-											} else {
-												{ "Expense: " + act.Detail }
-											}
-										</span>
-										<span
-											class="font-mono text-sm font-semibold"
-											if act.Type == "contribution" {
-												data-variant="income"
-											} else {
-												data-variant="expense"
-											}
-										>
-											if act.Type == "contribution" {
-												{ "+" + formatMoney(act.AmountMinor, currencySymbol) }
-											} else {
-												{ "-" + formatMoney(act.AmountMinor, currencySymbol) }
-											}
-										</span>
+								<li class="flex items-start gap-3 p-3 rounded-lg border border-border/40 hover:bg-muted/30 transition-colors">
+									<div class="mt-0.5 flex-shrink-0">
+										if act.Type == "contribution" {
+											<div class="p-1.5 bg-income/10 rounded-full text-income">
+												@components.IconArrowDownRight("h-4 w-4")
+											</div>
+										} else {
+											<div class="p-1.5 bg-expense/10 rounded-full text-expense">
+												@components.IconArrowUpRight("h-4 w-4")
+											</div>
+										}
 									</div>
-									<div class="flex items-center justify-between text-xs text-muted-foreground">
-										<span>Recorded by { act.RecordedBy }</span>
-										<span class="font-mono">{ act.CreatedAt[:10] }</span>
+									<div class="flex-1 min-w-0">
+										<div class="flex items-start justify-between gap-2">
+											<span class="font-semibold text-sm text-foreground truncate">
+												if act.Type == "contribution" {
+													{ "Deposit from " + act.Detail }
+												} else {
+													{ "Expense: " + act.Detail }
+												}
+											</span>
+											<span
+												class="font-mono text-sm font-bold whitespace-nowrap"
+												if act.Type == "contribution" {
+													data-variant="income"
+												} else {
+													data-variant="expense"
+												}
+											>
+												if act.Type == "contribution" {
+													{ "+" + formatMoney(act.AmountMinor, currencySymbol) }
+												} else {
+													{ "-" + formatMoney(act.AmountMinor, currencySymbol) }
+												}
+											</span>
+										</div>
+										<div class="flex items-center justify-between text-[11px] text-muted-foreground mt-1">
+											<span>Recorded by { act.RecordedBy }</span>
+											<span class="font-mono">{ act.CreatedAt[:10] }</span>
+										</div>
 									</div>
 								</li>
 							}

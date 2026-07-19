@@ -1,13 +1,12 @@
 // Package components holds small, reused templ fragments (form fields,
-// etc.) shared across multiple pages — see docs/ACCESSIBILITY.md for the
-// aria-describedby requirement this fulfills on every field with an error.
+// etc.) shared across multiple pages.
 package components
 
 templ TextField(id, name, label, fieldType, value, autocomplete string, err string) {
 	<div class="field">
-		<label class="label" for={ id }>{ label }</label>
+		<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for={ id }>{ label }</label>
 		<input
-			class="input min-h-11"
+			class="input min-h-11 w-full focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
 			type={ fieldType }
 			id={ id }
 			name={ name }
@@ -20,7 +19,10 @@ templ TextField(id, name, label, fieldType, value, autocomplete string, err stri
 			}
 		/>
 		if err != "" {
-			<p id={ id + "-error" } class="text-destructive text-sm mt-1" role="alert">{ err }</p>
+			<p id={ id + "-error" } class="text-destructive text-xs flex items-center gap-1 font-medium mt-1" role="alert">
+				@IconAlertCircle("h-4 w-4 flex-shrink-0")
+				{ err }
+			</p>
 		}
 	</div>
 }

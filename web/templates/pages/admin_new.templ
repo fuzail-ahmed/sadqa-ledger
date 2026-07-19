@@ -15,13 +15,13 @@ type AdminNewErrors struct {
 templ AdminNew(d components.AdminShellData, username, displayName string, errs AdminNewErrors, successMsg string) {
 	@components.AdminShell(d) {
 		<div class="mx-auto max-w-sm px-4 py-8">
-			<div class="card">
-				<header>
-					<h2>{ i18n.T(d.Lang, "admin_new.heading") }</h2>
+			<div class="card border border-border/50 shadow-md">
+				<header class="p-4 border-b border-border">
+					<h2 class="text-base font-bold text-foreground">{ i18n.T(d.Lang, "admin_new.heading") }</h2>
 				</header>
-				<section>
+				<section class="p-4 grid gap-4">
 					if successMsg != "" {
-						<div class="alert" data-variant="success" role="status">
+						<div class="alert text-xs shadow-sm mb-2" data-variant="success" role="status">
 							<p>{ successMsg }</p>
 						</div>
 					}
@@ -30,13 +30,16 @@ templ AdminNew(d components.AdminShellData, username, displayName string, errs A
 						@components.TextField("username", "username", i18n.T(d.Lang, "admin_new.username_label"), "text", username, "username", errs.Username)
 						@components.TextField("display_name", "display_name", i18n.T(d.Lang, "admin_new.display_name_label"), "text", displayName, "name", errs.DisplayName)
 						@components.TextField("password", "password", i18n.T(d.Lang, "admin_new.password_label"), "password", "", "new-password", errs.Password)
-						<button class="btn w-full min-h-11" data-variant="primary" type="submit">
+						
+						<button class="btn w-full min-h-11 text-sm font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none mt-2" data-variant="primary" type="submit">
 							{ i18n.T(d.Lang, "admin_new.submit") }
 						</button>
 					</form>
 				</section>
-				<footer>
-					<a href="/">{ i18n.T(d.Lang, "admin_new.back_link") }</a>
+				<footer class="p-4 border-t border-border flex items-center justify-center">
+					<a href="/" class="text-xs text-muted-foreground hover:text-foreground font-semibold underline focus-visible:ring-2 focus-visible:ring-primary focus:outline-none rounded-md px-2 py-1">
+						{ i18n.T(d.Lang, "admin_new.back_link") }
+					</a>
 				</footer>
 			</div>
 		</div>

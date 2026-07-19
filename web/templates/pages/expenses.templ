@@ -25,32 +25,32 @@ func formatMoneyExpense(amountMinor int64, symbol string) string {
 templ Expenses(d components.AdminShellData, list []expenses.Expense, currencySymbol, toastMsg string) {
 	@components.AdminShell(d) {
 		<div class="mx-auto max-w-xl px-4 py-8">
-			<div class="flex items-center justify-between gap-2">
-				<h1 class="text-xl font-semibold">{ i18n.T(d.Lang, "nav.expenses") }</h1>
-				<a class="btn min-h-11" data-variant="primary" href="/expenses/new">
+			<div class="flex items-center justify-between gap-4">
+				<h1 class="text-xl font-extrabold text-foreground tracking-tight">{ i18n.T(d.Lang, "nav.expenses") }</h1>
+				<a class="btn min-h-11 flex items-center justify-center px-4 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" data-variant="primary" href="/expenses/new">
 					+ { i18n.T(d.Lang, "expenses.new_title") }
 				</a>
 			</div>
 
 			if toastMsg != "" {
-				<div class="alert mt-4" data-variant="success" role="status">
+				<div class="alert mt-4 shadow-sm" data-variant="success" role="status">
 					<p>{ toastMsg }</p>
 				</div>
 			}
 
 			<div class="mt-6 flex flex-col gap-4">
 				if len(list) == 0 {
-					<div class="card p-8 text-center text-muted-foreground">
+					<div class="card p-8 text-center text-muted-foreground border border-border/50">
 						{ i18n.T(d.Lang, "expenses.empty") }
 					</div>
 				} else {
 					for _, exp := range list {
-						<div class="card p-4 flex flex-col gap-2 relative">
+						<div class="card p-4 flex flex-col gap-3 relative border border-border/50 hover:shadow-md transition-shadow duration-200">
 							<!-- Top line: description and amount -->
 							<div class="flex items-start justify-between gap-4">
 								<div>
-									<h3 class="font-semibold text-foreground text-base">{ exp.Description }</h3>
-									<p class="text-xs text-muted-foreground font-mono">{ exp.ExpenseDate }</p>
+									<h3 class="font-bold text-foreground text-base tracking-tight">{ exp.Description }</h3>
+									<p class="text-[11px] text-muted-foreground font-mono mt-0.5">{ exp.ExpenseDate }</p>
 								</div>
 								<span class="text-lg font-bold font-mono text-expense">
 									{ formatMoneyExpense(exp.AmountMinor, currencySymbol) }
@@ -59,8 +59,8 @@ templ Expenses(d components.AdminShellData, list []expenses.Expense, currencySym
 
 							<!-- Image thumbnail if photo is attached -->
 							if exp.ReceiptPhotoPath != nil && *exp.ReceiptPhotoPath != "" {
-								<div class="mt-2">
-									<a href={ templ.URL("/" + *exp.ReceiptPhotoPath) } target="_blank" class="inline-block border border-border rounded overflow-hidden">
+								<div class="mt-1">
+									<a href={ templ.URL("/" + *exp.ReceiptPhotoPath) } target="_blank" class="inline-block border border-border/60 rounded-md overflow-hidden hover:opacity-90 transition-opacity focus-visible:ring-2 focus-visible:ring-primary focus:outline-none">
 										<img 
 											src={ templ.URL("/" + *exp.ReceiptPhotoPath) } 
 											alt={ fmt.Sprintf("Receipt photo for: %s, %s", exp.Description, exp.ExpenseDate) }
@@ -71,8 +71,8 @@ templ Expenses(d components.AdminShellData, list []expenses.Expense, currencySym
 							}
 
 							<!-- Footer details (audit trail and actions) -->
-							<div class="mt-2 flex items-center justify-between gap-4 text-xs text-muted-foreground border-t border-border pt-2">
-								<span>{ i18n.T(d.Lang, "expenses.recorded_by") } { exp.RecordedByAdminName }</span>
+							<div class="flex items-center justify-between gap-4 text-xs text-muted-foreground border-t border-border/50 pt-3">
+								<span class="font-medium">{ i18n.T(d.Lang, "expenses.recorded_by") } { exp.RecordedByAdminName }</span>
 								
 								<form 
 									method="post" 
@@ -81,7 +81,7 @@ templ Expenses(d components.AdminShellData, list []expenses.Expense, currencySym
 									class="inline"
 								>
 									<input type="hidden" name="csrf_token" value={ d.CSRFToken }/>
-									<button class="btn text-destructive" data-size="sm" data-variant="outline" type="submit">
+									<button class="btn text-destructive px-3 min-h-11 flex items-center justify-center font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" data-variant="outline" type="submit">
 										{ i18n.T(d.Lang, "expenses.delete") }
 									</button>
 								</form>
@@ -105,11 +105,11 @@ templ ExpenseForm(
 ) {
 	@components.AdminShell(d) {
 		<div class="mx-auto max-w-sm px-4 py-8">
-			<div class="card">
-				<header>
-					<h2>{ i18n.T(d.Lang, "expenses.new_title") }</h2>
+			<div class="card border border-border/50 shadow-md">
+				<header class="p-4 border-b border-border">
+					<h2 class="text-base font-bold text-foreground">{ i18n.T(d.Lang, "expenses.new_title") }</h2>
 				</header>
-				<section>
+				<section class="p-4">
 					<!-- enctype="multipart/form-data" is required for photo file uploads! -->
 					<form 
 						method="post" 
@@ -121,9 +121,9 @@ templ ExpenseForm(
 
 						<!-- Description -->
 						<div class="field">
-							<label class="label" for="description">{ i18n.T(d.Lang, "expenses.description") }</label>
+							<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for="description">{ i18n.T(d.Lang, "expenses.description") }</label>
 							<input
-								class="input min-h-11"
+								class="input min-h-11 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
 								type="text"
 								id="description"
 								name="description"
@@ -135,15 +135,18 @@ templ ExpenseForm(
 								}
 							/>
 							if errs.Description != "" {
-								<p id="description-error" class="mt-1 text-sm text-destructive" role="alert">{ errs.Description }</p>
+								<p id="description-error" class="mt-1 text-xs text-destructive flex items-center gap-1 font-medium" role="alert">
+									@components.IconAlertCircle("h-4 w-4 flex-shrink-0")
+									{ errs.Description }
+								</p>
 							}
 						</div>
 
 						<!-- Amount -->
 						<div class="field">
-							<label class="label" for="amount">{ i18n.T(d.Lang, "expenses.amount") } ({ currencySymbol })</label>
+							<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for="amount">{ i18n.T(d.Lang, "expenses.amount") } ({ currencySymbol })</label>
 							<input
-								class="input min-h-11 font-mono"
+								class="input min-h-11 font-mono focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
 								type="text"
 								inputmode="numeric"
 								pattern="[0-9]*"
@@ -157,15 +160,18 @@ templ ExpenseForm(
 								}
 							/>
 							if errs.Amount != "" {
-								<p id="amount-error" class="mt-1 text-sm text-destructive" role="alert">{ errs.Amount }</p>
+								<p id="amount-error" class="mt-1 text-xs text-destructive flex items-center gap-1 font-medium" role="alert">
+									@components.IconAlertCircle("h-4 w-4 flex-shrink-0")
+									{ errs.Amount }
+								</p>
 							}
 						</div>
 
 						<!-- Date -->
 						<div class="field">
-							<label class="label" for="expense_date">{ i18n.T(d.Lang, "expenses.date") }</label>
+							<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for="expense_date">{ i18n.T(d.Lang, "expenses.date") }</label>
 							<input
-								class="input min-h-11"
+								class="input min-h-11 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
 								type="date"
 								id="expense_date"
 								name="expense_date"
@@ -176,9 +182,9 @@ templ ExpenseForm(
 
 						<!-- Receipt Photo File Upload -->
 						<div class="field">
-							<label class="label" for="receipt_photo">{ i18n.T(d.Lang, "expenses.photo_label") }</label>
+							<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for="receipt_photo">{ i18n.T(d.Lang, "expenses.photo_label") }</label>
 							<input
-								class="input min-h-11 p-1"
+								class="input min-h-11 p-1 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none border border-border/60"
 								type="file"
 								id="receipt_photo"
 								name="receipt_photo"
@@ -189,15 +195,18 @@ templ ExpenseForm(
 								}
 							/>
 							if errs.Photo != "" {
-								<p id="receipt_photo-error" class="mt-1 text-sm text-destructive" role="alert">{ errs.Photo }</p>
+								<p id="receipt_photo-error" class="mt-1 text-xs text-destructive flex items-center gap-1 font-medium" role="alert">
+									@components.IconAlertCircle("h-4 w-4 flex-shrink-0")
+									{ errs.Photo }
+								</p>
 							}
 						</div>
 
-						<div class="flex gap-2">
-							<button class="btn min-h-11 flex-1" data-variant="primary" type="submit">
+						<div class="flex gap-3 mt-2">
+							<button class="btn min-h-11 flex-1 text-sm font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" data-variant="primary" type="submit">
 								{ i18n.T(d.Lang, "members.save") }
 							</button>
-							<a class="btn min-h-11 flex-1" data-variant="outline" href="/expenses">
+							<a class="btn min-h-11 flex-1 text-sm font-bold flex items-center justify-center focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" data-variant="outline" href="/expenses">
 								{ i18n.T(d.Lang, "members.cancel") }
 							</a>
 						</div>

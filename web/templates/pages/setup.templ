@@ -15,16 +15,17 @@ type SetupErrors struct {
 
 templ Setup(csrfToken, groupName, displayName, username string, errs SetupErrors, generalErr string) {
 	@components.Shell("en", "ltr", i18n.T("en", "setup.title")) {
-		<main class="mx-auto max-w-sm px-6 py-16">
-			<div class="card">
-				<header>
-					<h2>{ i18n.T("en", "setup.heading") }</h2>
-					<p class="text-muted-foreground">{ i18n.T("en", "setup.intro") }</p>
+		<main class="mx-auto max-w-sm px-6 py-12">
+			<div class="card border border-border/50 shadow-lg">
+				<header class="p-4 border-b border-border text-center">
+					<h1 class="text-base font-extrabold text-foreground tracking-tight">{ i18n.T("en", "setup.heading") }</h1>
+					<p class="text-xs text-muted-foreground mt-1">{ i18n.T("en", "setup.intro") }</p>
 				</header>
-				<section>
+				<section class="p-4">
 					if generalErr != "" {
-						<div class="alert" data-variant="destructive" role="alert">
-							<p>{ generalErr }</p>
+						<div class="alert text-xs flex items-center gap-2 p-3 mb-4 shadow-sm border border-destructive/20" data-variant="destructive" role="alert">
+							@components.IconAlertCircle("h-5 w-5 text-destructive flex-shrink-0")
+							<p class="font-medium">{ generalErr }</p>
 						</div>
 					}
 					<form method="post" action="/setup" class="grid gap-4">
@@ -33,7 +34,8 @@ templ Setup(csrfToken, groupName, displayName, username string, errs SetupErrors
 						@components.TextField("display_name", "display_name", i18n.T("en", "setup.your_name_label"), "text", displayName, "name", errs.DisplayName)
 						@components.TextField("username", "username", i18n.T("en", "setup.username_label"), "text", username, "username", errs.Username)
 						@components.TextField("password", "password", i18n.T("en", "setup.password_label"), "password", "", "new-password", errs.Password)
-						<button class="btn w-full min-h-11" data-variant="primary" type="submit">
+						
+						<button class="btn w-full min-h-11 text-sm font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none mt-2" data-variant="primary" type="submit">
 							{ i18n.T("en", "setup.submit") }
 						</button>
 					</form>

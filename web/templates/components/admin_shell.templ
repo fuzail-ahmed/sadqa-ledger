@@ -3,41 +3,45 @@ package components
 import "github.com/fuzail-ahmed/sadqa-ledger/i18n"
 
 // AdminShellData carries the per-request values every admin screen's shared
-// header/nav needs, gathered once by authHandlers.shellData (internal/server)
-// rather than threaded as separate params through every page template.
+// header/nav needs, gathered once by authHandlers.shellData (internal/server).
 type AdminShellData struct {
-	Lang      string // "en" | "ar"
+	Lang      string // "en" | "ar" | "hi"
 	Dir       string // "ltr" | "rtl", derived from Lang
 	CSRFToken string
 	Active    string // nav key highlighted with aria-current, e.g. "members"
 	Title     string // resolved (already i18n.T'd) <title> text
 }
 
-templ navLink(href string, current bool, label string) {
+templ navLink(href string, current bool, label string, icon templ.Component) {
 	<a
 		href={ templ.URL(href) }
-		class="flex min-h-11 min-w-11 flex-1 flex-col items-center justify-center gap-0.5 px-1 text-sm"
+		class={
+			"flex min-h-11 min-w-11 flex-1 flex-col items-center justify-center gap-1 px-1 py-1.5 text-xs font-medium transition-colors focus-visible:ring-2 focus-visible:ring-primary focus:outline-none rounded-md",
+			templ.KV("text-primary font-bold bg-muted/40", current),
+			templ.KV("text-muted-foreground hover:text-foreground", !current),
+		}
 		if current {
 			aria-current="page"
 		}
 	>
-		{ label }
+		@icon
+		<span>{ label }</span>
 	</a>
 }
 
-// AdminShell wraps Shell with the persistent header (app name, language
-// switch, logout) and bottom nav (docs/APP_FLOW.md §10, docs/UI_UX_BRIEF.md
-// §5/§7) shared by every authenticated screen.
+// AdminShell wraps Shell with the persistent header and bottom nav shared by every authenticated screen.
 templ AdminShell(d AdminShellData) {
 	@Shell(d.Lang, d.Dir, d.Title) {
 		<div class="flex min-h-screen flex-col">
-			<header class="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
-				<span class="font-semibold">{ i18n.T(d.Lang, "app.name") }</span>
-				<div class="flex items-center gap-2">
-					<form method="post" action="/lang" aria-label={ i18n.T(d.Lang, "common.language") }>
+			<!-- Header Banner -->
+			<header class="flex items-center justify-between gap-4 border-b border-border bg-surface px-4 py-3 shadow-sm z-10">
+				<span class="font-semibold tracking-tight text-foreground">{ i18n.T(d.Lang, "app.name") }</span>
+				<div class="flex items-center gap-3">
+					<!-- Language Pref selector -->
+					<form method="post" action="/lang" aria-label={ i18n.T(d.Lang, "common.language") } class="flex items-center bg-muted/30 p-0.5 rounded-md border border-border">
 						<input type="hidden" name="csrf_token" value={ d.CSRFToken }/>
 						<button
-							class="btn min-h-11 px-2"
+							class="btn px-2.5 py-1 text-xs min-h-0 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
 							type="submit"
 							name="lang"
 							value="en"
@@ -45,13 +49,13 @@ templ AdminShell(d AdminShellData) {
 								data-variant="primary"
 								aria-current="true"
 							} else {
-								data-variant="outline"
+								data-variant="ghost"
 							}
 						>
 							EN
 						</button>
 						<button
-							class="btn min-h-11 px-2"
+							class="btn px-2.5 py-1 text-xs min-h-0 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
 							type="submit"
 							name="lang"
 							value="hi"
@@ -59,13 +63,13 @@ templ AdminShell(d AdminShellData) {
 								data-variant="primary"
 								aria-current="true"
 							} else {
-								data-variant="outline"
+								data-variant="ghost"
 							}
 						>
 							HI
 						</button>
 						<button
-							class="btn min-h-11 px-2"
+							class="btn px-2.5 py-1 text-xs min-h-0 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
 							type="submit"
 							name="lang"
 							value="ar"
@@ -73,37 +77,54 @@ templ AdminShell(d AdminShellData) {
 								data-variant="primary"
 								aria-current="true"
 							} else {
-								data-variant="outline"
+								data-variant="ghost"
 							}
 						>
 							AR
 						</button>
 					</form>
+
+					<!-- Logout -->
 					<form method="post" action="/logout">
 						<input type="hidden" name="csrf_token" value={ d.CSRFToken }/>
-						<button class="btn min-h-11" data-variant="outline" type="submit">
+						<button class="btn px-3 py-1.5 text-xs min-h-11 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" data-variant="outline" type="submit">
 							{ i18n.T(d.Lang, "common.logout") }
 						</button>
 					</form>
 				</div>
 			</header>
-			<main class="flex-1">
+
+			<!-- Screen Main Body -->
+			<main class="flex-1 pb-16 bg-background">
 				{ children... }
 			</main>
-			<nav class="sticky bottom-0 flex items-stretch border-t border-border bg-surface" aria-label={ i18n.T(d.Lang, "nav.dashboard") }>
-				@navLink("/", d.Active == "dashboard", i18n.T(d.Lang, "nav.dashboard"))
-				@navLink("/members", d.Active == "members", i18n.T(d.Lang, "nav.members"))
-				@navLink("/contributions/new", d.Active == "add", i18n.T(d.Lang, "nav.add_contribution"))
-				@navLink("/expenses", d.Active == "expenses", i18n.T(d.Lang, "nav.expenses"))
+
+			<!-- Pinned Bottom Navigation -->
+			<nav class="fixed bottom-0 start-0 end-0 flex items-stretch border-t border-border bg-surface shadow-lg z-20 px-2 py-1" aria-label={ i18n.T(d.Lang, "nav.dashboard") }>
+				@navLink("/", d.Active == "dashboard", i18n.T(d.Lang, "nav.dashboard"), IconHome("h-5 w-5"))
+				@navLink("/members", d.Active == "members", i18n.T(d.Lang, "nav.members"), IconUsers("h-5 w-5"))
+				@navLink("/contributions/new", d.Active == "add", i18n.T(d.Lang, "nav.add_contribution"), IconPlusCircle("h-5 w-5"))
+				@navLink("/expenses", d.Active == "expenses", i18n.T(d.Lang, "nav.expenses"), IconCreditCard("h-5 w-5"))
+				
+				<!-- More details context dropdown -->
 				<details class="relative flex flex-1">
-					<summary class="flex min-h-11 flex-1 cursor-pointer list-none flex-col items-center justify-center gap-0.5 px-1 text-sm">
-						{ i18n.T(d.Lang, "nav.more") }
+					<summary class="flex min-h-11 min-w-11 flex-1 cursor-pointer list-none flex-col items-center justify-center gap-1 px-1 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary focus:outline-none rounded-md">
+						@IconMoreHorizontal("h-5 w-5")
+						<span>{ i18n.T(d.Lang, "nav.more") }</span>
 					</summary>
-					<div class="absolute bottom-full end-0 mb-1 flex flex-col gap-1 rounded-md border border-border bg-surface p-2 shadow-md">
-						<a class="min-h-11 whitespace-nowrap px-3 py-2" href="/contributions">{ i18n.T(d.Lang, "nav.contributions") }</a>
-						<a class="min-h-11 whitespace-nowrap px-3 py-2" href="/summary">{ i18n.T(d.Lang, "nav.summary") }</a>
-						<a class="min-h-11 whitespace-nowrap px-3 py-2" href="/settings">{ i18n.T(d.Lang, "nav.settings") }</a>
-						<a class="min-h-11 whitespace-nowrap px-3 py-2" href="/export">{ i18n.T(d.Lang, "nav.export") }</a>
+					<div class="absolute bottom-full mb-2 end-0 flex flex-col gap-1 rounded-md border border-border bg-surface p-2 shadow-xl min-w-44 z-30">
+						<a class="min-h-11 flex items-center whitespace-nowrap px-4 py-2 text-sm text-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary focus:outline-none rounded-md" href="/contributions">
+							{ i18n.T(d.Lang, "nav.contributions") }
+						</a>
+						<a class="min-h-11 flex items-center whitespace-nowrap px-4 py-2 text-sm text-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary focus:outline-none rounded-md" href="/summary">
+							{ i18n.T(d.Lang, "nav.summary") }
+						</a>
+						<a class="min-h-11 flex items-center whitespace-nowrap px-4 py-2 text-sm text-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary focus:outline-none rounded-md" href="/settings">
+							{ i18n.T(d.Lang, "nav.settings") }
+						</a>
+						<a class="min-h-11 flex items-center whitespace-nowrap px-4 py-2 text-sm text-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary focus:outline-none rounded-md" href="/export">
+							{ i18n.T(d.Lang, "nav.export") }
+						</a>
 					</div>
 				</details>
 			</nav>

@@ -19,44 +19,46 @@ templ Settings(
 ) {
 	@components.AdminShell(d) {
 		<div class="mx-auto max-w-xl px-4 py-8 flex flex-col gap-6">
-			<h1 class="text-2xl font-bold text-foreground">{ i18n.T(d.Lang, "nav.settings") }</h1>
+			<h1 class="text-xl font-extrabold text-foreground tracking-tight">{ i18n.T(d.Lang, "nav.settings") }</h1>
 
 			if toastMsg != "" {
-				<div class="alert" data-variant="success" role="status">
+				<div class="alert shadow-sm" data-variant="success" role="status">
 					<p>{ toastMsg }</p>
 				</div>
 			}
 
 			<!-- 1. Privacy Toggle Section -->
-			<div class="card" id="privacy-section">
+			<div class="card border border-border/50 shadow-md" id="privacy-section">
 				@SettingsPrivacy(d.Lang, d.CSRFToken, gs.ShowNamesPublicly, "")
 			</div>
 
 			<!-- 2. Public Link & Regeneration Section -->
-			<div class="card" id="public-link-section">
+			<div class="card border border-border/50 shadow-md" id="public-link-section">
 				@SettingsPublicLink(d.Lang, d.CSRFToken, gs.PublicToken, baseUrl, "")
 			</div>
 
 			<!-- 3. Group Info Section -->
-			<div class="card" id="group-info-section">
+			<div class="card border border-border/50 shadow-md" id="group-info-section">
 				@SettingsGroupInfo(d.Lang, d.CSRFToken, gs, "")
 			</div>
 
 			<!-- 4. Admins Section -->
-			<div class="card">
+			<div class="card border border-border/50 shadow-md">
 				<header class="p-4 border-b border-border flex items-center justify-between">
-					<h2 class="text-lg font-semibold">{ i18n.T(d.Lang, "admin_new.heading") }s</h2>
-					<a class="btn" data-size="sm" href="/admins/new">+ Add Admin</a>
+					<h2 class="text-base font-bold text-foreground">{ i18n.T(d.Lang, "admin_new.heading") }s</h2>
+					<a class="btn min-h-11 px-3 flex items-center justify-center text-xs font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" data-variant="outline" href="/admins/new">
+						+ Add Admin
+					</a>
 				</header>
 				<section class="p-4">
 					<ul class="flex flex-col gap-2" role="list">
 						for _, admin := range admins {
-							<li class="flex items-center justify-between p-2 border-b border-border last:border-none">
+							<li class="flex items-center justify-between p-3 rounded-lg border border-border/40 bg-muted/10 min-h-11">
 								<div>
-									<span class="font-medium">{ admin.DisplayName }</span>
+									<span class="text-sm font-semibold text-foreground">{ admin.DisplayName }</span>
 									<span class="text-xs text-muted-foreground ml-2 font-mono">({ admin.Username })</span>
 								</div>
-								<span class="badge" data-variant="outline">{ admin.LanguagePref }</span>
+								<span class="badge py-0.5 px-2 text-[9px] font-bold uppercase tracking-wider" data-variant="outline">{ admin.LanguagePref }</span>
 							</li>
 						}
 					</ul>
@@ -64,7 +66,7 @@ templ Settings(
 			</div>
 
 			<!-- 5. Default Public Language Section -->
-			<div class="card" id="language-section">
+			<div class="card border border-border/50 shadow-md" id="language-section">
 				@SettingsLanguage(d.Lang, d.CSRFToken, gs.DefaultPublicLanguage, "")
 			</div>
 		</div>
@@ -74,7 +76,7 @@ templ Settings(
 // SettingsPrivacy renders the privacy toggle segment.
 templ SettingsPrivacy(lang, csrfToken string, showNames bool, toast string) {
 	<header class="p-4 border-b border-border">
-		<h2 class="text-lg font-semibold">{ i18n.T(lang, "settings.privacy_title") }</h2>
+		<h2 class="text-base font-bold text-foreground">{ i18n.T(lang, "settings.privacy_title") }</h2>
 	</header>
 	<section class="p-4">
 		<form 
@@ -88,18 +90,19 @@ templ SettingsPrivacy(lang, csrfToken string, showNames bool, toast string) {
 		>
 			<input type="hidden" name="csrf_token" value={ csrfToken }/>
 			if toast != "" {
-				<div class="alert text-sm py-1" data-variant="success" role="status"><p>{ toast }</p></div>
+				<div class="alert text-xs py-1 shadow-sm" data-variant="success" role="status"><p>{ toast }</p></div>
 			}
-			<label class="flex items-center gap-2 cursor-pointer min-h-11">
+			<label class="flex items-center gap-2 cursor-pointer min-h-11 text-sm font-medium">
 				<input 
 					type="checkbox" 
 					name="show_names_publicly" 
 					value="1" 
+					class="focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
 					if showNames { checked }
 				/>
 				<span>{ i18n.T(lang, "settings.show_names_label") }</span>
 			</label>
-			<button class="btn w-full" data-variant="primary" type="submit">{ i18n.T(lang, "settings.save_privacy") }</button>
+			<button class="btn w-full min-h-11 text-sm font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" data-variant="primary" type="submit">{ i18n.T(lang, "settings.save_privacy") }</button>
 		</form>
 	</section>
 }
@@ -108,19 +111,19 @@ templ SettingsPrivacy(lang, csrfToken string, showNames bool, toast string) {
 templ SettingsPublicLink(lang, csrfToken, publicToken, baseUrl, toast string) {
 	{{ publicUrl := fmt.Sprintf("%s/p/%s", baseUrl, publicToken) }}
 	<header class="p-4 border-b border-border">
-		<h2 class="text-lg font-semibold">{ i18n.T(lang, "settings.public_link_title") }</h2>
+		<h2 class="text-base font-bold text-foreground">{ i18n.T(lang, "settings.public_link_title") }</h2>
 	</header>
 	<section class="p-4 grid gap-4">
 		if toast != "" {
-			<div class="alert text-sm py-1" data-variant="success" role="status"><p>{ toast }</p></div>
+			<div class="alert text-xs py-1 shadow-sm" data-variant="success" role="status"><p>{ toast }</p></div>
 		}
 		<div class="field">
-			<label class="label">{ i18n.T(lang, "settings.public_link_title") }</label>
+			<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">{ i18n.T(lang, "settings.public_link_title") }</label>
 			<div class="flex gap-2">
-				<input class="input font-mono min-h-11 flex-1" type="text" id="public-url-input" value={ publicUrl } readonly/>
+				<input class="input font-mono min-h-11 flex-1 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" type="text" id="public-url-input" value={ publicUrl } readonly/>
 				<button 
 					type="button" 
-					class="btn" 
+					class="btn px-4 min-h-11 flex items-center justify-center font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" 
 					data-variant="outline"
 					onclick="navigator.clipboard.writeText(document.getElementById('public-url-input').value)"
 				>
@@ -137,7 +140,7 @@ templ SettingsPublicLink(lang, csrfToken, publicToken, baseUrl, toast string) {
 			data-confirm="The old link will stop working immediately. Regenerate public URL?"
 		>
 			<input type="hidden" name="csrf_token" value={ csrfToken }/>
-			<button class="btn w-full" data-variant="outline" type="submit">
+			<button class="btn w-full min-h-11 text-sm font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" data-variant="outline" type="submit">
 				{ i18n.T(lang, "settings.regenerate_btn") }
 			</button>
 		</form>
@@ -160,7 +163,7 @@ templ SettingsGroupInfo(lang, csrfToken string, gs *settings.GroupSettings, toas
 		}
 	}}
 	<header class="p-4 border-b border-border">
-		<h2 class="text-lg font-semibold">{ i18n.T(lang, "settings.group_info_title") }</h2>
+		<h2 class="text-base font-bold text-foreground">{ i18n.T(lang, "settings.group_info_title") }</h2>
 	</header>
 	<section class="p-4">
 		<form 
@@ -173,41 +176,41 @@ templ SettingsGroupInfo(lang, csrfToken string, gs *settings.GroupSettings, toas
 		>
 			<input type="hidden" name="csrf_token" value={ csrfToken }/>
 			if toast != "" {
-				<div class="alert text-sm py-1" data-variant="success" role="status"><p>{ toast }</p></div>
+				<div class="alert text-xs py-1 shadow-sm" data-variant="success" role="status"><p>{ toast }</p></div>
 			}
 
 			<!-- Group Name -->
 			<div class="field">
-				<label class="label" for="group_name">{ i18n.T(lang, "settings.group_name_label") }</label>
-				<input class="input min-h-11" type="text" id="group_name" name="group_name" value={ gs.GroupName } required/>
+				<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for="group_name">{ i18n.T(lang, "settings.group_name_label") }</label>
+				<input class="input min-h-11 w-full focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" type="text" id="group_name" name="group_name" value={ gs.GroupName } required/>
 			</div>
 
 			<div class="grid grid-cols-2 gap-4">
 				<!-- Currency Code -->
 				<div class="field">
-					<label class="label" for="currency_code">{ i18n.T(lang, "settings.currency_code_label") }</label>
-					<input class="input min-h-11 font-mono" type="text" id="currency_code" name="currency_code" value={ gs.CurrencyCode } required/>
+					<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for="currency_code">{ i18n.T(lang, "settings.currency_code_label") }</label>
+					<input class="input min-h-11 w-full font-mono focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" type="text" id="currency_code" name="currency_code" value={ gs.CurrencyCode } required/>
 				</div>
 				<!-- Currency Symbol -->
 				<div class="field">
-					<label class="label" for="currency_symbol">{ i18n.T(lang, "settings.currency_symbol_label") }</label>
-					<input class="input min-h-11 font-mono" type="text" id="currency_symbol" name="currency_symbol" value={ gs.CurrencySymbol } required/>
+					<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for="currency_symbol">{ i18n.T(lang, "settings.currency_symbol_label") }</label>
+					<input class="input min-h-11 w-full font-mono focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" type="text" id="currency_symbol" name="currency_symbol" value={ gs.CurrencySymbol } required/>
 				</div>
 			</div>
 
 			<!-- Quick amounts chips (minor units, comma-separated major) -->
 			<div class="field">
-				<label class="label" for="quick_amounts">{ i18n.T(lang, "settings.quick_amounts_label") }</label>
-				<input class="input min-h-11 font-mono" type="text" id="quick_amounts" name="quick_amounts" value={ amountsStr } required/>
+				<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for="quick_amounts">{ i18n.T(lang, "settings.quick_amounts_label") }</label>
+				<input class="input min-h-11 w-full font-mono focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" type="text" id="quick_amounts" name="quick_amounts" value={ amountsStr } required/>
 			</div>
 
 			<!-- Privacy Policy URL -->
 			<div class="field">
-				<label class="label" for="privacy_policy_url">{ i18n.T(lang, "settings.privacy_url_label") }</label>
-				<input class="input min-h-11" type="url" id="privacy_policy_url" name="privacy_policy_url" value={ privacyPolicyUrl } placeholder="https://example.com/privacy"/>
+				<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for="privacy_policy_url">{ i18n.T(lang, "settings.privacy_url_label") }</label>
+				<input class="input min-h-11 w-full focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" type="url" id="privacy_policy_url" name="privacy_policy_url" value={ privacyPolicyUrl} placeholder="https://example.com/privacy"/>
 			</div>
 
-			<button class="btn w-full" data-variant="primary" type="submit">{ i18n.T(lang, "settings.save_group") }</button>
+			<button class="btn w-full min-h-11 text-sm font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none mt-2" data-variant="primary" type="submit">{ i18n.T(lang, "settings.save_group") }</button>
 		</form>
 	</section>
 }
@@ -215,7 +218,7 @@ templ SettingsGroupInfo(lang, csrfToken string, gs *settings.GroupSettings, toas
 // SettingsLanguage renders the default public language form.
 templ SettingsLanguage(lang, csrfToken string, defaultPublicLanguage string, toast string) {
 	<header class="p-4 border-b border-border">
-		<h2 class="text-lg font-semibold">{ i18n.T(lang, "settings.default_lang_title") }</h2>
+		<h2 class="text-base font-bold text-foreground">{ i18n.T(lang, "settings.default_lang_title") }</h2>
 	</header>
 	<section class="p-4">
 		<form 
@@ -228,28 +231,28 @@ templ SettingsLanguage(lang, csrfToken string, defaultPublicLanguage string, toa
 		>
 			<input type="hidden" name="csrf_token" value={ csrfToken }/>
 			if toast != "" {
-				<div class="alert text-sm py-1" data-variant="success" role="status"><p>{ toast }</p></div>
+				<div class="alert text-xs py-1 shadow-sm" data-variant="success" role="status"><p>{ toast }</p></div>
 			}
 
 			<fieldset class="field">
-				<legend class="label">Choose Default Language for Public Viewers</legend>
+				<legend class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Choose Default Language for Public Viewers</legend>
 				<div class="flex gap-4">
-					<label class="flex items-center gap-2 cursor-pointer">
-						<input type="radio" name="default_public_language" value="en" if defaultPublicLanguage == "en" { checked }/>
+					<label class="flex items-center gap-2 cursor-pointer text-sm font-medium">
+						<input type="radio" name="default_public_language" value="en" class="focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" if defaultPublicLanguage == "en" { checked }/>
 						<span>English (EN)</span>
 					</label>
-					<label class="flex items-center gap-2 cursor-pointer">
-						<input type="radio" name="default_public_language" value="hi" if defaultPublicLanguage == "hi" { checked }/>
+					<label class="flex items-center gap-2 cursor-pointer text-sm font-medium">
+						<input type="radio" name="default_public_language" value="hi" class="focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" if defaultPublicLanguage == "hi" { checked }/>
 						<span>Hindi (HI)</span>
 					</label>
-					<label class="flex items-center gap-2 cursor-pointer">
-						<input type="radio" name="default_public_language" value="ar" if defaultPublicLanguage == "ar" { checked }/>
+					<label class="flex items-center gap-2 cursor-pointer text-sm font-medium">
+						<input type="radio" name="default_public_language" value="ar" class="focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" if defaultPublicLanguage == "ar" { checked }/>
 						<span>Arabic (AR)</span>
 					</label>
 				</div>
 			</fieldset>
 
-			<button class="btn w-full" data-variant="primary" type="submit">{ i18n.T(lang, "settings.save_lang") }</button>
+			<button class="btn w-full min-h-11 text-sm font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none mt-2" data-variant="primary" type="submit">{ i18n.T(lang, "settings.save_lang") }</button>
 		</form>
 	</section>
 }

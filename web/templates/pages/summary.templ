@@ -13,16 +13,16 @@ templ Summary(
 ) {
 	@components.AdminShell(d) {
 		<div class="mx-auto max-w-xl px-4 py-8 flex flex-col gap-6">
-			<div class="card">
-				<header>
-					<h2>{ i18n.T(d.Lang, "nav.summary") }</h2>
+			<div class="card border border-border/50 shadow-md">
+				<header class="p-4 border-b border-border">
+					<h2 class="text-base font-bold text-foreground">{ i18n.T(d.Lang, "nav.summary") }</h2>
 				</header>
-				<section class="grid gap-4">
+				<section class="p-4 grid gap-4">
 					<!-- Month Picker -->
 					<div class="field">
-						<label class="label" for="summary_month">{ i18n.T(d.Lang, "summary.select_month") }</label>
+						<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for="summary_month">{ i18n.T(d.Lang, "summary.select_month") }</label>
 						<input
-							class="input min-h-11"
+							class="input min-h-11 w-full focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
 							type="month"
 							id="summary_month"
 							name="summary_month"
@@ -48,13 +48,13 @@ templ Summary(
 templ SummaryPreview(lang string, text string) {
 	<div class="grid gap-4">
 		<div class="field">
-			<label class="label" for="summary_text">{ i18n.T(lang, "summary.preview_label") }</label>
+			<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for="summary_text">{ i18n.T(lang, "summary.preview_label") }</label>
 			<textarea
 				id="summary_text"
 				name="summary_text"
 				rows="12"
 				readonly
-				class="input font-mono w-full p-3 bg-muted border border-border rounded text-sm whitespace-pre"
+				class="input font-mono w-full p-3 bg-muted border border-border rounded text-sm whitespace-pre focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
 			>{ text }</textarea>
 		</div>
 
@@ -62,7 +62,7 @@ templ SummaryPreview(lang string, text string) {
 			<!-- Copy to Clipboard Button -->
 			<button
 				type="button"
-				class="btn w-full"
+				class="btn w-full min-h-11 font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
 				data-variant="primary"
 				onclick="
 					navigator.clipboard.writeText(document.getElementById('summary_text').value)
@@ -83,7 +83,7 @@ templ SummaryPreview(lang string, text string) {
 			</p>
 			
 			<!-- Hidden Success Alert -->
-			<div id="copy-success-toast" class="alert hidden" data-variant="success" role="status">
+			<div id="copy-success-toast" class="alert hidden shadow-sm" data-variant="success" role="status">
 				<p>Copied summary to clipboard!</p>
 			</div>
 		</div>

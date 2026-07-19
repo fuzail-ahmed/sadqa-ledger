@@ -51,33 +51,33 @@ func Summary(
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto max-w-xl px-4 py-8 flex flex-col gap-6\"><div class=\"card\"><header><h2>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto max-w-xl px-4 py-8 flex flex-col gap-6\"><div class=\"card border border-border/50 shadow-md\"><header class=\"p-4 border-b border-border\"><h2 class=\"text-base font-bold text-foreground\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(d.Lang, "nav.summary"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/summary.templ`, Line: 18, Col: 40}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/summary.templ`, Line: 18, Col: 84}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h2></header><section class=\"grid gap-4\"><!-- Month Picker --><div class=\"field\"><label class=\"label\" for=\"summary_month\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h2></header><section class=\"p-4 grid gap-4\"><!-- Month Picker --><div class=\"field\"><label class=\"label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1\" for=\"summary_month\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(d.Lang, "summary.select_month"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/summary.templ`, Line: 23, Col: 87}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/summary.templ`, Line: 23, Col: 157}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</label> <input class=\"input min-h-11\" type=\"month\" id=\"summary_month\" name=\"summary_month\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</label> <input class=\"input min-h-11 w-full focus-visible:ring-2 focus-visible:ring-primary focus:outline-none\" type=\"month\" id=\"summary_month\" name=\"summary_month\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -134,20 +134,20 @@ func SummaryPreview(lang string, text string) templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"grid gap-4\"><div class=\"field\"><label class=\"label\" for=\"summary_text\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"grid gap-4\"><div class=\"field\"><label class=\"label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1\" for=\"summary_text\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(lang, "summary.preview_label"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/summary.templ`, Line: 51, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/summary.templ`, Line: 51, Col: 152}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</label> <textarea id=\"summary_text\" name=\"summary_text\" rows=\"12\" readonly class=\"input font-mono w-full p-3 bg-muted border border-border rounded text-sm whitespace-pre\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</label> <textarea id=\"summary_text\" name=\"summary_text\" rows=\"12\" readonly class=\"input font-mono w-full p-3 bg-muted border border-border rounded text-sm whitespace-pre focus-visible:ring-2 focus-visible:ring-primary focus:outline-none\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -160,7 +160,7 @@ func SummaryPreview(lang string, text string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</textarea></div><div class=\"flex flex-col gap-2\"><!-- Copy to Clipboard Button --><button type=\"button\" class=\"btn w-full\" data-variant=\"primary\" onclick=\"\n\t\t\t\t\tnavigator.clipboard.writeText(document.getElementById('summary_text').value)\n\t\t\t\t\t\t.then(() => {\n\t\t\t\t\t\t\tvar toast = document.getElementById('copy-success-toast');\n\t\t\t\t\t\t\ttoast.classList.remove('hidden');\n\t\t\t\t\t\t\tsetTimeout(() => { toast.classList.add('hidden'); }, 3000);\n\t\t\t\t\t\t})\n\t\t\t\t\t\t.catch(() => {\n\t\t\t\t\t\t\talert('Could not copy automatically. Please select the text inside the preview box and copy manually.');\n\t\t\t\t\t\t});\n\t\t\t\t\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</textarea></div><div class=\"flex flex-col gap-2\"><!-- Copy to Clipboard Button --><button type=\"button\" class=\"btn w-full min-h-11 font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none\" data-variant=\"primary\" onclick=\"\n\t\t\t\t\tnavigator.clipboard.writeText(document.getElementById('summary_text').value)\n\t\t\t\t\t\t.then(() => {\n\t\t\t\t\t\t\tvar toast = document.getElementById('copy-success-toast');\n\t\t\t\t\t\t\ttoast.classList.remove('hidden');\n\t\t\t\t\t\t\tsetTimeout(() => { toast.classList.add('hidden'); }, 3000);\n\t\t\t\t\t\t})\n\t\t\t\t\t\t.catch(() => {\n\t\t\t\t\t\t\talert('Could not copy automatically. Please select the text inside the preview box and copy manually.');\n\t\t\t\t\t\t});\n\t\t\t\t\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -173,7 +173,7 @@ func SummaryPreview(lang string, text string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</button><p class=\"text-xs text-muted-foreground text-center\">Or select the text inside the box above, right click, and copy manually.</p><!-- Hidden Success Alert --><div id=\"copy-success-toast\" class=\"alert hidden\" data-variant=\"success\" role=\"status\"><p>Copied summary to clipboard!</p></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</button><p class=\"text-xs text-muted-foreground text-center\">Or select the text inside the box above, right click, and copy manually.</p><!-- Hidden Success Alert --><div id=\"copy-success-toast\" class=\"alert hidden shadow-sm\" data-variant=\"success\" role=\"status\"><p>Copied summary to clipboard!</p></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

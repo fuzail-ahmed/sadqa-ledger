@@ -47,25 +47,25 @@ func Export(d components.AdminShellData, backupActive bool, toastMsg string) tem
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto max-w-xl px-4 py-8 flex flex-col gap-6\"><div class=\"card\"><header><h2>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto max-w-xl px-4 py-8 flex flex-col gap-6\"><div class=\"card border border-border/50 shadow-md\"><header class=\"p-4 border-b border-border\"><h2 class=\"text-base font-bold text-foreground\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(d.Lang, "nav.export"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/export.templ`, Line: 14, Col: 39}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/export.templ`, Line: 14, Col: 83}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h2></header><section class=\"grid gap-6\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h2></header><section class=\"p-4 grid gap-6\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if toastMsg != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"alert\" data-variant=\"success\" role=\"status\"><p>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"alert shadow-sm\" data-variant=\"success\" role=\"status\"><p>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -83,20 +83,20 @@ func Export(d components.AdminShellData, backupActive bool, toastMsg string) tem
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"flex flex-col gap-2\"><p class=\"text-foreground text-sm\">Export your group's data at any time. Downloads are generated on demand.</p><p class=\"text-xs text-muted-foreground\"><strong>Security notice:</strong> Both the database snapshot and CSV exports completely exclude active session tokens and administrator password hashes. They are safe to share for backups, reporting, or migration.</p></div><div class=\"flex flex-col gap-4 border-t border-border pt-4\"><!-- Database Snapshot --><div class=\"flex flex-col gap-1\"><h3 class=\"text-sm font-semibold text-foreground\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"flex flex-col gap-2.5\"><p class=\"text-foreground text-sm font-medium\">Export your group's data at any time. Downloads are generated on demand.</p><p class=\"text-xs text-muted-foreground leading-relaxed\"><strong>Security notice:</strong> Both the database snapshot and CSV exports completely exclude active session tokens and administrator password hashes. They are safe to share for backups, reporting, or migration.</p></div><div class=\"flex flex-col gap-5 border-t border-border/50 pt-5\"><!-- Database Snapshot --><div class=\"flex flex-col gap-1\"><h3 class=\"text-sm font-bold text-foreground\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(d.Lang, "export.db_title"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/export.templ`, Line: 35, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/export.templ`, Line: 35, Col: 88}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</h3><p class=\"text-xs text-muted-foreground\">Download the sanitized SQLite ledger database file (.db).</p><a class=\"btn mt-1\" data-variant=\"primary\" href=\"/export/database\" download=\"sadqa-ledger-sanitized.db\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</h3><p class=\"text-xs text-muted-foreground\">Download the sanitized SQLite ledger database file (.db).</p><a class=\"btn mt-1.5 min-h-11 flex items-center justify-center font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none\" data-variant=\"primary\" href=\"/export/database\" download=\"sadqa-ledger-sanitized.db\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -109,20 +109,20 @@ func Export(d components.AdminShellData, backupActive bool, toastMsg string) tem
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</a></div><div class=\"grid grid-cols-2 gap-4 border-t border-border pt-4\"><!-- Contributions CSV --><div class=\"flex flex-col gap-1\"><h3 class=\"text-sm font-semibold text-foreground\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</a></div><div class=\"grid grid-cols-2 gap-4 border-t border-border/50 pt-5\"><!-- Contributions CSV --><div class=\"flex flex-col gap-1\"><h3 class=\"text-sm font-bold text-foreground\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(d.Lang, "nav.contributions"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/export.templ`, Line: 45, Col: 95}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/export.templ`, Line: 45, Col: 91}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</h3><p class=\"text-xs text-muted-foreground\">Active contributions spreadsheet (CSV).</p><a class=\"btn mt-1\" data-variant=\"outline\" href=\"/export/contributions\" download=\"contributions.csv\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</h3><p class=\"text-xs text-muted-foreground\">Active contributions spreadsheet (CSV).</p><a class=\"btn mt-1.5 min-h-11 flex items-center justify-center font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none\" data-variant=\"outline\" href=\"/export/contributions\" download=\"contributions.csv\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -135,20 +135,20 @@ func Export(d components.AdminShellData, backupActive bool, toastMsg string) tem
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</a></div><!-- Expenses CSV --><div class=\"flex flex-col gap-1\"><h3 class=\"text-sm font-semibold text-foreground\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</a></div><!-- Expenses CSV --><div class=\"flex flex-col gap-1\"><h3 class=\"text-sm font-bold text-foreground\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(d.Lang, "nav.expenses"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/export.templ`, Line: 54, Col: 90}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/export.templ`, Line: 54, Col: 86}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</h3><p class=\"text-xs text-muted-foreground\">Active expenses spreadsheet (CSV).</p><a class=\"btn mt-1\" data-variant=\"outline\" href=\"/export/expenses\" download=\"expenses.csv\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</h3><p class=\"text-xs text-muted-foreground\">Active expenses spreadsheet (CSV).</p><a class=\"btn mt-1.5 min-h-11 flex items-center justify-center font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none\" data-variant=\"outline\" href=\"/export/expenses\" download=\"expenses.csv\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -161,7 +161,7 @@ func Export(d components.AdminShellData, backupActive bool, toastMsg string) tem
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</a></div></div></div><div class=\"border-t border-border pt-4 flex items-center justify-between text-xs text-muted-foreground\"><span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</a></div></div></div><div class=\"border-t border-border/50 pt-5 flex items-center justify-between text-xs text-muted-foreground font-medium\"><span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -179,7 +179,7 @@ func Export(d components.AdminShellData, backupActive bool, toastMsg string) tem
 				return templ_7745c5c3_Err
 			}
 			if backupActive {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span class=\"text-income font-medium\">● Active (Streaming to Cloudflare R2)</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span class=\"text-income font-bold flex items-center gap-1\"><span class=\"animate-pulse\">●</span> Active (Streaming to Cloudflare R2)</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

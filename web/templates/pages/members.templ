@@ -2,7 +2,6 @@ package pages
 
 import (
 	"fmt"
-
 	"github.com/fuzail-ahmed/sadqa-ledger/i18n"
 	"github.com/fuzail-ahmed/sadqa-ledger/internal/members"
 	"github.com/fuzail-ahmed/sadqa-ledger/web/templates/components"
@@ -15,19 +14,19 @@ import (
 templ Members(d components.AdminShellData, list []members.Member, query, toastMsg string) {
 	@components.AdminShell(d) {
 		<div class="mx-auto max-w-xl px-4 py-8">
-			<div class="flex items-center justify-between gap-2">
-				<h1 class="text-xl font-semibold">{ i18n.T(d.Lang, "members.heading") }</h1>
-				<a class="btn min-h-11" data-variant="primary" href="/members/new">{ i18n.T(d.Lang, "members.add_button") }</a>
+			<div class="flex items-center justify-between gap-4">
+				<h1 class="text-xl font-extrabold text-foreground tracking-tight">{ i18n.T(d.Lang, "members.heading") }</h1>
+				<a class="btn min-h-11 flex items-center justify-center px-4 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" data-variant="primary" href="/members/new">{ i18n.T(d.Lang, "members.add_button") }</a>
 			</div>
 			if toastMsg != "" {
-				<div class="alert mt-4" data-variant="success" role="status">
+				<div class="alert mt-4 shadow-sm" data-variant="success" role="status">
 					<p>{ toastMsg }</p>
 				</div>
 			}
-			<div role="search" class="mt-4">
-				<label class="label" for="q">{ i18n.T(d.Lang, "members.search_label") }</label>
+			<div role="search" class="mt-5 field">
+				<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for="q">{ i18n.T(d.Lang, "members.search_label") }</label>
 				<input
-					class="input min-h-11"
+					class="input min-h-11 w-full focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
 					type="search"
 					id="q"
 					name="q"
@@ -42,11 +41,12 @@ templ Members(d components.AdminShellData, list []members.Member, query, toastMs
 				/>
 			</div>
 			<div id="member-loading" class="htmx-indicator mt-4 grid gap-2" aria-hidden="true">
-				<div class="h-11 animate-pulse rounded-md bg-muted"></div>
-				<div class="h-11 animate-pulse rounded-md bg-muted"></div>
+				<div class="h-11 animate-pulse rounded-md bg-muted/60"></div>
+				<div class="h-11 animate-pulse rounded-md bg-muted/60"></div>
 			</div>
-			<div class="table-container">
-			@MemberList(d.Lang, d.CSRFToken, query, list)
+			
+			<div class="mt-4">
+				@MemberList(d.Lang, d.CSRFToken, query, list)
 			</div>
 		</div>
 	}
@@ -56,44 +56,35 @@ templ Members(d components.AdminShellData, list []members.Member, query, toastMs
 // and on every HTMX live-search request (docs/APP_FLOW.md §4 states:
 // empty/search-no-results/success).
 templ MemberList(lang, csrfToken, query string, list []members.Member) {
-	<table id="member-list" class="table">
-		
-		<thead>
-      <tr>
-        <th>Name</th>
-        <th>Actions</th>
-      </tr>
-  </thead>
-
-
-		<tbody>
+	<div id="member-list" class="flex flex-col gap-2 w-full">
 		if len(list) == 0 && query != "" {
-			<tr><td class="text-muted-foreground">{ fmt.Sprintf(i18n.T(lang, "members.no_results"), query) }</td></tr>
+			<div class="card p-8 text-center text-muted-foreground border border-border/50">
+				{ fmt.Sprintf(i18n.T(lang, "members.no_results"), query) }
+			</div>
 		} else if len(list) == 0 {
-			<tr><td class="text-muted-foreground">{ i18n.T(lang, "members.empty") }</td></tr>
+			<div class="card p-8 text-center text-muted-foreground border border-border/50">
+				{ i18n.T(lang, "members.empty") }
+			</div>
 		} else {
-				for _, m := range list {
-					@memberRow(lang, csrfToken, m)
-				}
+			for _, m := range list {
+				@memberRow(lang, csrfToken, m)
+			}
 		}
-		</tbody>
-	</table>
+	</div>
 }
 
 templ memberRow(lang, csrfToken string, m members.Member) {
-	<tr>
-		<td>
-			<div>
-				<span>{ m.Name }</span>
-				if m.IsActive {
-					<span class="badge" data-variant="secondary">{ i18n.T(lang, "members.status_active") }</span>
-				} else {
-					<span class="badge" data-variant="outline">{ i18n.T(lang, "members.status_inactive") }</span>
-				}
-			</div>
-		</td>
-		<td class="text-end">
-			<a class="btn" data-size="sm" data-variant="outline" href={ templ.URL(fmt.Sprintf("/members/%d/edit", m.ID)) }>
+	<div class="card p-3 flex items-center justify-between gap-4 border border-border/50 hover:bg-muted/10 transition-colors min-h-12">
+		<div class="flex items-center gap-3">
+			<span class="font-bold text-sm text-foreground">{ m.Name }</span>
+			if m.IsActive {
+				<span class="badge py-0.5 px-2 text-[9px] font-bold uppercase tracking-wider" data-variant="success">{ i18n.T(lang, "members.status_active") }</span>
+			} else {
+				<span class="badge py-0.5 px-2 text-[9px] font-bold uppercase tracking-wider" data-variant="warning">{ i18n.T(lang, "members.status_inactive") }</span>
+			}
+		</div>
+		<div class="flex items-center gap-2">
+			<a class="btn px-3 min-h-11 flex items-center justify-center text-xs font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" data-variant="outline" href={ templ.URL(fmt.Sprintf("/members/%d/edit", m.ID)) }>
 				{ i18n.T(lang, "members.edit_link") }
 			</a>
 			<form
@@ -105,7 +96,7 @@ templ memberRow(lang, csrfToken string, m members.Member) {
 				class="inline"
 			>
 				<input type="hidden" name="csrf_token" value={ csrfToken }/>
-				<button class="btn" data-size="sm" data-variant="outline" type="submit">
+				<button class="btn px-3 min-h-11 flex items-center justify-center text-xs font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" data-variant="outline" type="submit">
 					if m.IsActive {
 						{ i18n.T(lang, "members.deactivate") }
 					} else {
@@ -113,6 +104,6 @@ templ memberRow(lang, csrfToken string, m members.Member) {
 					}
 				</button>
 			</form>
-		</td>
-	</tr>
+		</div>
+	</div>
 }
