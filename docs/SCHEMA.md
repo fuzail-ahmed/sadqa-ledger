@@ -54,6 +54,7 @@ CREATE TABLE admins (
     display_name    TEXT NOT NULL,
     language_pref   TEXT NOT NULL DEFAULT 'en',  -- 'en' | 'hi' | 'ar'
     is_active       INTEGER NOT NULL DEFAULT 1,  -- 0/1 boolean; deactivated admins can't log in but audit history is preserved
+    created_by_admin_id INTEGER REFERENCES admins(id),  -- NULL for the first/setup-created admin; the acting admin's id otherwise (added migrations/0002_admins_created_by.sql)
     created_at      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
     updated_at      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
 );

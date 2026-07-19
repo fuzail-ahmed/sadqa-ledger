@@ -56,16 +56,29 @@ func FindAdminByID(conn *sql.DB, id int64) (*Admin, error) {
 }
 
 // CreateAdmin inserts a new admin row with an already-bcrypt-hashed
-// password. Returns the new admin's id.
-func CreateAdmin(conn *sql.DB, username, passwordHash, displayName string) (int64, error) {
+// password, recording which admin created it (docs/SCHEMA.md §3.1).
+// createdByAdminID of 0 stores NULL (no creator, e.g. test setup). Returns
+// the new admin's id.
+func CreateAdmin(conn *sql.DB, username, passwordHash, displayName string, createdByAdminID int64) (int64, error) {
+	var createdBy sql.NullInt64
+	if createdByAdminID != 0 {
+		createdBy = sql.NullInt64{Int64: createdByAdminID, Valid: true}
+	}
 	res, err := conn.Exec(
-		`INSERT INTO admins (username, password_hash, display_name) VALUES (?, ?, ?)`,
-		username, passwordHash, displayName,
+		`INSERT INTO admins (username, password_hash, display_name, created_by_admin_id) VALUES (?, ?, ?, ?)`,
+		username, passwordHash, displayName, createdBy,
 	)
 	if err != nil {
 		return 0, err
 	}
 	return res.LastInsertId()
+}
+
+// SetLanguagePref updates an admin's UI language, used by the language
+// switcher in the shared admin shell (docs/APP_FLOW.md §10).
+func SetLanguagePref(conn *sql.DB, adminID int64, lang string) error {
+	_, err := conn.Exec(`UPDATE admins SET language_pref = ? WHERE id = ?`, lang, adminID)
+	return err
 }
 
 // GroupSettingsExist reports whether the singleton group_settings row has

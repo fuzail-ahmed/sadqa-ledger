@@ -21,7 +21,7 @@ func openTestDB(t *testing.T) *sql.DB {
 	CREATE TABLE admins (
 		id INTEGER PRIMARY KEY, username TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL,
 		display_name TEXT NOT NULL, language_pref TEXT NOT NULL DEFAULT 'en',
-		is_active INTEGER NOT NULL DEFAULT 1
+		is_active INTEGER NOT NULL DEFAULT 1, created_by_admin_id INTEGER REFERENCES admins(id)
 	);
 	CREATE TABLE group_settings (
 		id INTEGER PRIMARY KEY CHECK (id = 1), group_name TEXT NOT NULL,
@@ -59,7 +59,7 @@ func TestHashAndVerifyPassword(t *testing.T) {
 
 func TestCreateSessionStoresHashNotRawToken(t *testing.T) {
 	conn := openTestDB(t)
-	adminID, err := CreateAdmin(conn, "sohail", "irrelevant-hash", "Sohail")
+	adminID, err := CreateAdmin(conn, "sohail", "irrelevant-hash", "Sohail", 0)
 	if err != nil {
 		t.Fatalf("CreateAdmin: %v", err)
 	}
@@ -90,7 +90,7 @@ func TestCreateSessionStoresHashNotRawToken(t *testing.T) {
 
 func TestLookupSessionSuccessAndFailure(t *testing.T) {
 	conn := openTestDB(t)
-	adminID, _ := CreateAdmin(conn, "sohail", "hash", "Sohail")
+	adminID, _ := CreateAdmin(conn, "sohail", "hash", "Sohail", 0)
 	rawToken, err := CreateSession(conn, adminID, time.Hour, "", "")
 	if err != nil {
 		t.Fatalf("CreateSession: %v", err)
@@ -111,7 +111,7 @@ func TestLookupSessionSuccessAndFailure(t *testing.T) {
 
 func TestLookupSessionRejectsExpired(t *testing.T) {
 	conn := openTestDB(t)
-	adminID, _ := CreateAdmin(conn, "sohail", "hash", "Sohail")
+	adminID, _ := CreateAdmin(conn, "sohail", "hash", "Sohail", 0)
 	// Negative lifetime: already expired the instant it's created.
 	rawToken, err := CreateSession(conn, adminID, -time.Hour, "", "")
 	if err != nil {
@@ -131,7 +131,7 @@ func TestLookupSessionRejectsExpired(t *testing.T) {
 
 func TestDeleteSessionLogsOutServerSide(t *testing.T) {
 	conn := openTestDB(t)
-	adminID, _ := CreateAdmin(conn, "sohail", "hash", "Sohail")
+	adminID, _ := CreateAdmin(conn, "sohail", "hash", "Sohail", 0)
 	rawToken, _ := CreateSession(conn, adminID, time.Hour, "", "")
 
 	if err := DeleteSession(conn, rawToken); err != nil {
@@ -144,7 +144,7 @@ func TestDeleteSessionLogsOutServerSide(t *testing.T) {
 
 func TestDeleteExpiredSessions(t *testing.T) {
 	conn := openTestDB(t)
-	adminID, _ := CreateAdmin(conn, "sohail", "hash", "Sohail")
+	adminID, _ := CreateAdmin(conn, "sohail", "hash", "Sohail", 0)
 	CreateSession(conn, adminID, -time.Hour, "", "") // expired
 	CreateSession(conn, adminID, time.Hour, "", "")  // still valid
 

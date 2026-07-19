@@ -219,7 +219,8 @@ func (h *authHandlers) handleAdminNewSubmit(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	if _, err := auth.CreateAdmin(h.conn, username, passwordHash, displayName); err != nil {
+	creator := auth.CurrentAdmin(r)
+	if _, err := auth.CreateAdmin(h.conn, username, passwordHash, displayName, creator.ID); err != nil {
 		csrfToken := auth.CSRFToken(w, r, h.cfg.SecureCookies)
 		errs.Username = i18n.T("en", "validation.username_taken")
 		pages.AdminNew(csrfToken, username, displayName, errs, "").Render(r.Context(), w)
