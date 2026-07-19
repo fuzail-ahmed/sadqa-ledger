@@ -1,0 +1,44 @@
+package pages
+
+import (
+	"github.com/fuzail-ahmed/sadqa-ledger/i18n"
+	"github.com/fuzail-ahmed/sadqa-ledger/web/templates/components"
+)
+
+// SetupErrors holds a per-field validation message, empty string = no error.
+type SetupErrors struct {
+	GroupName   string
+	DisplayName string
+	Username    string
+	Password    string
+}
+
+templ Setup(csrfToken, groupName, displayName, username string, errs SetupErrors, generalErr string) {
+	@components.Shell(i18n.T("en", "setup.title")) {
+		<main class="mx-auto max-w-sm px-6 py-16">
+			<div class="card">
+				<header>
+					<h2>{ i18n.T("en", "setup.heading") }</h2>
+					<p class="text-muted-foreground">{ i18n.T("en", "setup.intro") }</p>
+				</header>
+				<section>
+					if generalErr != "" {
+						<div class="alert" data-variant="destructive" role="alert">
+							<p>{ generalErr }</p>
+						</div>
+					}
+					<form method="post" action="/setup" class="grid gap-4">
+						<input type="hidden" name="csrf_token" value={ csrfToken }/>
+						@components.TextField("group_name", "group_name", i18n.T("en", "setup.group_name_label"), "text", groupName, "organization", errs.GroupName)
+						@components.TextField("display_name", "display_name", i18n.T("en", "setup.your_name_label"), "text", displayName, "name", errs.DisplayName)
+						@components.TextField("username", "username", i18n.T("en", "setup.username_label"), "text", username, "username", errs.Username)
+						@components.TextField("password", "password", i18n.T("en", "setup.password_label"), "password", "", "new-password", errs.Password)
+						<button class="btn w-full min-h-11" data-variant="primary" type="submit">
+							{ i18n.T("en", "setup.submit") }
+						</button>
+					</form>
+				</section>
+			</div>
+		</main>
+	}
+}

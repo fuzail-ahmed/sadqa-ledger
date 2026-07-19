@@ -30,3 +30,11 @@ Decisions: `SetMaxOpenConns(1)` — single writer keeps SQLite lock handling tri
 Gotchas: none beyond the known `_pragma=` DSN gotcha (already documented) — verified WAL/foreign_keys actually took effect at runtime, not just DSN-string-looks-right.
 Verified: fresh DB gets all tables/indexes (`sqlite_master` inspected), restart against an existing DB applies zero migrations, `make lint test build` all pass, no `.db*` files staged.
 Next: Phase 2 — Auth & First-Run Setup.
+
+## Phase 2 — Auth & First-Run Setup ✅ 2026-07-19
+Done: `internal/auth` (bcrypt, SHA-256-hashed sessions, double-submit CSRF, `RequireAuth` middleware), `/setup` `/login` `/logout` `/admins/new` routes + templ pages, `i18n` package (English only so far), `/` now sits behind auth. Session cleanup runs hourly plus lazily on lookup.
+Decisions: CSRF is a stateless double-submit cookie (no new dependency); `SecureCookies` derives from `BASE_URL`'s scheme, no new env var; `/admins/new` is a minimal standalone page, not the full Settings screen (Phase 7) — satisfies "admins can add admins" without building Settings early.
+Gotchas: none beyond the known DSN gotcha; test DB config needs a non-zero `SessionLifetime` or sessions expire the instant they're created.
+Flagged (not decided silently): no rate-limiting spec found anywhere in docs — skipped dedicated throttling, bcrypt's cost is the only delay; `admins` table has no `created_by_admin_id` column in `docs/SCHEMA.md`, so admin creation isn't audit-attributed like contributions/expenses are.
+Verified: `make lint test build` green; manual curl walkthrough of setup → protected page → logout → redirect; raw session token confirmed absent from `sessions` table (test + manual DB check); CSRF-forged POST rejected with 403; touch targets set to 44px (`min-h-11`) on all form inputs/buttons.
+Next: Phase 3 — Core Admin UI Shell.

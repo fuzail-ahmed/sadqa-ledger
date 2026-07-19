@@ -1,0 +1,55 @@
+package pages
+
+import (
+	"github.com/fuzail-ahmed/sadqa-ledger/i18n"
+	"github.com/fuzail-ahmed/sadqa-ledger/web/templates/components"
+)
+
+templ Login(csrfToken, username, errorMsg string) {
+	@components.Shell(i18n.T("en", "login.title")) {
+		<main class="mx-auto max-w-sm px-6 py-16">
+			<div class="card">
+				<header>
+					<h2>{ i18n.T("en", "app.name") }</h2>
+				</header>
+				<section>
+					if errorMsg != "" {
+						<div class="alert" data-variant="destructive" role="alert">
+							<p>{ errorMsg }</p>
+						</div>
+					}
+					<form method="post" action="/login" class="grid gap-4">
+						<input type="hidden" name="csrf_token" value={ csrfToken }/>
+						<div class="field">
+							<label class="label" for="username">{ i18n.T("en", "login.username_label") }</label>
+							<input
+								class="input min-h-11"
+								type="text"
+								id="username"
+								name="username"
+								value={ username }
+								autocomplete="username"
+								autofocus
+								required
+							/>
+						</div>
+						<div class="field">
+							<label class="label" for="password">{ i18n.T("en", "login.password_label") }</label>
+							<input
+								class="input min-h-11"
+								type="password"
+								id="password"
+								name="password"
+								autocomplete="current-password"
+								required
+							/>
+						</div>
+						<button class="btn w-full min-h-11" data-variant="primary" type="submit">
+							{ i18n.T("en", "login.submit") }
+						</button>
+					</form>
+				</section>
+			</div>
+		</main>
+	}
+}

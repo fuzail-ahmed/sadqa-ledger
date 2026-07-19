@@ -14,6 +14,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/fuzail-ahmed/sadqa-ledger/internal/auth"
 	"github.com/fuzail-ahmed/sadqa-ledger/internal/config"
 	"github.com/fuzail-ahmed/sadqa-ledger/internal/db"
 	"github.com/fuzail-ahmed/sadqa-ledger/internal/server"
@@ -38,12 +39,32 @@ func main() {
 
 	srv := &http.Server{
 		Addr:              fmt.Sprintf(":%d", cfg.Port),
-		Handler:           server.New(),
+		Handler:           server.New(conn, cfg),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
+
+	// Periodic sweep of expired sessions (docs/SCHEMA.md §5); lookups also
+	// lazily delete an expired row the moment it's used, so this just
+	// catches sessions nobody has tried to use since they expired.
+	go func() {
+		ticker := time.NewTicker(time.Hour)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-ticker.C:
+				if n, err := auth.DeleteExpiredSessions(conn); err != nil {
+					logger.Error("cleanup expired sessions", "error", err)
+				} else if n > 0 {
+					logger.Info("cleaned up expired sessions", "count", n)
+				}
+			}
+		}
+	}()
 
 	go func() {
 		logger.Info("starting server", "addr", srv.Addr)

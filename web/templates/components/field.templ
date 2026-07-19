@@ -1,0 +1,26 @@
+// Package components holds small, reused templ fragments (form fields,
+// etc.) shared across multiple pages — see docs/ACCESSIBILITY.md for the
+// aria-describedby requirement this fulfills on every field with an error.
+package components
+
+templ TextField(id, name, label, fieldType, value, autocomplete string, err string) {
+	<div class="field">
+		<label class="label" for={ id }>{ label }</label>
+		<input
+			class="input min-h-11"
+			type={ fieldType }
+			id={ id }
+			name={ name }
+			value={ value }
+			autocomplete={ autocomplete }
+			required
+			if err != "" {
+				aria-invalid="true"
+				aria-describedby={ id + "-error" }
+			}
+		/>
+		if err != "" {
+			<p id={ id + "-error" } class="text-destructive text-sm mt-1" role="alert">{ err }</p>
+		}
+	</div>
+}
