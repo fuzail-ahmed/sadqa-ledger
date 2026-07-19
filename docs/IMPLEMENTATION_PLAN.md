@@ -143,7 +143,7 @@ Phased build sequence, each phase producing a concrete, demoable deliverable wit
 **Deliverables:**
 - Unit tests for: money arithmetic (sum/balance calculations), migration runner, session expiry logic, privacy-setting enforcement on the public route.
 - Integration/end-to-end smoke tests for the core flow: login → add contribution → dashboard reflects it → generate summary → logout.
-- Security pass: confirm parameterized queries throughout (no string-concatenated SQL), confirm CSRF coverage on all state-changing routes, confirm file-upload validation, confirm public route never leans on client-side hiding of admin data (`docs/TRD.md` §9).
+- Security pass (pre-pilot checklist): confirm parameterized queries throughout (no string-concatenated SQL), confirm CSRF coverage on all state-changing routes, confirm file-upload validation, confirm public route never leans on client-side hiding of admin data (`docs/TRD.md` §9), add login rate limiting / lockout (flagged in Phase 2 — currently only bcrypt's cost delays brute-force attempts).
 - **Full accessibility pass across every screen**, running the complete testing checklist from `docs/ACCESSIBILITY.md`: Lighthouse and axe automated scans, a keyboard-only pass through the full core flow, a screen reader spot check (NVDA/VoiceOver/TalkBack), a measured contrast check against the implemented (not just documented) colors, a 200%-zoom check, and a `prefers-reduced-motion` check — not just the informal legibility spot check this phase previously described.
 
 **Acceptance criteria:**
