@@ -7,24 +7,35 @@ import (
 
 templ Login(csrfToken, username, errorMsg string) {
 	@components.Shell("en", "ltr", i18n.T("en", "login.title")) {
-		<main class="mx-auto max-w-sm px-6 py-16">
-			<div class="card border border-border/50 shadow-lg">
-				<header class="p-4 border-b border-border text-center">
-					<h1 class="text-xl font-extrabold text-foreground tracking-tight">{ i18n.T("en", "app.name") }</h1>
+		<main class="mx-auto max-w-sm px-6 py-20">
+			<div class="card border border-border/50 shadow-xl overflow-hidden">
+				<!-- Centered Premium Header with Lock Icon -->
+				<header class="p-6 border-b border-border text-center flex flex-col items-center gap-3 bg-muted/10">
+					<div class="p-3 bg-primary/10 text-primary rounded-full shadow-inner animate-pulse">
+						@components.IconLock("h-7 w-7")
+					</div>
+					<div>
+						<h1 class="text-lg font-extrabold text-foreground tracking-tight">{ i18n.T("en", "app.name") }</h1>
+						<p class="text-xs text-muted-foreground mt-0.5 font-medium">Administrator Login Portal</p>
+					</div>
 				</header>
-				<section class="p-4">
+
+				<section class="p-6">
 					if errorMsg != "" {
-						<div class="alert text-xs flex items-center gap-2 p-3 mb-4 shadow-sm border border-destructive/20" data-variant="destructive" role="alert">
-							@components.IconAlertCircle("h-5 w-5 text-destructive flex-shrink-0")
-							<p class="font-medium">{ errorMsg }</p>
+						<div class="alert text-xs flex items-start gap-2 p-3 mb-4 shadow-sm border border-destructive/20" data-variant="destructive" role="alert">
+							@components.IconAlertCircle("h-5 w-5 text-destructive flex-shrink-0 mt-0.5")
+							<p class="font-medium leading-relaxed">{ errorMsg }</p>
 						</div>
 					}
 					<form method="post" action="/login" class="grid gap-4">
 						<input type="hidden" name="csrf_token" value={ csrfToken }/>
 						
-						<!-- Username -->
+						<!-- Username Input Section -->
 						<div class="field">
-							<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for="username">{ i18n.T("en", "login.username_label") }</label>
+							<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1" for="username">
+								@components.IconUser("h-3.5 w-3.5")
+								<span>{ i18n.T("en", "login.username_label") }</span>
+							</label>
 							<input
 								class="input min-h-11 w-full focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
 								type="text"
@@ -37,9 +48,12 @@ templ Login(csrfToken, username, errorMsg string) {
 							/>
 						</div>
 
-						<!-- Password -->
+						<!-- Password Input Section -->
 						<div class="field">
-							<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for="password">{ i18n.T("en", "login.password_label") }</label>
+							<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1" for="password">
+								@components.IconKeyRound("h-3.5 w-3.5")
+								<span>{ i18n.T("en", "login.password_label") }</span>
+							</label>
 							<input
 								class="input min-h-11 w-full focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
 								type="password"
