@@ -44,3 +44,10 @@ Decisions: language switcher is plain-HTML submit buttons (no JS) posting to `/l
 Gotchas: none.
 Verified: `make lint test build` green; manual curl pass confirms every scaffolded route 200s and titles resolve/translate correctly; `lang=ar` switch confirmed to flip `<html lang dir>` and translate content; Lighthouse accessibility scored 100 on `/login`, `/`, `/members`, `/contributions/new`, `/expenses`, `/settings`; keyboard reachability confirmed structurally (no `tabindex`/`onclick` divs anywhere — every control is a native `a`/`button`/`summary`), not via a live Tab-key recording (no headless keyboard-automation tool available in this environment).
 Next: Phase 4 — Members.
+
+## Phase 4 — Members ✅ 2026-07-19
+Done: `internal/members` store (list/search, create, update, activate/reactivate) and `/members`, `/members/new`, `/members/:id/edit`, `/members/:id/toggle` routes replace the Phase 3 placeholders; htmx vendored (first screen needing it) for live name search, returning a fragment on `HX-Request`.
+Decisions: members are soft-deleted via `is_active` only, per `docs/SCHEMA.md` — added `created_by_admin_id`/`updated_by_admin_id` columns (migration 0003) mirroring admins' audit-trail precedent; Deactivate's confirmation dialog uses native `confirm()` via a `data-confirm` attribute + one delegated listener in `Shell`, not a dialog library, since templ requires `templ.ComponentScript` for inline `onsubmit` expressions.
+Gotchas: templ rejects a plain string expression on `onsubmit`/`onclick` attributes (compile error demanding `templ.ComponentScript`) — the `data-confirm` + listener pattern sidesteps it.
+Verified: `make lint test build` green; CRUD + soft-delete covered by `internal/members` unit tests and an `internal/server` HTTP-flow test (add validation error, success toast, search-no-results, deactivate/reactivate, audit columns populated); manual curl walkthrough of setup → add → search → edit → deactivate → reactivate; Lighthouse accessibility scored 100 on `/members`, `/members/new`, `/members/:id/edit`; keyboard reachability confirmed structurally (no `tabindex`/`onclick` divs).
+Next: Phase 5 — Contributions & Dashboard.

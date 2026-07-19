@@ -20,6 +20,9 @@ go.work.sum
 # Basecoat CSS/JS bundle, vendored/downloaded by `make setup` (no npm involved)
 /web/static/vendor/basecoat/
 
+# htmx.min.js, vendored/downloaded by `make setup` (no npm involved)
+/web/static/vendor/htmx/
+
 # templ generated files marker (keep generated .go files unless project decides otherwise)
 # *_templ.go
 

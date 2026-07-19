@@ -47,9 +47,12 @@ func New(conn *sql.DB, cfg config.Config) http.Handler {
 		// Route scaffolding for the remaining admin screens
 		// (docs/APP_FLOW.md §0) — placeholder content only, real logic lands
 		// in the phase that owns each screen (docs/IMPLEMENTATION_PLAN.md).
-		r.Get("/members", h.handlePlaceholder("members", "nav.members"))
-		r.Get("/members/new", h.handlePlaceholder("members", "members.new_title"))
-		r.Get("/members/{id}/edit", h.handlePlaceholder("members", "members.edit_title"))
+		r.Get("/members", h.handleMembersPage)
+		r.Get("/members/new", h.handleMemberNewPage)
+		r.Post("/members/new", h.handleMemberNewSubmit)
+		r.Get("/members/{id}/edit", h.handleMemberEditPage)
+		r.Post("/members/{id}/edit", h.handleMemberEditSubmit)
+		r.Post("/members/{id}/toggle", h.handleMemberToggle)
 		r.Get("/contributions", h.handlePlaceholder("more", "nav.contributions"))
 		r.Get("/contributions/new", h.handlePlaceholder("add", "nav.add_contribution"))
 		r.Get("/expenses", h.handlePlaceholder("expenses", "nav.expenses"))

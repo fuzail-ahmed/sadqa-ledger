@@ -1,0 +1,65 @@
+package pages
+
+import (
+	"github.com/fuzail-ahmed/sadqa-ledger/i18n"
+	"github.com/fuzail-ahmed/sadqa-ledger/web/templates/components"
+)
+
+// MemberFormErrors holds a per-field validation message, empty string = no error.
+type MemberFormErrors struct {
+	Name string
+}
+
+// MemberForm renders both add and edit (docs/APP_FLOW.md §4a): action picks
+// the submit URL, headingKey the <title>/heading text, isActive the
+// Active/Inactive radio default (Active on create).
+templ MemberForm(d components.AdminShellData, action, headingKey, name string, isActive bool, errs MemberFormErrors) {
+	@components.AdminShell(d) {
+		<div class="mx-auto max-w-sm px-4 py-8">
+			<div class="card">
+				<header>
+					<h2>{ i18n.T(d.Lang, headingKey) }</h2>
+				</header>
+				<section>
+					<form method="post" action={ templ.URL(action) } class="grid gap-4">
+						<input type="hidden" name="csrf_token" value={ d.CSRFToken }/>
+						@components.TextField("name", "name", i18n.T(d.Lang, "members.name_label"), "text", name, "name", errs.Name)
+						<fieldset class="field">
+							<legend class="label">{ i18n.T(d.Lang, "members.status_label") }</legend>
+							<label class="flex min-h-11 items-center gap-2">
+								<input
+									type="radio"
+									name="is_active"
+									value="1"
+									if isActive {
+										checked
+									}
+								/>
+								{ i18n.T(d.Lang, "members.status_active") }
+							</label>
+							<label class="flex min-h-11 items-center gap-2">
+								<input
+									type="radio"
+									name="is_active"
+									value="0"
+									if !isActive {
+										checked
+									}
+								/>
+								{ i18n.T(d.Lang, "members.status_inactive") }
+							</label>
+						</fieldset>
+						<div class="flex gap-2">
+							<button class="btn min-h-11 flex-1" data-variant="primary" type="submit">
+								{ i18n.T(d.Lang, "members.save") }
+							</button>
+							<a class="btn min-h-11 flex-1" data-variant="outline" href="/members">
+								{ i18n.T(d.Lang, "members.cancel") }
+							</a>
+						</div>
+					</form>
+				</section>
+			</div>
+		</div>
+	}
+}

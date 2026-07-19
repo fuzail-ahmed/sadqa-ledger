@@ -72,7 +72,7 @@ func Shell(lang, dir, title string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</title><link rel=\"stylesheet\" href=\"/static/vendor/basecoat/basecoat.min.css\"><link rel=\"stylesheet\" href=\"/static/css/output.css\"><script src=\"/static/vendor/basecoat/basecoat.min.js\" defer></script></head><body class=\"bg-background text-foreground font-sans min-h-screen\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</title><link rel=\"stylesheet\" href=\"/static/vendor/basecoat/basecoat.min.css\"><link rel=\"stylesheet\" href=\"/static/css/output.css\"><script src=\"/static/vendor/basecoat/basecoat.min.js\" defer></script><script src=\"/static/vendor/htmx/htmx.min.js\" defer></script><script>\n\t\t\t\t// Native confirm() before submitting any form marked data-confirm\n\t\t\t\t// (e.g. deactivating a member, docs/APP_FLOW.md §4a) — no dialog\n\t\t\t\t// library needed for a single yes/no prompt.\n\t\t\t\tdocument.addEventListener(\"submit\", function (e) {\n\t\t\t\t\tvar form = e.target.closest(\"[data-confirm]\");\n\t\t\t\t\tif (form && !window.confirm(form.dataset.confirm)) {\n\t\t\t\t\t\te.preventDefault();\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t</script></head><body class=\"bg-background text-foreground font-sans min-h-screen\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

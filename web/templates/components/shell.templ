@@ -14,6 +14,18 @@ templ Shell(lang, dir, title string) {
 			<link rel="stylesheet" href="/static/vendor/basecoat/basecoat.min.css"/>
 			<link rel="stylesheet" href="/static/css/output.css"/>
 			<script src="/static/vendor/basecoat/basecoat.min.js" defer></script>
+			<script src="/static/vendor/htmx/htmx.min.js" defer></script>
+			<script>
+				// Native confirm() before submitting any form marked data-confirm
+				// (e.g. deactivating a member, docs/APP_FLOW.md §4a) — no dialog
+				// library needed for a single yes/no prompt.
+				document.addEventListener("submit", function (e) {
+					var form = e.target.closest("[data-confirm]");
+					if (form && !window.confirm(form.dataset.confirm)) {
+						e.preventDefault();
+					}
+				});
+			</script>
 		</head>
 		<body class="bg-background text-foreground font-sans min-h-screen">
 			{ children... }

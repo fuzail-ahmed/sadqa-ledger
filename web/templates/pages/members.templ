@@ -1,0 +1,104 @@
+package pages
+
+import (
+	"fmt"
+
+	"github.com/fuzail-ahmed/sadqa-ledger/i18n"
+	"github.com/fuzail-ahmed/sadqa-ledger/internal/members"
+	"github.com/fuzail-ahmed/sadqa-ledger/web/templates/components"
+)
+
+// Members renders the full /members page: search box, "+ Add Member", and
+// the member list (docs/APP_FLOW.md §4). The list itself is MemberList, a
+// separate fragment so the live-search HTMX request can re-render just that
+// part (docs/TRD.md §4/§11).
+templ Members(d components.AdminShellData, list []members.Member, query, toastMsg string) {
+	@components.AdminShell(d) {
+		<div class="mx-auto max-w-xl px-4 py-8">
+			<div class="flex items-center justify-between gap-2">
+				<h1 class="text-xl font-semibold">{ i18n.T(d.Lang, "members.heading") }</h1>
+				<a class="btn min-h-11" data-variant="primary" href="/members/new">{ i18n.T(d.Lang, "members.add_button") }</a>
+			</div>
+			if toastMsg != "" {
+				<div class="alert mt-4" data-variant="success" role="status">
+					<p>{ toastMsg }</p>
+				</div>
+			}
+			<div role="search" class="mt-4">
+				<label class="label" for="q">{ i18n.T(d.Lang, "members.search_label") }</label>
+				<input
+					class="input min-h-11"
+					type="search"
+					id="q"
+					name="q"
+					value={ query }
+					placeholder={ i18n.T(d.Lang, "members.search_placeholder") }
+					hx-get="/members"
+					hx-trigger="input changed delay:300ms, search"
+					hx-target="#member-list"
+					hx-swap="outerHTML"
+					hx-push-url="true"
+					hx-indicator="#member-loading"
+				/>
+			</div>
+			<div id="member-loading" class="htmx-indicator mt-4 grid gap-2" aria-hidden="true">
+				<div class="h-11 animate-pulse rounded-md bg-muted"></div>
+				<div class="h-11 animate-pulse rounded-md bg-muted"></div>
+			</div>
+			@MemberList(d.Lang, d.CSRFToken, query, list)
+		</div>
+	}
+}
+
+// MemberList is the swappable fragment returned both inline on first load
+// and on every HTMX live-search request (docs/APP_FLOW.md §4 states:
+// empty/search-no-results/success).
+templ MemberList(lang, csrfToken, query string, list []members.Member) {
+	<div id="member-list" class="mt-4">
+		if len(list) == 0 && query != "" {
+			<p class="text-muted-foreground">{ fmt.Sprintf(i18n.T(lang, "members.no_results"), query) }</p>
+		} else if len(list) == 0 {
+			<p class="text-muted-foreground">{ i18n.T(lang, "members.empty") }</p>
+		} else {
+			<ul class="grid gap-2">
+				for _, m := range list {
+					@memberRow(lang, csrfToken, m)
+				}
+			</ul>
+		}
+	</div>
+}
+
+templ memberRow(lang, csrfToken string, m members.Member) {
+	<li class="card flex items-center justify-between gap-2 px-4 py-3">
+		<div class="flex items-center gap-2">
+			<span>{ m.Name }</span>
+			if m.IsActive {
+				<span class="badge" data-variant="secondary">{ i18n.T(lang, "members.status_active") }</span>
+			} else {
+				<span class="badge" data-variant="outline">{ i18n.T(lang, "members.status_inactive") }</span>
+			}
+		</div>
+		<div class="flex items-center gap-2">
+			<a class="btn min-h-11" data-variant="outline" href={ templ.URL(fmt.Sprintf("/members/%d/edit", m.ID)) }>
+				{ i18n.T(lang, "members.edit_link") }
+			</a>
+			<form
+				method="post"
+				action={ templ.URL(fmt.Sprintf("/members/%d/toggle", m.ID)) }
+				if m.IsActive {
+					data-confirm={ i18n.T(lang, "members.deactivate_confirm") }
+				}
+			>
+				<input type="hidden" name="csrf_token" value={ csrfToken }/>
+				<button class="btn min-h-11" data-variant="outline" type="submit">
+					if m.IsActive {
+						{ i18n.T(lang, "members.deactivate") }
+					} else {
+						{ i18n.T(lang, "members.reactivate") }
+					}
+				</button>
+			</form>
+		</div>
+	</li>
+}
