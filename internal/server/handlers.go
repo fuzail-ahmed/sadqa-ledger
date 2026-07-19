@@ -2,9 +2,12 @@ package server
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/fuzail-ahmed/sadqa-ledger/i18n"
 	"github.com/fuzail-ahmed/sadqa-ledger/internal/auth"
+	"github.com/fuzail-ahmed/sadqa-ledger/internal/dashboard"
+	"github.com/fuzail-ahmed/sadqa-ledger/internal/settings"
 	"github.com/fuzail-ahmed/sadqa-ledger/web/templates/components"
 	"github.com/fuzail-ahmed/sadqa-ledger/web/templates/pages"
 )
@@ -28,11 +31,33 @@ func (h *authHandlers) shellData(w http.ResponseWriter, r *http.Request, active,
 	}
 }
 
-// handleHome renders the Dashboard route, behind auth (Phase 2). Real
-// Dashboard content (stat cards, checklist, activity feed) lands in Phase 5.
+// handleHome renders the Dashboard route, behind auth (Phase 2).
 func (h *authHandlers) handleHome(w http.ResponseWriter, r *http.Request) {
 	admin := auth.CurrentAdmin(r)
-	pages.Home(h.shellData(w, r, "dashboard", "nav.dashboard"), admin.DisplayName).Render(r.Context(), w)
+	gs, err := settings.Get(h.conn)
+	if err != nil {
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+
+	month := time.Now().Format("2006-01")
+	tMonth, _ := time.Parse("2006-01", month)
+	currentMonthLabel := tMonth.Format("January 2006")
+
+	data, err := dashboard.GetDashboardData(h.conn, month)
+	if err != nil {
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+
+	pages.Home(
+		h.shellData(w, r, "dashboard", "nav.dashboard"),
+		admin.DisplayName,
+		gs.GroupName,
+		gs.CurrencySymbol,
+		currentMonthLabel,
+		data,
+	).Render(r.Context(), w)
 }
 
 // handleLangSubmit switches the current admin's UI language

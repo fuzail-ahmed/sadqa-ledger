@@ -1,32 +1,185 @@
-// Package pages holds top-level, full-page templ templates.
 package pages
 
 import (
+	"fmt"
 	"github.com/fuzail-ahmed/sadqa-ledger/i18n"
+	"github.com/fuzail-ahmed/sadqa-ledger/internal/dashboard"
 	"github.com/fuzail-ahmed/sadqa-ledger/web/templates/components"
 )
 
-// Home is the Dashboard route. Phase 3 wraps it in the shared admin shell
-// (header, nav); the real Dashboard content (stat cards, checklist, activity
-// feed) lands in Phase 5.
-templ Home(d components.AdminShellData, displayName string) {
+func formatMoney(amountMinor int64, symbol string) string {
+	if amountMinor % 100 == 0 {
+		return fmt.Sprintf("%s%d", symbol, amountMinor/100)
+	}
+	return fmt.Sprintf("%s%.2f", symbol, float64(amountMinor)/100.0)
+}
+
+// Home renders the full Dashboard (docs/APP_FLOW.md §2, docs/UI_UX_BRIEF.md §7).
+templ Home(
+	d components.AdminShellData,
+	displayName string,
+	groupName string,
+	currencySymbol string,
+	currentMonthLabel string,
+	data *dashboard.DashboardData,
+) {
 	@components.AdminShell(d) {
-		<div class="mx-auto max-w-xl px-4 py-8">
+		<div class="mx-auto max-w-xl px-4 py-8 flex flex-col gap-6">
+			<!-- Header Info -->
+			<header class="flex items-center justify-between gap-4">
+				<div>
+					<h1 class="text-2xl font-bold text-foreground">{ groupName }</h1>
+					<p class="text-sm text-muted-foreground">{ currentMonthLabel } • Welcome, { displayName }</p>
+				</div>
+				<a class="btn" data-variant="primary" href="/contributions/new">
+					+ { i18n.T(d.Lang, "nav.add_contribution") }
+				</a>
+			</header>
+
+			<!-- 2x2 Stats Grid -->
+			<div class="grid grid-cols-2 gap-4">
+				<!-- This Month Collected -->
+				<div class="card p-4 flex flex-col gap-1">
+					<span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+						This Month / जमा
+					</span>
+					<span class="text-2xl font-semibold font-mono text-income">
+						{ formatMoney(data.ThisMonthCollected, currencySymbol) }
+					</span>
+				</div>
+
+				<!-- All-Time Collected -->
+				<div class="card p-4 flex flex-col gap-1">
+					<span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+						Total Collected / जमा
+					</span>
+					<span class="text-2xl font-semibold font-mono text-income">
+						{ formatMoney(data.AllTimeCollected, currencySymbol) }
+					</span>
+				</div>
+
+				<!-- All-Time Expenses -->
+				<div class="card p-4 flex flex-col gap-1">
+					<span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+						Total Expenses / खर्च
+					</span>
+					<span class="text-2xl font-semibold font-mono text-expense">
+						{ formatMoney(data.AllTimeExpenses, currencySymbol) }
+					</span>
+				</div>
+
+				<!-- Current Balance -->
+				<div class="card p-4 flex flex-col gap-1">
+					<span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+						Balance / बाकी
+					</span>
+					<span
+						class="text-2xl font-semibold font-mono"
+						if data.CurrentBalance >= 0 {
+							data-variant="income"
+						} else {
+							data-variant="expense"
+						}
+					>
+						{ formatMoney(data.CurrentBalance, currencySymbol) }
+					</span>
+				</div>
+			</div>
+
+			<!-- Paid/Unpaid Checklist -->
 			<div class="card">
-				<header>
-					<h2>{ i18n.T(d.Lang, "app.name") }</h2>
-					<p>Logged in as { displayName }.</p>
+				<header class="p-4 border-b border-border flex items-center justify-between">
+					<h2 class="text-lg font-semibold">{ i18n.T(d.Lang, "nav.members") } Checklist</h2>
+					<span class="text-xs text-muted-foreground">Current Month</span>
 				</header>
-				<section>
-					<p class="text-muted-foreground">
-						If this card has a border, rounded corners, and a solid teal
-						button below, Basecoat and the project's Tailwind theme are
-						both wired up correctly.
-					</p>
+				<section class="p-2 max-h-80 overflow-y-auto" id="dashboard-checklist-container" aria-live="polite">
+					if len(data.Checklist) == 0 {
+						<div class="p-4 text-center text-muted-foreground">
+							{ i18n.T(d.Lang, "members.empty") }
+							<div class="mt-2">
+								<a class="btn" data-variant="outline" href="/members/new">+ Add Member</a>
+							</div>
+						</div>
+					} else {
+						<ul class="flex flex-col gap-1" role="list">
+							for _, item := range data.Checklist {
+								<li class="flex items-center justify-between p-2 rounded hover:bg-muted min-h-11">
+									<div class="flex items-center gap-2">
+										if item.Paid {
+											<span class="text-income font-bold" aria-label="Paid">✓</span>
+										} else {
+											<span class="text-warning font-bold" aria-label="Unpaid">—</span>
+										}
+										<span class="text-foreground">{ item.MemberName }</span>
+									</div>
+									<div class="flex items-center gap-2">
+										if item.Paid {
+											<span class="font-mono text-sm text-income">
+												{ formatMoney(item.AmountMinor, currencySymbol) }
+											</span>
+											<span class="text-xs text-muted-foreground font-mono">{ item.PaidOn }</span>
+										} else {
+											<a 
+												class="btn" 
+												data-size="sm" 
+												data-variant="outline"
+												href={ templ.URL(fmt.Sprintf("/contributions/new?member_id=%d", item.MemberID)) }
+											>
+												Record
+											</a>
+										}
+									</div>
+								</li>
+							}
+						</ul>
+					}
 				</section>
-				<footer>
-					<a class="btn min-h-11" data-variant="outline" href="/admins/new">Add admin</a>
-				</footer>
+			</div>
+
+			<!-- Recent Activity Feed -->
+			<div class="card">
+				<header class="p-4 border-b border-border">
+					<h2 class="text-lg font-semibold">Recent Activity</h2>
+				</header>
+				<section class="p-2 max-h-64 overflow-y-auto">
+					if len(data.RecentActivity) == 0 {
+						<p class="p-4 text-center text-muted-foreground text-sm">No activity recorded yet.</p>
+					} else {
+						<ul class="flex flex-col gap-2" role="list">
+							for _, act := range data.RecentActivity {
+								<li class="flex flex-col gap-0.5 p-2 border-b border-border last:border-none">
+									<div class="flex items-center justify-between gap-2">
+										<span class="font-medium text-sm text-foreground">
+											if act.Type == "contribution" {
+												{ "Deposit from " + act.Detail }
+											} else {
+												{ "Expense: " + act.Detail }
+											}
+										</span>
+										<span
+											class="font-mono text-sm font-semibold"
+											if act.Type == "contribution" {
+												data-variant="income"
+											} else {
+												data-variant="expense"
+											}
+										>
+											if act.Type == "contribution" {
+												{ "+" + formatMoney(act.AmountMinor, currencySymbol) }
+											} else {
+												{ "-" + formatMoney(act.AmountMinor, currencySymbol) }
+											}
+										</span>
+									</div>
+									<div class="flex items-center justify-between text-xs text-muted-foreground">
+										<span>Recorded by { act.RecordedBy }</span>
+										<span class="font-mono">{ act.CreatedAt[:10] }</span>
+									</div>
+								</li>
+							}
+						</ul>
+					}
+				</section>
 			</div>
 		</div>
 	}
