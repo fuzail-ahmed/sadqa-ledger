@@ -53,3 +53,6 @@ Thumbs.db
 # Build artifacts
 /sadqa-ledger
 /sadqa-ledger.exe
+
+
+bash.exe.stackdump
