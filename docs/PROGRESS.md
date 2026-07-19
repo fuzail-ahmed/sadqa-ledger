@@ -57,3 +57,9 @@ Done: `/contributions/new` form (active member search via HTMX, quick-amount chi
 Decisions: Combined recent activity feed queried via SQLite `UNION ALL` inside a subquery to avoid SQLite sorting ambiguities; dashboard data query logic isolated in a dedicated `internal/dashboard` package.
 Gotchas: SQLite `UNION ALL` ORDER BY gotcha: ordering must target column aliases of the outer/subquery, not inner aliases; templ line-breaks gotcha for attributes: inline `if` must have separate lines for blocks.
 Next: Phase 6 — Expenses.
+
+## Phase 6 — Expenses ✅ 2026-07-19
+Done: `/expenses` list (chronological list, recorded-by details, and receipt previews with descriptive alt text) and `/expenses/new` form (receipt file uploading with size < 5MB and JPG/PNG validation, local filesystem storage, soft-deletion).
+Decisions: Saved upload files directly in `./uploads/` outside the web root, mapping a router prefix to serve them; file upload handled using standard `multipart/form-data` encoding.
+Gotchas: Multipart forms must use `r.ParseMultipartForm` in handlers and `multipart` request building in testing, as `application/x-www-form-urlencoded` fails file parsing.
+Next: Phase 7 — Public Transparency Page & Monthly Summary.
