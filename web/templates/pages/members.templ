@@ -36,10 +36,10 @@ func countMembers(list []members.Member) (active, inactive int) {
 // part (docs/TRD.md §4/§11).
 templ Members(d components.AdminShellData, list []members.Member, query, toastMsg string) {
 	@components.AdminShell(d) {
-		<div class="mx-auto max-w-xl px-4 py-8 flex flex-col gap-6">
+		<div class="mx-auto max-w-xl px-4 py-8 flex flex-col gap-6 text-start">
 			<!-- Page Header -->
 			<div class="flex items-center justify-between gap-4">
-				<div>
+				<div class="text-start">
 					<h1 class="text-xl font-extrabold text-foreground tracking-tight">{ i18n.T(d.Lang, "members.heading") }</h1>
 					<p class="text-xs text-muted-foreground mt-0.5">Manage community contributors & status</p>
 				</div>
@@ -51,7 +51,7 @@ templ Members(d components.AdminShellData, list []members.Member, query, toastMs
 
 			if toastMsg != "" {
 				<div class="alert shadow-sm" data-variant="success" role="status">
-					<p class="font-medium">{ toastMsg }</p>
+					<p class="font-medium text-start">{ toastMsg }</p>
 				</div>
 			}
 
@@ -59,15 +59,15 @@ templ Members(d components.AdminShellData, list []members.Member, query, toastMs
 			if query == "" {
 				{{ activeCount, inactiveCount := countMembers(list) }}
 				<div class="grid grid-cols-3 gap-3">
-					<div class="card p-3 flex flex-col justify-between border border-border/50 shadow-xs">
+					<div class="card p-3 flex flex-col justify-between border border-border/50 shadow-xs text-start">
 						<span class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Total</span>
 						<span class="text-lg font-bold font-mono text-foreground tracking-tight mt-1">{ fmt.Sprintf("%d", len(list)) }</span>
 					</div>
-					<div class="card p-3 flex flex-col justify-between border border-border/50 shadow-xs">
+					<div class="card p-3 flex flex-col justify-between border border-border/50 shadow-xs text-start">
 						<span class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Active</span>
 						<span class="text-lg font-bold font-mono text-income tracking-tight mt-1">{ fmt.Sprintf("%d", activeCount) }</span>
 					</div>
-					<div class="card p-3 flex flex-col justify-between border border-border/50 shadow-xs">
+					<div class="card p-3 flex flex-col justify-between border border-border/50 shadow-xs text-start">
 						<span class="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Inactive</span>
 						<span class="text-lg font-bold font-mono text-muted-foreground tracking-tight mt-1">{ fmt.Sprintf("%d", inactiveCount) }</span>
 					</div>
@@ -75,9 +75,9 @@ templ Members(d components.AdminShellData, list []members.Member, query, toastMs
 			}
 
 			<!-- Search Bar Card -->
-			<div class="card border border-border/50 shadow-sm p-4">
+			<div class="card border border-border/50 shadow-sm p-4 text-start">
 				<div role="search" class="field">
-					<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block" for="q">{ i18n.T(d.Lang, "members.search_label") }</label>
+					<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block text-start" for="q">{ i18n.T(d.Lang, "members.search_label") }</label>
 					<div class="relative flex items-center">
 						<div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none text-muted-foreground">
 							@components.IconSearch("h-4 w-4")
@@ -100,10 +100,10 @@ templ Members(d components.AdminShellData, list []members.Member, query, toastMs
 				</div>
 			</div>
 
-			<!-- HTMX Loading Indicator Skeleton -->
-			<div id="member-loading" class="htmx-indicator grid gap-3" aria-hidden="true">
-				<div class="h-16 animate-pulse rounded-xl bg-muted/40 border border-border/40"></div>
-				<div class="h-16 animate-pulse rounded-xl bg-muted/40 border border-border/40"></div>
+			<!-- HTMX Loading Indicator Skeleton (hidden by default so it takes 0 space, displays only on htmx-request) -->
+			<div id="member-loading" class="htmx-indicator hidden [&.htmx-request]:grid gap-3" aria-hidden="true">
+				<div class="h-24 animate-pulse rounded-xl bg-muted/40 border border-border/40"></div>
+				<div class="h-24 animate-pulse rounded-xl bg-muted/40 border border-border/40"></div>
 			</div>
 			
 			<!-- Member List Fragment -->
@@ -118,7 +118,7 @@ templ Members(d components.AdminShellData, list []members.Member, query, toastMs
 // and on every HTMX live-search request (docs/APP_FLOW.md §4 states:
 // empty/search-no-results/success).
 templ MemberList(lang, csrfToken, query string, list []members.Member) {
-	<div id="member-list" class="flex flex-col gap-3 w-full">
+	<div id="member-list" class="flex flex-col gap-3 w-full text-start">
 		if len(list) == 0 && query != "" {
 			<div class="card p-8 text-center border border-border/50 flex flex-col items-center justify-center gap-2">
 				<div class="p-3 bg-muted/30 rounded-full text-muted-foreground mb-1">
@@ -145,36 +145,42 @@ templ MemberList(lang, csrfToken, query string, list []members.Member) {
 }
 
 templ memberRow(lang, csrfToken string, m members.Member) {
-	<div class="card p-3.5 flex items-center justify-between gap-3 border border-border/50 hover:shadow-md transition-all duration-200 min-h-14 rounded-xl">
-		<div class="flex items-center gap-3.5 min-w-0">
+	<div class="card relative p-4 flex flex-col gap-3.5 border border-border/50 hover:shadow-md transition-all duration-200 rounded-xl text-start bg-surface">
+		<!-- Top Right Status Badge -->
+		<div class="absolute top-3.5 end-3.5">
+			if m.IsActive {
+				<span class="badge py-1 px-2.5 text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1 shadow-xs" data-variant="success">
+					<span class="text-[9px]">✓</span>
+					<span>{ i18n.T(lang, "members.status_active") }</span>
+				</span>
+			} else {
+				<span class="badge py-1 px-2.5 text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1 shadow-xs" data-variant="warning">
+					<span class="text-[9px]">—</span>
+					<span>{ i18n.T(lang, "members.status_inactive") }</span>
+				</span>
+			}
+		</div>
+
+		<!-- Left Aligned Header Info (Member Avatar & Name) -->
+		<div class="flex items-center gap-3.5 pe-24 text-start">
 			<div class={
-				"w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 transition-colors shadow-xs",
+				"w-11 h-11 rounded-full flex items-center justify-center font-bold text-base flex-shrink-0 transition-colors shadow-xs",
 				templ.KV("bg-primary/10 text-primary border border-primary/20", m.IsActive),
 				templ.KV("bg-muted/60 text-muted-foreground border border-border/60", !m.IsActive),
 			}>
 				{ getInitial(m.Name) }
 			</div>
-			<div class="flex flex-col min-w-0">
-				<div class="flex items-center gap-2 flex-wrap">
-					<span class="font-bold text-sm text-foreground tracking-tight truncate">{ m.Name }</span>
-					if m.IsActive {
-						<span class="badge py-0.5 px-2 text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1" data-variant="success">
-							<span class="text-[9px]">✓</span>
-							<span>{ i18n.T(lang, "members.status_active") }</span>
-						</span>
-					} else {
-						<span class="badge py-0.5 px-2 text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1" data-variant="warning">
-							<span class="text-[9px]">—</span>
-							<span>{ i18n.T(lang, "members.status_inactive") }</span>
-						</span>
-					}
-				</div>
+			<div class="flex flex-col text-start min-w-0">
+				<h3 class="font-extrabold text-base text-foreground tracking-tight truncate text-start">{ m.Name }</h3>
+				<span class="text-xs text-muted-foreground mt-0.5 text-start font-medium">Contributor</span>
 			</div>
 		</div>
-		<div class="flex items-center gap-2 flex-shrink-0">
-			<a class="btn px-3 min-h-11 flex items-center justify-center gap-1 text-xs font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" data-variant="outline" href={ templ.URL(fmt.Sprintf("/members/%d/edit", m.ID)) }>
-				@components.IconEdit("h-3.5 w-3.5")
-				<span class="hidden sm:inline">{ i18n.T(lang, "members.edit_link") }</span>
+
+		<!-- Action Buttons Row (Left-aligned) -->
+		<div class="flex items-center justify-start gap-2.5 pt-2.5 border-t border-border/40 w-full text-start">
+			<a class="btn px-3.5 py-1.5 min-h-10 flex items-center justify-center gap-1.5 text-xs font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" data-variant="outline" href={ templ.URL(fmt.Sprintf("/members/%d/edit", m.ID)) }>
+				@components.IconEdit("h-3.5 w-3.5 text-muted-foreground")
+				<span>{ i18n.T(lang, "members.edit_link") }</span>
 			</a>
 			<form
 				method="post"
@@ -185,11 +191,11 @@ templ memberRow(lang, csrfToken string, m members.Member) {
 				class="inline"
 			>
 				<input type="hidden" name="csrf_token" value={ csrfToken }/>
-				<button class="btn px-3 min-h-11 flex items-center justify-center text-xs font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" data-variant="outline" type="submit">
+				<button class="btn px-3.5 py-1.5 min-h-10 flex items-center justify-center text-xs font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" data-variant="outline" type="submit">
 					if m.IsActive {
 						<span class="text-muted-foreground hover:text-destructive">{ i18n.T(lang, "members.deactivate") }</span>
 					} else {
-						<span class="text-primary">{ i18n.T(lang, "members.reactivate") }</span>
+						<span class="text-primary font-bold">{ i18n.T(lang, "members.reactivate") }</span>
 					}
 				</button>
 			</form>
