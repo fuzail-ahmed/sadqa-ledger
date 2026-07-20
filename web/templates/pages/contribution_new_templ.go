@@ -21,6 +21,21 @@ type ContributionFormErrors struct {
 	Amount string
 }
 
+func setAmount(val int64) templ.ComponentScript {
+	return templ.ComponentScript{
+		Name: `__templ_setAmount_7c30`,
+		Function: `function __templ_setAmount_7c30(val){const el = document.getElementById('amount');
+	if (el) {
+		el.value = val;
+		el.dispatchEvent(new Event('input', { bubbles: true }));
+		el.dispatchEvent(new Event('change', { bubbles: true }));
+	}
+}`,
+		Call:       templ.SafeScript(`__templ_setAmount_7c30`, val),
+		CallInline: templ.SafeScriptInline(`__templ_setAmount_7c30`, val),
+	}
+}
+
 // ContributionNew renders the full Add Contribution page.
 func ContributionNew(
 	d components.AdminShellData,
@@ -77,7 +92,7 @@ func ContributionNew(
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(toastMsg)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 33, Col: 19}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 42, Col: 19}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -95,7 +110,7 @@ func ContributionNew(
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(d.Lang, "nav.add_contribution"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 40, Col: 91}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 49, Col: 91}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -108,7 +123,7 @@ func ContributionNew(
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(d.CSRFToken)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 52, Col: 64}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 61, Col: 64}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 			if templ_7745c5c3_Err != nil {
@@ -129,7 +144,7 @@ func ContributionNew(
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(d.Lang, "members.save"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 59, Col: 39}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 68, Col: 39}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -187,7 +202,7 @@ func ContributionFormContent(
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(lang, "members.name_label"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 81, Col: 149}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 90, Col: 149}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -205,7 +220,7 @@ func ContributionFormContent(
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(selectedMember.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 84, Col: 82}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 93, Col: 82}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -218,7 +233,7 @@ func ContributionFormContent(
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("%d", selectedMember.ID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 85, Col: 86}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 94, Col: 86}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 			if templ_7745c5c3_Err != nil {
@@ -231,7 +246,7 @@ func ContributionFormContent(
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(lang, "members.cancel"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 94, Col: 37}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 103, Col: 37}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -249,7 +264,7 @@ func ContributionFormContent(
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.ResolveAttributeValue(i18n.T(lang, "members.search_placeholder"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 104, Col: 61}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 113, Col: 61}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
 			if templ_7745c5c3_Err != nil {
@@ -272,7 +287,7 @@ func ContributionFormContent(
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(errs.Member)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 116, Col: 17}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 125, Col: 17}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -300,7 +315,7 @@ func ContributionFormContent(
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(currencySymbol)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 130, Col: 130}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 139, Col: 130}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -313,7 +328,7 @@ func ContributionFormContent(
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.ResolveAttributeValue(amount)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 138, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 147, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var15)
 		if templ_7745c5c3_Err != nil {
@@ -345,7 +360,7 @@ func ContributionFormContent(
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(errs.Amount)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 148, Col: 17}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 157, Col: 17}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
@@ -367,10 +382,7 @@ func ContributionFormContent(
 			}
 			for _, valMinor := range quickAmounts {
 				valMajor := valMinor / 100
-				templ_7745c5c3_Err = templ.RenderScriptItems(ctx, templ_7745c5c3_Buffer, templ.ComponentScript{
-					Name:     "fillAmount",
-					Function: fmt.Sprintf("function() { document.getElementById('amount').value = '%d'; }", valMajor),
-				})
+				templ_7745c5c3_Err = templ.RenderScriptItems(ctx, templ_7745c5c3_Buffer, setAmount(valMajor))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -378,10 +390,7 @@ func ContributionFormContent(
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var17 templ.ComponentScript = templ.ComponentScript{
-					Name:     "fillAmount",
-					Function: fmt.Sprintf("function() { document.getElementById('amount').value = '%d'; }", valMajor),
-				}
+				var templ_7745c5c3_Var17 templ.ComponentScript = setAmount(valMajor)
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var17.Call)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -393,7 +402,7 @@ func ContributionFormContent(
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s%d", currencySymbol, valMajor))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 166, Col: 53}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 172, Col: 53}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 				if templ_7745c5c3_Err != nil {
@@ -416,7 +425,7 @@ func ContributionFormContent(
 		var templ_7745c5c3_Var19 string
 		templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.ResolveAttributeValue(currentMonth)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 181, Col: 23}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 187, Col: 23}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var19)
 		if templ_7745c5c3_Err != nil {
@@ -429,7 +438,7 @@ func ContributionFormContent(
 		var templ_7745c5c3_Var20 string
 		templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.ResolveAttributeValue(currentDate)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 198, Col: 22}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 204, Col: 22}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var20)
 		if templ_7745c5c3_Err != nil {
@@ -473,7 +482,7 @@ func ContributionSearchResults(lang string, list []members.Member, currentMonth 
 			var templ_7745c5c3_Var22 string
 			templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(lang, "members.no_results"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 207, Col: 97}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 213, Col: 97}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 			if templ_7745c5c3_Err != nil {
@@ -492,7 +501,7 @@ func ContributionSearchResults(lang string, list []members.Member, currentMonth 
 				var templ_7745c5c3_Var23 string
 				templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.ResolveAttributeValue(string(templ.URL(fmt.Sprintf("/contributions/select-member?id=%d", m.ID))))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 213, Col: 87}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 219, Col: 87}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var23)
 				if templ_7745c5c3_Err != nil {
@@ -505,7 +514,7 @@ func ContributionSearchResults(lang string, list []members.Member, currentMonth 
 				var templ_7745c5c3_Var24 string
 				templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(m.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 218, Col: 42}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 224, Col: 42}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 				if templ_7745c5c3_Err != nil {
@@ -523,7 +532,7 @@ func ContributionSearchResults(lang string, list []members.Member, currentMonth 
 					var templ_7745c5c3_Var25 string
 					templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(i18n.T(lang, "members.status_inactive"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 220, Col: 147}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 226, Col: 147}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 					if templ_7745c5c3_Err != nil {
@@ -582,7 +591,7 @@ func ContributionDuplicateCheck(lang string, showWarning bool, memberName string
 			var templ_7745c5c3_Var27 string
 			templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s already has a payment logged for %s — this will be added as a second entry.", memberName, month))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 233, Col: 120}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/pages/contribution_new.templ`, Line: 239, Col: 120}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 			if templ_7745c5c3_Err != nil {
