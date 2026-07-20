@@ -15,43 +15,57 @@ type MemberFormErrors struct {
 // Active/Inactive radio default (Active on create).
 templ MemberForm(d components.AdminShellData, action, headingKey, name string, isActive bool, errs MemberFormErrors) {
 	@components.AdminShell(d) {
-		<div class="mx-auto max-w-sm px-4 py-8">
+		<div class="mx-auto max-w-md px-4 py-8 flex flex-col gap-4">
+			<div class="flex items-center gap-2">
+				<a href="/members" class="text-xs font-semibold text-muted-foreground hover:text-foreground inline-flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none rounded-md px-1 py-0.5">
+					← { i18n.T(d.Lang, "members.back_link") }
+				</a>
+			</div>
 			<div class="card border border-border/50 shadow-md">
-				<header class="p-4 border-b border-border">
+				<header class="p-4 border-b border-border flex items-center gap-3">
+					<div class="p-2 bg-primary/10 rounded-lg text-primary">
+						@components.IconUser("h-5 w-5")
+					</div>
 					<h2 class="text-base font-bold text-foreground">{ i18n.T(d.Lang, headingKey) }</h2>
 				</header>
 				<section class="p-4">
-					<form method="post" action={ templ.URL(action) } class="grid gap-4">
+					<form method="post" action={ templ.URL(action) } class="grid gap-5">
 						<input type="hidden" name="csrf_token" value={ d.CSRFToken }/>
 						@components.TextField("name", "name", i18n.T(d.Lang, "members.name_label"), "text", name, "name", errs.Name)
 						
 						<!-- Status selection -->
 						<fieldset class="field">
-							<legend class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">{ i18n.T(d.Lang, "members.status_label") }</legend>
-							<div class="flex flex-col gap-2">
-								<label class="flex min-h-11 items-center gap-2 cursor-pointer text-sm font-medium">
+							<legend class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">{ i18n.T(d.Lang, "members.status_label") }</legend>
+							<div class="grid gap-2.5">
+								<label class="flex min-h-11 items-center gap-3 p-3 rounded-lg border border-border/60 bg-surface hover:bg-muted/20 cursor-pointer text-sm font-medium transition-colors">
 									<input
 										type="radio"
 										name="is_active"
 										value="1"
-										class="focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
+										class="focus-visible:ring-2 focus-visible:ring-primary focus:outline-none accent-primary"
 										if isActive {
 											checked
 										}
 									/>
-									<span>{ i18n.T(d.Lang, "members.status_active") }</span>
+									<span class="flex items-center gap-2">
+										<span class="badge py-0.5 px-2 text-[10px] font-bold uppercase tracking-wider" data-variant="success">Active</span>
+										<span>{ i18n.T(d.Lang, "members.status_active") }</span>
+									</span>
 								</label>
-								<label class="flex min-h-11 items-center gap-2 cursor-pointer text-sm font-medium">
+								<label class="flex min-h-11 items-center gap-3 p-3 rounded-lg border border-border/60 bg-surface hover:bg-muted/20 cursor-pointer text-sm font-medium transition-colors">
 									<input
 										type="radio"
 										name="is_active"
 										value="0"
-										class="focus-visible:ring-2 focus-visible:ring-primary focus:outline-none"
+										class="focus-visible:ring-2 focus-visible:ring-primary focus:outline-none accent-primary"
 										if !isActive {
 											checked
 										}
 									/>
-									<span>{ i18n.T(d.Lang, "members.status_inactive") }</span>
+									<span class="flex items-center gap-2">
+										<span class="badge py-0.5 px-2 text-[10px] font-bold uppercase tracking-wider" data-variant="warning">Inactive</span>
+										<span>{ i18n.T(d.Lang, "members.status_inactive") }</span>
+									</span>
 								</label>
 							</div>
 						</fieldset>

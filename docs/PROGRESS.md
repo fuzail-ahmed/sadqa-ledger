@@ -92,4 +92,11 @@ Next: Phase 12 — Polish & Launch Readiness.
 Done: Onboarding base documentation finalize (README, CHANGELOG version cut, LICENSE verification) and local release tag cut (`v0.1.0`).
 Decisions: Tagged repository release tag locally as `v0.1.0` after verifying green states.
 Gotchas: Checked working tree status to ensure no untracked generated assets are checked in.
+Next: Members Page Theme Polish.
+
+## Members Page Redesign & Theme Alignment ✅ 2026-07-20
+Done: Redesigned `/members` and `/members/new` UI to match design system with quick stats summary cards, embedded search icon, initial avatar badges, and consistent card styling.
+Decisions: Initial avatar badge generated dynamically via UTF-8 rune decoding; search box integrated inside card container with icon.
+Gotchas: None.
 Next: Launch!
+
