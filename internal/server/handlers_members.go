@@ -69,7 +69,7 @@ func (h *authHandlers) handleMemberNewSubmit(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	if _, err := members.Create(h.conn, name, admin.ID); err != nil {
+	if _, err := members.Create(h.conn, name, isActive, admin.ID); err != nil {
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}

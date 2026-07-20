@@ -61,12 +61,12 @@ func Get(conn *sql.DB, id int64) (*Member, error) {
 	return &m, nil
 }
 
-// Create inserts a new member, active by default (docs/APP_FLOW.md §4a),
+// Create inserts a new member with the specified name and active status,
 // recording the acting admin.
-func Create(conn *sql.DB, name string, createdByAdminID int64) (int64, error) {
+func Create(conn *sql.DB, name string, isActive bool, createdByAdminID int64) (int64, error) {
 	res, err := conn.Exec(
-		`INSERT INTO members (name, created_by_admin_id, updated_by_admin_id) VALUES (?, ?, ?)`,
-		name, createdByAdminID, createdByAdminID,
+		`INSERT INTO members (name, is_active, created_by_admin_id, updated_by_admin_id) VALUES (?, ?, ?, ?)`,
+		name, isActive, createdByAdminID, createdByAdminID,
 	)
 	if err != nil {
 		return 0, err

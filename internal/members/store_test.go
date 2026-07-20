@@ -39,7 +39,7 @@ func openTestDB(t *testing.T) *sql.DB {
 
 func TestCreateDefaultsActiveAndRecordsAdmin(t *testing.T) {
 	conn := openTestDB(t)
-	id, err := Create(conn, "Farhan", 1)
+	id, err := Create(conn, "Farhan", true, 1)
 	if err != nil {
 		t.Fatalf("Create: %v", err)
 	}
@@ -61,7 +61,7 @@ func TestCreateDefaultsActiveAndRecordsAdmin(t *testing.T) {
 
 func TestUpdateChangesNameAndStatus(t *testing.T) {
 	conn := openTestDB(t)
-	id, _ := Create(conn, "Farhan", 1)
+	id, _ := Create(conn, "Farhan", true, 1)
 
 	if err := Update(conn, id, "Farhan Ahmed", false, 1); err != nil {
 		t.Fatalf("Update: %v", err)
@@ -88,7 +88,7 @@ func TestUpdateUnknownIDReturnsNotFound(t *testing.T) {
 
 func TestSetActiveSoftDeleteAndReactivate(t *testing.T) {
 	conn := openTestDB(t)
-	id, _ := Create(conn, "Farhan", 1)
+	id, _ := Create(conn, "Farhan", true, 1)
 
 	if err := SetActive(conn, id, false, 1); err != nil {
 		t.Fatalf("SetActive(false): %v", err)
@@ -123,8 +123,8 @@ func TestSetActiveUnknownIDReturnsNotFound(t *testing.T) {
 
 func TestListFiltersByNameCaseInsensitive(t *testing.T) {
 	conn := openTestDB(t)
-	Create(conn, "Abdul Rahman", 1)
-	Create(conn, "Farhan", 1)
+	Create(conn, "Abdul Rahman", true, 1)
+	Create(conn, "Farhan", true, 1)
 
 	all, err := List(conn, "")
 	if err != nil {
@@ -153,7 +153,7 @@ func TestListFiltersByNameCaseInsensitive(t *testing.T) {
 
 func TestListIncludesInactiveMembers(t *testing.T) {
 	conn := openTestDB(t)
-	id, _ := Create(conn, "Farhan", 1)
+	id, _ := Create(conn, "Farhan", true, 1)
 	SetActive(conn, id, false, 1)
 
 	list, err := List(conn, "")
@@ -162,5 +162,21 @@ func TestListIncludesInactiveMembers(t *testing.T) {
 	}
 	if len(list) != 1 || list[0].IsActive {
 		t.Errorf("List() = %+v, want one inactive member still present", list)
+	}
+}
+
+func TestCreateWithInactiveStatus(t *testing.T) {
+	conn := openTestDB(t)
+	id, err := Create(conn, "Tariq", false, 1)
+	if err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+
+	m, err := Get(conn, id)
+	if err != nil {
+		t.Fatalf("Get: %v", err)
+	}
+	if m.IsActive {
+		t.Error("new member created with isActive=false is active, want inactive")
 	}
 }

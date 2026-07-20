@@ -15,7 +15,7 @@ type MemberFormErrors struct {
 // Active/Inactive radio default (Active on create).
 templ MemberForm(d components.AdminShellData, action, headingKey, name string, isActive bool, errs MemberFormErrors) {
 	@components.AdminShell(d) {
-		<div class="mx-auto max-w-md px-4 py-8 flex flex-col gap-4">
+		<div class="mx-auto max-w-md px-4 py-8 flex flex-col gap-4 text-start">
 			<div class="flex items-center gap-2">
 				<a href="/members" class="text-xs font-semibold text-muted-foreground hover:text-foreground inline-flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none rounded-md px-1 py-0.5">
 					← { i18n.T(d.Lang, "members.back_link") }
@@ -33,39 +33,56 @@ templ MemberForm(d components.AdminShellData, action, headingKey, name string, i
 						<input type="hidden" name="csrf_token" value={ d.CSRFToken }/>
 						@components.TextField("name", "name", i18n.T(d.Lang, "members.name_label"), "text", name, "name", errs.Name)
 						
-						<!-- Status selection -->
+						<!-- Status selection cards -->
 						<fieldset class="field">
-							<legend class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">{ i18n.T(d.Lang, "members.status_label") }</legend>
-							<div class="grid gap-2.5">
-								<label class="flex min-h-11 items-center gap-3 p-3 rounded-lg border border-border/60 bg-surface hover:bg-muted/20 cursor-pointer text-sm font-medium transition-colors">
-									<input
-										type="radio"
-										name="is_active"
-										value="1"
-										class="focus-visible:ring-2 focus-visible:ring-primary focus:outline-none accent-primary"
-										if isActive {
-											checked
-										}
-									/>
-									<span class="flex items-center gap-2">
-										<span class="badge py-0.5 px-2 text-[10px] font-bold uppercase tracking-wider" data-variant="success">Active</span>
-										<span>{ i18n.T(d.Lang, "members.status_active") }</span>
-									</span>
+							<legend class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2.5 block text-start">{ i18n.T(d.Lang, "members.status_label") }</legend>
+							<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+								<!-- Active Option -->
+								<label class={
+									"flex flex-col gap-2 p-3.5 rounded-xl border cursor-pointer transition-all duration-200 shadow-2xs min-h-16 text-start",
+									templ.KV("border-emerald-500/60 bg-emerald-500/5 ring-2 ring-emerald-500/20", isActive),
+									templ.KV("border-border/60 bg-surface hover:bg-muted/30 opacity-70", !isActive),
+								}>
+									<div class="flex items-center justify-between gap-2">
+										<span class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-[11px] font-bold tracking-wide bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
+											@components.IconCheck("h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400")
+											<span>{ i18n.T(d.Lang, "members.status_active") }</span>
+										</span>
+										<input
+											type="radio"
+											name="is_active"
+											value="1"
+											class="accent-primary focus-visible:ring-2 focus-visible:ring-primary focus:outline-none h-4 w-4"
+											if isActive {
+												checked
+											}
+										/>
+									</div>
+									<p class="text-[11px] text-muted-foreground leading-tight">Appears on active monthly checklist</p>
 								</label>
-								<label class="flex min-h-11 items-center gap-3 p-3 rounded-lg border border-border/60 bg-surface hover:bg-muted/20 cursor-pointer text-sm font-medium transition-colors">
-									<input
-										type="radio"
-										name="is_active"
-										value="0"
-										class="focus-visible:ring-2 focus-visible:ring-primary focus:outline-none accent-primary"
-										if !isActive {
-											checked
-										}
-									/>
-									<span class="flex items-center gap-2">
-										<span class="badge py-0.5 px-2 text-[10px] font-bold uppercase tracking-wider" data-variant="warning">Inactive</span>
-										<span>{ i18n.T(d.Lang, "members.status_inactive") }</span>
-									</span>
+
+								<!-- Inactive Option -->
+								<label class={
+									"flex flex-col gap-2 p-3.5 rounded-xl border cursor-pointer transition-all duration-200 shadow-2xs min-h-16 text-start",
+									templ.KV("border-amber-500/60 bg-amber-500/5 ring-2 ring-amber-500/20", !isActive),
+									templ.KV("border-border/60 bg-surface hover:bg-muted/30 opacity-70", isActive),
+								}>
+									<div class="flex items-center justify-between gap-2">
+										<span class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-[11px] font-bold tracking-wide bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
+											@components.IconAlertCircle("h-3.5 w-3.5 text-amber-600 dark:text-amber-400")
+											<span>{ i18n.T(d.Lang, "members.status_inactive") }</span>
+										</span>
+										<input
+											type="radio"
+											name="is_active"
+											value="0"
+											class="accent-primary focus-visible:ring-2 focus-visible:ring-primary focus:outline-none h-4 w-4"
+											if !isActive {
+												checked
+											}
+										/>
+									</div>
+									<p class="text-[11px] text-muted-foreground leading-tight">Hidden from checklist (history kept)</p>
 								</label>
 							</div>
 						</fieldset>
