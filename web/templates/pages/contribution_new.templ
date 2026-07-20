@@ -87,7 +87,12 @@ templ ContributionFormContent(
 ) {
 	<!-- Member Selection -->
 	<div id="member-search-container" class="field">
-		<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1" for="member_search">{ i18n.T(lang, "members.name_label") }</label>
+		<div class="flex items-center justify-between mb-1">
+			<label class="label text-xs font-bold text-muted-foreground uppercase tracking-wider mb-0" for="member_search">{ i18n.T(lang, "members.name_label") }</label>
+			<a href="/members/new" class="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none rounded">
+				{ i18n.T(lang, "members.add_button") }
+			</a>
+		</div>
 		if selectedMember != nil {
 			<div class="flex min-h-11 items-center justify-between gap-2 rounded-md border border-border bg-muted/30 p-2">
 				<span class="font-semibold text-sm text-foreground px-1">{ selectedMember.Name }</span>
@@ -210,7 +215,12 @@ templ ContributionFormContent(
 // ContributionSearchResults renders the matching members search results.
 templ ContributionSearchResults(lang string, list []members.Member, currentMonth string) {
 	if len(list) == 0 {
-		<div class="p-4 text-sm text-center text-muted-foreground">{ i18n.T(lang, "members.no_results") }</div>
+		<div class="p-4 text-sm text-center text-muted-foreground flex flex-col items-center justify-center gap-2">
+			<span>{ i18n.T(lang, "members.no_results") }</span>
+			<a class="btn px-3 py-1.5 min-h-9 text-xs font-bold flex items-center justify-center gap-1 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none mt-1" data-variant="primary" href="/members/new">
+				{ i18n.T(lang, "members.add_button") }
+			</a>
+		</div>
 	} else {
 		for _, m := range list {
 			<button
@@ -227,6 +237,11 @@ templ ContributionSearchResults(lang string, list []members.Member, currentMonth
 				}
 			</button>
 		}
+		<div class="p-2 bg-muted/20 border-t border-border/40 text-center">
+			<a class="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1 py-1 px-2" href="/members/new">
+				{ i18n.T(lang, "members.add_button") }
+			</a>
+		</div>
 	}
 }
 

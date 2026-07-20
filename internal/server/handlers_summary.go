@@ -18,10 +18,55 @@ func formatMoney(amountMinor int64, symbol string) string {
 	return fmt.Sprintf("%s%.2f", symbol, float64(amountMinor)/100.0)
 }
 
+var monthNamesHindi = map[time.Month]string{
+	time.January:   "जनवरी",
+	time.February:  "फरवरी",
+	time.March:     "मार्च",
+	time.April:     "अप्रैल",
+	time.May:       "मई",
+	time.June:      "जून",
+	time.July:      "जुलाई",
+	time.August:    "अगस्त",
+	time.September: "सितंबर",
+	time.October:   "अक्टूबर",
+	time.November:  "नवंबर",
+	time.December:  "दिसंबर",
+}
+
+var monthNamesArabic = map[time.Month]string{
+	time.January:   "يناير",
+	time.February:  "فبراير",
+	time.March:     "مارس",
+	time.April:     "أبريل",
+	time.May:       "مايو",
+	time.June:      "يونيو",
+	time.July:      "يوليو",
+	time.August:    "أغسطس",
+	time.September: "سبتمبر",
+	time.October:   "أكتوبر",
+	time.November:  "نوفمبر",
+	time.December:  "ديسمبر",
+}
+
+func formatMonthLabel(t time.Time, lang string) string {
+	switch lang {
+	case "hi":
+		if name, ok := monthNamesHindi[t.Month()]; ok {
+			return fmt.Sprintf("%s %d", name, t.Year())
+		}
+	case "ar":
+		if name, ok := monthNamesArabic[t.Month()]; ok {
+			return fmt.Sprintf("%s %d", name, t.Year())
+		}
+	}
+	return t.Format("January 2006")
+}
+
 // handleSummaryPage renders the main monthly summary screen.
 func (h *authHandlers) handleSummaryPage(w http.ResponseWriter, r *http.Request) {
+	admin := auth.CurrentAdmin(r)
 	currentMonth := time.Now().Format("2006-01")
-	text, err := h.buildSummaryText(currentMonth)
+	text, err := h.buildSummaryText(currentMonth, admin.LanguagePref)
 	if err != nil {
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
@@ -32,22 +77,22 @@ func (h *authHandlers) handleSummaryPage(w http.ResponseWriter, r *http.Request)
 
 // handleSummaryGenerate serves HTMX requests to generate summary text for a chosen month.
 func (h *authHandlers) handleSummaryGenerate(w http.ResponseWriter, r *http.Request) {
+	admin := auth.CurrentAdmin(r)
 	month := strings.TrimSpace(r.URL.Query().Get("summary_month"))
 	if month == "" {
 		month = time.Now().Format("2006-01")
 	}
 
-	text, err := h.buildSummaryText(month)
+	text, err := h.buildSummaryText(month, admin.LanguagePref)
 	if err != nil {
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
 
-	admin := auth.CurrentAdmin(r)
 	pages.SummaryPreview(admin.LanguagePref, text).Render(r.Context(), w)
 }
 
-func (h *authHandlers) buildSummaryText(month string) (string, error) {
+func (h *authHandlers) buildSummaryText(month, lang string) (string, error) {
 	gs, err := settings.Get(h.conn)
 	if err != nil {
 		return "", err
@@ -57,7 +102,7 @@ func (h *authHandlers) buildSummaryText(month string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	monthLabel := tMonth.Format("January 2006")
+	monthLabel := formatMonthLabel(tMonth, lang)
 
 	// Calculate totals for this month
 	var totalCollected int64
@@ -92,13 +137,32 @@ func (h *authHandlers) buildSummaryText(month string) (string, error) {
 	closingBalance := allTimeCollected - allTimeExpenses
 
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("*Sadqa Ledger — %s*\n", monthLabel))
-	sb.WriteString(fmt.Sprintf("Group: %s\n\n", gs.GroupName))
+	switch lang {
+	case "hi":
+		sb.WriteString(fmt.Sprintf("*सदका लेजर — %s*\n", monthLabel))
+		sb.WriteString(fmt.Sprintf("समूह: %s\n\n", gs.GroupName))
 
-	sb.WriteString(fmt.Sprintf("*Monthly Summary (%s):*\n", monthLabel))
-	sb.WriteString(fmt.Sprintf("- Total Collected: %s\n", formatMoney(totalCollected, gs.CurrencySymbol)))
-	sb.WriteString(fmt.Sprintf("- Total Expenses: %s\n", formatMoney(totalSpent, gs.CurrencySymbol)))
-	sb.WriteString(fmt.Sprintf("- Closing Balance: %s\n", formatMoney(closingBalance, gs.CurrencySymbol)))
+		sb.WriteString(fmt.Sprintf("*मासिक सारांश (%s):*\n", monthLabel))
+		sb.WriteString(fmt.Sprintf("- कुल जमा: %s\n", formatMoney(totalCollected, gs.CurrencySymbol)))
+		sb.WriteString(fmt.Sprintf("- कुल खर्च: %s\n", formatMoney(totalSpent, gs.CurrencySymbol)))
+		sb.WriteString(fmt.Sprintf("- अंतिम बाकी: %s\n", formatMoney(closingBalance, gs.CurrencySymbol)))
+	case "ar":
+		sb.WriteString(fmt.Sprintf("*دفتر الصدقة — %s*\n", monthLabel))
+		sb.WriteString(fmt.Sprintf("المجموعة: %s\n\n", gs.GroupName))
+
+		sb.WriteString(fmt.Sprintf("*الملخص الشهري (%s):*\n", monthLabel))
+		sb.WriteString(fmt.Sprintf("- إجمالي المقبوضات: %s\n", formatMoney(totalCollected, gs.CurrencySymbol)))
+		sb.WriteString(fmt.Sprintf("- إجمالي المصروفات: %s\n", formatMoney(totalSpent, gs.CurrencySymbol)))
+		sb.WriteString(fmt.Sprintf("- الرصيد الختامي: %s\n", formatMoney(closingBalance, gs.CurrencySymbol)))
+	default:
+		sb.WriteString(fmt.Sprintf("*Sadqa Ledger — %s*\n", monthLabel))
+		sb.WriteString(fmt.Sprintf("Group: %s\n\n", gs.GroupName))
+
+		sb.WriteString(fmt.Sprintf("*Monthly Summary (%s):*\n", monthLabel))
+		sb.WriteString(fmt.Sprintf("- Total Collected: %s\n", formatMoney(totalCollected, gs.CurrencySymbol)))
+		sb.WriteString(fmt.Sprintf("- Total Expenses: %s\n", formatMoney(totalSpent, gs.CurrencySymbol)))
+		sb.WriteString(fmt.Sprintf("- Closing Balance: %s\n", formatMoney(closingBalance, gs.CurrencySymbol)))
+	}
 
 	// Fetch all individual contributions for this month
 	rows, err := h.conn.Query(
@@ -117,7 +181,14 @@ func (h *authHandlers) buildSummaryText(month string) (string, error) {
 	var hasContribs bool
 	for rows.Next() {
 		if !hasContribs {
-			sb.WriteString(fmt.Sprintf("\n*Contributions (%s):*\n", monthLabel))
+			switch lang {
+			case "hi":
+				sb.WriteString(fmt.Sprintf("\n*योगदान (%s):*\n", monthLabel))
+			case "ar":
+				sb.WriteString(fmt.Sprintf("\n*المساهمات (%s):*\n", monthLabel))
+			default:
+				sb.WriteString(fmt.Sprintf("\n*Contributions (%s):*\n", monthLabel))
+			}
 			hasContribs = true
 		}
 		var name string
@@ -125,14 +196,28 @@ func (h *authHandlers) buildSummaryText(month string) (string, error) {
 		if err := rows.Scan(&name, &amount); err == nil {
 			displayName := name
 			if !gs.ShowNamesPublicly {
-				displayName = "Contributor"
+				switch lang {
+				case "hi":
+					displayName = "योगदानकर्ता"
+				case "ar":
+					displayName = "مساهم"
+				default:
+					displayName = "Contributor"
+				}
 			}
 			sb.WriteString(fmt.Sprintf("- %s: %s\n", displayName, formatMoney(amount, gs.CurrencySymbol)))
 		}
 	}
 
 	if !hasContribs {
-		sb.WriteString(fmt.Sprintf("\n*Contributions (%s):*\nNo contributions recorded for %s.\n", monthLabel, monthLabel))
+		switch lang {
+		case "hi":
+			sb.WriteString(fmt.Sprintf("\n*योगदान (%s):*\n%s के लिए कोई योगदान दर्ज नहीं किया गया।\n", monthLabel, monthLabel))
+		case "ar":
+			sb.WriteString(fmt.Sprintf("\n*المساهمات (%s):*\nلم يتم تسجيل أي مساهمات لشهر %s.\n", monthLabel, monthLabel))
+		default:
+			sb.WriteString(fmt.Sprintf("\n*Contributions (%s):*\nNo contributions recorded for %s.\n", monthLabel, monthLabel))
+		}
 	}
 
 	return sb.String(), nil
