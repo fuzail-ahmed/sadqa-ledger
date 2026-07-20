@@ -43,9 +43,8 @@ templ Members(d components.AdminShellData, list []members.Member, query, toastMs
 					<h1 class="text-xl font-extrabold text-foreground tracking-tight">{ i18n.T(d.Lang, "members.heading") }</h1>
 					<p class="text-xs text-muted-foreground mt-0.5">Manage community contributors & status</p>
 				</div>
-				<a class="btn min-h-11 flex items-center justify-center gap-1.5 px-4 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" data-variant="primary" href="/members/new">
-					<span>+</span>
-					<span>{ i18n.T(d.Lang, "members.add_button") }</span>
+				<a class="btn min-h-11 flex items-center justify-center px-4 focus-visible:ring-2 focus-visible:ring-primary focus:outline-none font-bold" data-variant="primary" href="/members/new">
+					{ i18n.T(d.Lang, "members.add_button") }
 				</a>
 			</div>
 
@@ -133,7 +132,7 @@ templ MemberList(lang, csrfToken, query string, list []members.Member) {
 				</div>
 				<p class="text-sm font-medium text-muted-foreground">{ i18n.T(lang, "members.empty") }</p>
 				<a class="btn min-h-11 px-4 flex items-center justify-center font-bold focus-visible:ring-2 focus-visible:ring-primary focus:outline-none" data-variant="primary" href="/members/new">
-					+ { i18n.T(lang, "members.add_button") }
+					{ i18n.T(lang, "members.add_button") }
 				</a>
 			</div>
 		} else {
@@ -149,13 +148,13 @@ templ memberRow(lang, csrfToken string, m members.Member) {
 		<!-- Top Right Status Badge -->
 		<div class="absolute top-3.5 end-3.5">
 			if m.IsActive {
-				<span class="badge py-1 px-2.5 text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1 shadow-xs" data-variant="success">
-					<span class="text-[9px]">✓</span>
+				<span class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-[11px] font-bold tracking-wide bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 shadow-2xs" data-variant="success">
+					@components.IconCheck("h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400")
 					<span>{ i18n.T(lang, "members.status_active") }</span>
 				</span>
 			} else {
-				<span class="badge py-1 px-2.5 text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1 shadow-xs" data-variant="warning">
-					<span class="text-[9px]">—</span>
+				<span class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-[11px] font-bold tracking-wide bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 shadow-2xs" data-variant="warning">
+					@components.IconAlertCircle("h-3.5 w-3.5 text-amber-600 dark:text-amber-400")
 					<span>{ i18n.T(lang, "members.status_inactive") }</span>
 				</span>
 			}
