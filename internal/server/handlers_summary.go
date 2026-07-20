@@ -95,39 +95,44 @@ func (h *authHandlers) buildSummaryText(month string) (string, error) {
 	sb.WriteString(fmt.Sprintf("*Sadqa Ledger — %s*\n", monthLabel))
 	sb.WriteString(fmt.Sprintf("Group: %s\n\n", gs.GroupName))
 
-	sb.WriteString("*Monthly Summary:*\n")
+	sb.WriteString(fmt.Sprintf("*Monthly Summary (%s):*\n", monthLabel))
 	sb.WriteString(fmt.Sprintf("- Total Collected: %s\n", formatMoney(totalCollected, gs.CurrencySymbol)))
 	sb.WriteString(fmt.Sprintf("- Total Expenses: %s\n", formatMoney(totalSpent, gs.CurrencySymbol)))
 	sb.WriteString(fmt.Sprintf("- Closing Balance: %s\n", formatMoney(closingBalance, gs.CurrencySymbol)))
 
-	if gs.ShowNamesPublicly {
-		// Get individual contributions
-		rows, err := h.conn.Query(
-			`SELECT m.name, SUM(c.amount_minor) 
-			 FROM contributions c 
-			 JOIN members m ON c.member_id = m.id 
-			 WHERE c.contribution_month = ? AND c.deleted_at IS NULL 
-			 GROUP BY m.id, m.name 
-			 ORDER BY m.name COLLATE NOCASE`,
-			month,
-		)
-		if err != nil {
-			return "", err
-		}
-		defer rows.Close()
+	// Fetch all individual contributions for this month
+	rows, err := h.conn.Query(
+		`SELECT m.name, c.amount_minor 
+		 FROM contributions c 
+		 JOIN members m ON c.member_id = m.id 
+		 WHERE c.contribution_month = ? AND c.deleted_at IS NULL 
+		 ORDER BY c.created_at ASC, m.name COLLATE NOCASE`,
+		month,
+	)
+	if err != nil {
+		return "", err
+	}
+	defer rows.Close()
 
-		var hasContribs bool
-		for rows.Next() {
-			if !hasContribs {
-				sb.WriteString("\n*Contributions:*\n")
-				hasContribs = true
-			}
-			var name string
-			var amount int64
-			if err := rows.Scan(&name, &amount); err == nil {
-				sb.WriteString(fmt.Sprintf("- %s: %s\n", name, formatMoney(amount, gs.CurrencySymbol)))
-			}
+	var hasContribs bool
+	for rows.Next() {
+		if !hasContribs {
+			sb.WriteString(fmt.Sprintf("\n*Contributions (%s):*\n", monthLabel))
+			hasContribs = true
 		}
+		var name string
+		var amount int64
+		if err := rows.Scan(&name, &amount); err == nil {
+			displayName := name
+			if !gs.ShowNamesPublicly {
+				displayName = "Contributor"
+			}
+			sb.WriteString(fmt.Sprintf("- %s: %s\n", displayName, formatMoney(amount, gs.CurrencySymbol)))
+		}
+	}
+
+	if !hasContribs {
+		sb.WriteString(fmt.Sprintf("\n*Contributions (%s):*\nNo contributions recorded for %s.\n", monthLabel, monthLabel))
 	}
 
 	return sb.String(), nil
