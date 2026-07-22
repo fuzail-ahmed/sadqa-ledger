@@ -25,6 +25,15 @@ func New(conn *sql.DB, cfg config.Config) http.Handler {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.RealIP)
 
+	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		if err := conn.PingContext(r.Context()); err != nil {
+			http.Error(w, "database unavailable", http.StatusServiceUnavailable)
+			return
+		}
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		_, _ = w.Write([]byte("ok\n"))
+	})
+
 	// Embedded static assets (compiled Tailwind CSS + vendored Basecoat
 	// bundle) — see web/static/embed.go.
 	r.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.FS(static.FS))))

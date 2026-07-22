@@ -96,6 +96,17 @@ func TestProtectedRouteRedirectsToSetupOnEmptyDB(t *testing.T) {
 	}
 }
 
+func TestHealthzIsPublicAndPingsDatabase(t *testing.T) {
+	h, _ := newTestServer(t)
+	rec := doGet(h, "/healthz", nil)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("GET /healthz = %d, want 200", rec.Code)
+	}
+	if rec.Body.String() != "ok\n" {
+		t.Fatalf("GET /healthz body = %q, want ok", rec.Body.String())
+	}
+}
+
 func TestFullSignupLoginLogoutFlow(t *testing.T) {
 	h, conn := newTestServer(t)
 

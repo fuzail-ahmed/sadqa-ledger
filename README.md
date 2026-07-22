@@ -36,20 +36,18 @@ Full reasoning behind every product and technical decision lives in [`docs/`](do
 - **Works in English, Hindi, and Arabic.**
 - **Installs like an app** on your phone's home screen — no app store needed.
 
-## Quick start (Docker)
+## Quick start (Docker Compose)
 
 If you already have Docker installed:
 
 ```bash
-docker run -d \
-  --name sadqa-ledger \
-  -p 8080:8080 \
-  -v sadqa-ledger-data:/data \
-  --env-file .env \
-  ghcr.io/fuzail-ahmed/sadqa-ledger:latest
+cp .env.example .env
+# edit .env: set DOMAIN, BASE_URL, SESSION_SECRET, and backup settings
+docker compose build
+docker compose up -d
 ```
 
-Then open `http://localhost:8080` and follow the first-run setup to create your first admin account and configure your group.
+Then open the `BASE_URL` you configured and follow the first-run setup to create your first admin account and configure your group.
 
 Don't have a `.env` file yet? Copy [`.env.example`](.env.example) to `.env` and fill in your own values first.
 

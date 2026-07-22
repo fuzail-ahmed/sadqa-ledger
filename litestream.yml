@@ -2,7 +2,7 @@
 # Place this in /etc/litestream.yml on your server or run with: litestream replicate -config litestream.yml
 
 dbs:
-  - path: ${DATABASE_PATH:-/data/sadqa-ledger.db}
+  - path: ${DATABASE_PATH}
     replicas:
       - type: s3
         name: r2
