@@ -1,26 +1,26 @@
 # Self-Hosting Guide - Deploying Sadqa Ledger on Oracle Cloud
 
-This guide deploys Sadqa Ledger from the repository source on an Oracle Cloud Ubuntu VM using Docker Compose. It does not require access to GHCR or any pre-published container image.
+This guide deploys Sadqa Ledger on an Oracle Cloud Ubuntu VM using Docker Compose. By default, it pulls prebuilt Docker images from GitHub Container Registry (GHCR) to avoid building on the server.
 
 By the end, you will have:
 
 - Caddy serving the app over HTTPS with an automatic certificate.
-- Sadqa Ledger running from a locally built Docker image.
+- Sadqa Ledger running from a prebuilt GHCR Docker image.
 - SQLite stored on a persistent Docker volume.
 - Litestream continuously replicating the SQLite database to Cloudflare R2.
 
 ## Architecture
 
 ```text
-Browser -> HTTPS -> Caddy -> Sadqa Ledger -> /data/sadqa-ledger.db
-                                                 |
-                                                 v
-                                            Litestream -> Cloudflare R2
+Browser -> HTTPS -> Caddy -> Sadqa Ledger (GHCR Image) -> /data/sadqa-ledger.db
+                                                               |
+                                                               v
+                                                          Litestream -> Cloudflare R2
 ```
 
 The Compose stack is defined in `docker-compose.yml` and starts three services:
 
-- `app`: locally built from `Dockerfile`.
+- `app`: prebuilt image pulled from GitHub Container Registry (GHCR).
 - `caddy`: public HTTP/HTTPS entrypoint.
 - `litestream`: SQLite backup replication sidecar.
 
@@ -121,11 +121,11 @@ Generate the session secret on the VM:
 openssl rand -hex 32
 ```
 
-## Using GitHub Container Registry (Recommended)
+## GitHub Container Registry (Default & Recommended)
 
-GitHub Container Registry (GHCR) hosts prebuilt Docker images of Sadqa Ledger, supporting both `linux/amd64` and `linux/arm64` architectures.
+By default, the `docker-compose.yml` file is configured to pull prebuilt Docker images of Sadqa Ledger from GitHub Container Registry (GHCR) (`ghcr.io/fuzail-ahmed/sadqa-ledger:latest`). These images support both `linux/amd64` and `linux/arm64` architectures.
 
-### Why GHCR is Preferred
+### Why GHCR is the Default
 - **No Heavy Compilations on VM:** Compiling Go code, generating templ files, and minifying Tailwind CSS is handled in GitHub Actions instead of on the server.
 - **Fast Deployments:** Launching the application takes seconds since you only pull prebuilt layers instead of building from source.
 - **Multitarget Architecture Support:** Seamlessly runs on Oracle Cloud ARM64 Ampere instances and traditional AMD64 hosts.
@@ -135,50 +135,40 @@ Oracle Cloud's Always Free tier provides VM instances (like `VM.Standard.E2.1.Mi
 - **Out of Memory (OOM) Errors:** The Go compiler, Tailwind CLI, and templ generators require significant RAM. Running them on a 1 GB VM frequently exhausts memory, causing the OS to kill the compilation process.
 - **System Instabilities:** The high CPU and memory pressure during builds can cause the VM to freeze, terminating existing services like Caddy or Litestream backups.
 
-### How to Configure Docker Compose for GHCR
-To use the prebuilt image, modify the `app` service configuration in [docker-compose.yml](file:///D:/sadqa-ledger/docker-compose.yml):
-
-```yaml
-  app:
-    image: ghcr.io/fuzail-ahmed/sadqa-ledger:latest
-    restart: unless-stopped
-    # Remove or comment out the build block below:
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
-```
-
 ### How to Roll Back to a Previous Image Tag
-If a new release has issues, you can easily roll back to a specific tag or git SHA:
-1. Open `docker-compose.yml` and change the tag from `:latest` to the desired version tag or git SHA (e.g., `:v1.0.0` or `:abc1234`):
-   ```yaml
-   image: ghcr.io/fuzail-ahmed/sadqa-ledger:v1.0.0
+If a new release has issues, you can easily roll back to a specific tag or git SHA without editing the `docker-compose.yml` file:
+1. Open `.env` and configure `APP_VERSION` to point to the desired release tag (e.g., `v1.0.3`) or git SHA (e.g., `3d9e81f`):
+   ```env
+   APP_VERSION=v1.0.3
    ```
-2. Pull the specific image and restart the containers:
+2. Pull the configured image version and restart the containers:
    ```bash
    docker compose pull
    docker compose up -d
    ```
 
+### Local Development Builds
+If you are developing locally and want to build the Docker image from your local source files instead of pulling from GHCR:
+1. Copy the example override configuration:
+   ```bash
+   cp docker-compose.override.yml.example docker-compose.override.yml
+   ```
+2. When running Docker Compose commands locally, Docker Compose will automatically read both `docker-compose.yml` and `docker-compose.override.yml`, merging them to build the application from source.
+
 ---
 
-## 6. Build and start
+## 6. Pull and start
 
-### Option A: Using GHCR (Recommended)
-If you updated `docker-compose.yml` to use the GHCR image, pull and start the stack:
+To start the deployment:
 
 ```bash
 docker compose pull
 docker compose up -d
 ```
 
-### Option B: Building from Source (Local fallback)
-If you choose to build locally from the source files on the VM:
+> [!NOTE]
+> Production deployments pull prebuilt images from GitHub Container Registry (GHCR) by default. This avoids compiling code on the server, which is essential for low-memory VMs (e.g. 1 GB RAM) to prevent memory exhaustion and system instability.
 
-```bash
-docker compose build --pull
-docker compose up -d
-```
 
 
 Check status:
@@ -241,19 +231,35 @@ docker compose up -d
 
 Log in and confirm the expected members, contributions, expenses, settings, and public page are present.
 
-## Updating
+## Production Update
 
-### Option A: Using GHCR (Recommended)
-From the repository directory:
+To update the application to the newest version on production:
 
 ```bash
 git pull
 docker compose pull
 docker compose up -d
+docker compose ps
 ```
 
-### Option B: Building from Source (Local fallback)
-From the repository directory:
+This pulls the prebuilt image configured via `APP_VERSION` in your `.env` file (which defaults to `latest`) and restarts the stack with minimal downtime. The application automatically runs any pending migrations on startup.
+
+## Rollback
+
+If a deployment contains bugs or issues, you can roll back to a previous stable tag or git SHA without modifying the `docker-compose.yml` file:
+
+1. Open `.env` and set `APP_VERSION` to the target tag (e.g., `v1.0.2` or a specific git SHA like `3d9e81f`):
+   ```env
+   APP_VERSION=v1.0.2
+   ```
+2. Pull the targeted version and restart the services:
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+If you are using a local build setup for development with `docker-compose.override.yml`:
 
 ```bash
 git pull
@@ -261,12 +267,10 @@ docker compose build --pull
 docker compose up -d
 ```
 
-The app applies pending database migrations on startup.
-
 ## Troubleshooting
 
 - **Caddy certificate fails:** confirm `DOMAIN` is only the hostname, `BASE_URL` includes `https://`, DNS points to this VM, ports `80` and `443` are open, and Cloudflare proxy is disabled.
-- **GHCR denied:** this deployment does not use GHCR. Run `docker compose build --pull` from the cloned repository.
+- **GHCR pull fails/denied:** verify the VM has internet access and can reach `ghcr.io`. If you cannot pull the prebuilt image, you can fall back to local builds by copying the override configuration (`cp docker-compose.override.yml.example docker-compose.override.yml`) and building from source: `docker compose build`.
 - **Litestream credential errors:** verify all `LITESTREAM_R2_*` values in `.env`.
 - **App unhealthy:** check `docker compose logs app`; the Docker healthcheck calls `/healthz`, which pings the SQLite connection.
 - **Permission denied running Docker:** log out and back in after `sudo usermod -aG docker "$USER"`, or temporarily run Docker commands with `sudo`.

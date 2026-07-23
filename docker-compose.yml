@@ -1,9 +1,6 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: sadqa-ledger:local
+    image: ghcr.io/fuzail-ahmed/sadqa-ledger:${APP_VERSION:-latest}
     restart: unless-stopped
     env_file:
       - .env

@@ -38,20 +38,44 @@ Full reasoning behind every product and technical decision lives in [`docs/`](do
 
 ## Quick start (Docker Compose)
 
-If you already have Docker installed:
+The production configuration pulls prebuilt, multi-architecture Docker images from GitHub Container Registry (GHCR) by default. These images are automatically built and published by GitHub Actions on every release.
+
+If you already have Docker installed and want to run the prebuilt image:
 
 ```bash
 cp .env.example .env
 # edit .env: set DOMAIN, BASE_URL, SESSION_SECRET, and backup settings
+docker compose pull
+docker compose up -d
+```
+
+### Local Development
+
+If you are developing locally and want to build the Docker image from your local source files:
+
+```bash
+cp .env.example .env
+cp docker-compose.override.yml.example docker-compose.override.yml
+# edit .env as needed
 docker compose build
 docker compose up -d
 ```
+### Image Versioning and Hardening
+
+Production deployments parameterize the application version using the `APP_VERSION` environment variable in the `.env` file. This offers several production advantages:
+- **Versioning Control:** You can pin deployments to specific versions instead of always tracking `latest`.
+- **Easy Rollbacks:** If a new update introduces bugs, rolling back is as simple as editing `APP_VERSION` in your `.env` file to a previous stable tag and running `docker compose up -d`. You never need to edit the `docker-compose.yml` file.
+
+Available version patterns for `APP_VERSION`:
+- `latest` (default): Tracks the newest build of the `master`/`main` branch.
+- **Release Tags** (e.g., `v1.0.3`): Pins the application to a specific tagged release.
+- **Git SHAs** (e.g., `3d9e81f`): Pins the application to a specific commit build for precise, reproducible deployment control.
 
 Then open the `BASE_URL` you configured and follow the first-run setup to create your first admin account and configure your group.
 
 Don't have a `.env` file yet? Copy [`.env.example`](.env.example) to `.env` and fill in your own values first.
 
-This runs the app locally for trying it out. **To actually put this online for your community — on a free server, with a real domain and automatic HTTPS, and continuous off-site backups — follow [`docs/DEPLOY.md`](docs/DEPLOY.md).** It's written for someone who has never seriously used a terminal before.
+This runs the app for trying it out. **To actually put this online for your community — on a free server, with a real domain and automatic HTTPS, and continuous off-site backups — follow the comprehensive [`docs/DEPLOY.md`](docs/DEPLOY.md) guide.** It's written for someone who has never seriously used a terminal before.
 
 ## Tech stack
 
