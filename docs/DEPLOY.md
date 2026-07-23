@@ -121,12 +121,65 @@ Generate the session secret on the VM:
 openssl rand -hex 32
 ```
 
+## Using GitHub Container Registry (Recommended)
+
+GitHub Container Registry (GHCR) hosts prebuilt Docker images of Sadqa Ledger, supporting both `linux/amd64` and `linux/arm64` architectures.
+
+### Why GHCR is Preferred
+- **No Heavy Compilations on VM:** Compiling Go code, generating templ files, and minifying Tailwind CSS is handled in GitHub Actions instead of on the server.
+- **Fast Deployments:** Launching the application takes seconds since you only pull prebuilt layers instead of building from source.
+- **Multitarget Architecture Support:** Seamlessly runs on Oracle Cloud ARM64 Ampere instances and traditional AMD64 hosts.
+
+### Why Building on 1 GB Oracle VMs is Discouraged
+Oracle Cloud's Always Free tier provides VM instances (like `VM.Standard.E2.1.Micro` or low-end Ampere shapes) with limited memory (e.g., 1 GB RAM). Running `docker compose build` on these VMs is highly discouraged because:
+- **Out of Memory (OOM) Errors:** The Go compiler, Tailwind CLI, and templ generators require significant RAM. Running them on a 1 GB VM frequently exhausts memory, causing the OS to kill the compilation process.
+- **System Instabilities:** The high CPU and memory pressure during builds can cause the VM to freeze, terminating existing services like Caddy or Litestream backups.
+
+### How to Configure Docker Compose for GHCR
+To use the prebuilt image, modify the `app` service configuration in [docker-compose.yml](file:///D:/sadqa-ledger/docker-compose.yml):
+
+```yaml
+  app:
+    image: ghcr.io/fuzail-ahmed/sadqa-ledger:latest
+    restart: unless-stopped
+    # Remove or comment out the build block below:
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+```
+
+### How to Roll Back to a Previous Image Tag
+If a new release has issues, you can easily roll back to a specific tag or git SHA:
+1. Open `docker-compose.yml` and change the tag from `:latest` to the desired version tag or git SHA (e.g., `:v1.0.0` or `:abc1234`):
+   ```yaml
+   image: ghcr.io/fuzail-ahmed/sadqa-ledger:v1.0.0
+   ```
+2. Pull the specific image and restart the containers:
+   ```bash
+   docker compose pull
+   docker compose up -d
+   ```
+
+---
+
 ## 6. Build and start
+
+### Option A: Using GHCR (Recommended)
+If you updated `docker-compose.yml` to use the GHCR image, pull and start the stack:
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+### Option B: Building from Source (Local fallback)
+If you choose to build locally from the source files on the VM:
 
 ```bash
 docker compose build --pull
 docker compose up -d
 ```
+
 
 Check status:
 
@@ -190,6 +243,16 @@ Log in and confirm the expected members, contributions, expenses, settings, and 
 
 ## Updating
 
+### Option A: Using GHCR (Recommended)
+From the repository directory:
+
+```bash
+git pull
+docker compose pull
+docker compose up -d
+```
+
+### Option B: Building from Source (Local fallback)
 From the repository directory:
 
 ```bash
